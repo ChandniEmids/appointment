@@ -1,0 +1,3063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ClearPath FDO — Appointment Manager</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://mcp.figma.com/mcp/html-to-design/capture.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+  <style>
+    * { font-family: 'Google Sans', sans-serif; }
+
+    :root {
+      --spacing-1: 8px;
+      --spacing-2: 16px;
+      --spacing-3: 24px;
+      --spacing-4: 32px;
+      --spacing-5: 40px;
+      --spacing-6: 48px;
+      --spacing-7: 56px;
+      --spacing-8: 64px;
+      --header-height: 64px;
+      --sidebar-width: 240px;
+      --brand-blue: #143AC3;
+      --cta-gradient: linear-gradient(90deg, #143AC3 0%, #5F50E5 100%);
+      --sidebar-bg: transparent;
+      --sidebar-border: #f3f4f6;
+      --nav-active-bg: #F0F3FF;
+      --nav-active-text: #143AC3;
+      --nav-active-border: #143AC3;
+      /* Theme tokens — light */
+      --bg-page: linear-gradient(180deg, rgba(235,235,237,0.60) 0%, rgba(220,220,236,0.60) 100%), #FFF;
+      --bg-header: #F9F9FB;
+      --bg-surface: #ffffff;
+      --bg-input: #ffffff;
+      --bg-calendar: #ffffff;
+      --text-primary: #121219;
+      --text-secondary: #666689;
+      --text-muted: #9ca3af;
+      --border-subtle: #f3f4f6;
+      --border-input: #F0F0F7;
+      --nav-item-color: #374151;
+      --nav-item-hover-bg: #f9fafb;
+      --today-bg: #F5F7FF;
+      --today-color: #143AC3;
+      --weekend-bg: #fafafa;
+      --scrollbar-track: #f1f5f9;
+      --scrollbar-thumb: #cbd5e1;
+    }
+
+    [data-theme="dark"] {
+      --bg-page: #0D0D1C;
+      --bg-header: #12121F;
+      --bg-surface: #1A1A2E;
+      --bg-input: #1C1C30;
+      --bg-calendar: #14142A;
+      --text-primary: #E8E8F4;
+      --text-secondary: #7878A0;
+      --text-muted: #44446A;
+      --border-subtle: #232340;
+      --border-input: #2A2A46;
+      --sidebar-border: #232340;
+      --nav-active-bg: rgba(20,58,195,0.18);
+      --nav-item-color: #8080B0;
+      --nav-item-hover-bg: rgba(255,255,255,0.05);
+      --today-bg: rgba(20,58,195,0.18);
+      --today-color: #818CF8;
+      --weekend-bg: rgba(255,255,255,0.02);
+      --scrollbar-track: #16162A;
+      --scrollbar-thumb: #38385C;
+    }
+
+    body { background: var(--bg-page); margin: 0; padding: 0; transition: background 0.3s ease; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+    ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 3px; }
+
+    /* Pulse animation */
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.3); }
+    }
+    .pulse-dot { animation: pulse-dot 1.5s ease-in-out infinite; }
+
+    /* Skeleton animation */
+    @keyframes shimmer {
+      0% { background-position: -400px 0; }
+      100% { background-position: 400px 0; }
+    }
+    .skeleton {
+      background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+      background-size: 800px 100%;
+      animation: shimmer 1.5s infinite;
+    }
+
+    /* Side panel transition */
+    .side-panel {
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .side-panel.open { transform: translateX(0); }
+
+    /* Modal transition */
+    .modal-backdrop {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .modal-backdrop.open { opacity: 1; pointer-events: all; }
+    .modal-content {
+      transform: scale(0.95) translateY(-10px);
+      transition: transform 0.2s ease, opacity 0.2s ease;
+      opacity: 0;
+    }
+    .modal-backdrop.open .modal-content { transform: scale(1) translateY(0); opacity: 1; }
+
+    /* Filter bar — toggleable */
+    .filter-bar {
+      overflow: hidden;
+      transition: max-height 0.25s ease, opacity 0.2s ease;
+      max-height: 120px;
+      opacity: 1;
+    }
+    .filter-bar.collapsed {
+      max-height: 0;
+      opacity: 0;
+    }
+
+    /* Card hover */
+    .appt-card {
+      cursor: pointer;
+      transition: box-shadow 0.15s ease, transform 0.15s ease;
+    }
+    .appt-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.12); transform: translateY(-1px); }
+    .appt-card { position: relative; }
+
+    /* Time grid */
+    .time-grid { display: grid; }
+    .time-slot { min-height: 64px; position: relative; }
+
+    /* Month grid */
+    .month-cell { min-height: 88px; }
+
+    /* Availability dot */
+    .avail-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
+
+    /* Smooth transition for status changes */
+    .appt-card { transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.15s ease, transform 0.15s ease; }
+
+    /* ── App shell ── */
+    #appHeader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--header-height);
+      background: var(--bg-header);
+      border-bottom: 1px solid var(--border-subtle);
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      padding: 0 var(--spacing-3);
+      gap: var(--spacing-2);
+    }
+
+    #appHeader .header-logo {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-1);
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+
+    #appHeader .header-logo-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(90deg, #143AC3 0%, #5F50E5 100%);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #appHeader .header-logo-icon svg {
+      width: 18px;
+      height: 18px;
+      fill: white;
+    }
+
+    #appHeader .header-logo-text {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      line-height: 1;
+    }
+
+    #appHeader .header-logo-text .clear { color: var(--text-primary); }
+    #appHeader .header-logo-text .path  { color: #143AC3; }
+    #appHeader .header-logo-text .fdo   { color: var(--text-secondary); font-weight: 500; margin-left: 2px; }
+
+    #appHeader .header-search-wrap {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+    }
+
+    #appHeader .header-search {
+      position: relative;
+      width: 100%;
+      min-width: 320px;
+      max-width: 480px;
+    }
+
+    #appHeader .header-search svg,
+    #appHeader .header-search i {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    #appHeader .header-search input {
+      width: 100%;
+      height: 40px;
+      padding: 0 12px 0 40px;
+      border: 1px solid var(--border-input);
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--text-primary);
+      background: var(--bg-input);
+      outline: none;
+      transition: border-color .15s, box-shadow .15s;
+    }
+
+    #appHeader .header-search input:focus {
+      border-color: #143AC3;
+      box-shadow: 0 0 0 3px rgba(20,58,195,0.15);
+      background: var(--bg-input);
+    }
+
+    #appHeader .header-search input::placeholder { color: var(--text-muted); }
+
+    #appHeader .header-right {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-1);
+      flex-shrink: 0;
+    }
+
+    #appHeader .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #0d9488;
+      color: white;
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      user-select: none;
+    }
+
+    #appHeader .user-avatar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 8px;
+      transition: background .15s;
+    }
+    #appHeader .user-avatar-wrap:hover { background: var(--nav-item-hover-bg); }
+
+    #appHeader .user-caret {
+      width: 14px;
+      height: 14px;
+      color: #666689;
+    }
+
+    /* User dropdown */
+    .user-dropdown-wrap { position: relative; }
+    .user-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+      min-width: 200px;
+      z-index: 200;
+      overflow: hidden;
+    }
+    .user-dropdown.open { display: block; }
+    .user-dropdown-info {
+      padding: 14px 16px 12px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .user-dropdown-name { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+    .user-dropdown-email { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+    .user-dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: background .12s;
+      text-decoration: none;
+      width: 100%;
+      border: none;
+      background: none;
+      font-family: inherit;
+    }
+    .user-dropdown-item:hover { background: var(--nav-item-hover-bg); color: var(--text-primary); }
+    .user-dropdown-item.logout { color: #ef4444; }
+    .user-dropdown-item.logout:hover { background: #fef2f2; color: #dc2626; }
+
+    /* ── Sidebar ── */
+    #appSidebar {
+      position: fixed;
+      top: var(--header-height);
+      left: 0;
+      width: var(--sidebar-width);
+      height: calc(100vh - var(--header-height));
+      background: var(--sidebar-bg);
+      display: flex;
+      flex-direction: column;
+      z-index: 40;
+      overflow-y: auto;
+    }
+
+    #appSidebar .nav-section-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: var(--spacing-3) var(--spacing-2) var(--spacing-1) var(--spacing-2);
+    }
+
+    #appSidebar .nav-section-label.admin-label {
+      margin-top: 32px;
+    }
+
+    #appSidebar .nav-item {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-1);
+      height: 40px;
+      padding: 0 var(--spacing-2);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--nav-item-color);
+      text-decoration: none;
+      border-radius: 8px;
+      margin: 0 8px;
+      cursor: pointer;
+      transition: background .15s, color .15s;
+      border-left: 3px solid transparent;
+      margin-left: 8px;
+    }
+
+    #appSidebar .nav-item:hover:not(.active) {
+      background: var(--nav-item-hover-bg);
+    }
+
+    #appSidebar .nav-item.active {
+      background: var(--nav-active-bg);
+      color: var(--nav-active-text);
+      border-left-color: var(--nav-active-border);
+      font-weight: 600;
+    }
+
+    #appSidebar .nav-item svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    #appSidebar .nav-item i {
+      flex-shrink: 0;
+      line-height: 1;
+    }
+
+    #appSidebar .nav-spacer { flex: 1; }
+
+    #appSidebar .nav-bottom {
+      border-top: 1px solid var(--border-subtle);
+      padding: var(--spacing-1) 0;
+    }
+
+    #appSidebar .nav-bottom .nav-item {
+      color: var(--text-secondary);
+    }
+
+    /* ── Body layout ── */
+    #appBody {
+      display: flex;
+      padding-top: var(--header-height);
+    }
+
+    #appMain {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      min-height: calc(100vh - var(--header-height));
+      overflow-x: auto;
+    }
+
+    /* ── View controls bar ── */
+    .view-controls-bar {
+      background: transparent;
+      border-bottom: none;
+      padding: var(--spacing-4) var(--spacing-4) 0;
+      height: auto;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--spacing-2);
+    }
+
+    /* ── Calendar content area ── */
+    #calendarAreaWrap {
+      display: flex;
+      flex: 1;
+    }
+
+    /* ── Theme transitions ── */
+    *, *::before, *::after { transition: background-color 0.25s ease, border-color 0.25s ease, color 0.15s ease; }
+
+    /* ── Dark mode — Tailwind utility overrides ── */
+    [data-theme="dark"] .bg-white { background-color: var(--bg-surface) !important; }
+    [data-theme="dark"] .bg-gray-100 { background-color: #232340 !important; }
+    [data-theme="dark"] .bg-gray-50  { background-color: rgba(255,255,255,0.04) !important; }
+    [data-theme="dark"] .hover\:bg-gray-50:hover { background-color: var(--nav-item-hover-bg) !important; }
+    [data-theme="dark"] .hover\:bg-gray-100:hover { background-color: rgba(255,255,255,0.08) !important; }
+    [data-theme="dark"] .border-gray-100 { border-color: var(--border-subtle) !important; }
+    [data-theme="dark"] .border-gray-50  { border-color: var(--border-subtle) !important; }
+    [data-theme="dark"] .text-\[#121219\] { color: var(--text-primary) !important; }
+    [data-theme="dark"] .text-\[#666689\] { color: var(--text-secondary) !important; }
+    [data-theme="dark"] .shadow-sm { box-shadow: 0 1px 3px rgba(0,0,0,0.5) !important; }
+
+    /* ── Dark mode — structural ── */
+    [data-theme="dark"] #calendarContainer { background: var(--bg-calendar) !important; }
+    [data-theme="dark"] #detailPanel { background: var(--bg-surface); border-left-color: var(--border-subtle); }
+    [data-theme="dark"] .modal-content { background: var(--bg-surface) !important; border-color: var(--border-subtle) !important; }
+    [data-theme="dark"] input, [data-theme="dark"] select, [data-theme="dark"] textarea {
+      background-color: var(--bg-input) !important;
+      color: var(--text-primary) !important;
+      border-color: var(--border-input) !important;
+    }
+    [data-theme="dark"] input::placeholder, [data-theme="dark"] textarea::placeholder { color: var(--text-muted) !important; }
+    [data-theme="dark"] table { background: var(--bg-calendar); }
+    [data-theme="dark"] th { background: var(--bg-calendar) !important; border-color: var(--border-subtle) !important; }
+    [data-theme="dark"] td { background: var(--bg-surface) !important; border-color: var(--border-subtle) !important; }
+
+    /* ── Dark mode — theme toggle button ── */
+    .theme-toggle {
+      width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 8px;
+      cursor: pointer; border: none;
+      background: transparent;
+      transition: background 0.15s;
+    }
+    .theme-toggle:hover { background: var(--nav-item-hover-bg); }
+
+    /* ── Attendance Module ─────────────────────────── */
+    .att-module { border-radius:8px; border:1.5px solid var(--border-subtle); overflow:hidden; }
+    .att-module-head {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:10px 14px; background:var(--bg-surface);
+      border-bottom:1px solid var(--border-subtle);
+    }
+    .att-module-title {
+      display:flex; align-items:center; gap:6px;
+      font-size:11px; font-weight:700; color:var(--text-secondary);
+      text-transform:uppercase; letter-spacing:.06em;
+    }
+    .att-present-badge {
+      font-size:11px; font-weight:700; color:#16a34a;
+      background:#f0fdf4; border:1px solid #bbf7d0;
+      padding:2px 8px; border-radius:99px;
+    }
+    [data-theme="dark"] .att-present-badge { background:rgba(21,128,61,.15); border-color:rgba(21,128,61,.3); color:#4ade80; }
+    .att-mark-all {
+      font-size:11px; font-weight:600; color:#143AC3;
+      background:none; border:none; cursor:pointer;
+      padding:3px 8px; border-radius:5px; transition:background .12s;
+    }
+    .att-mark-all:hover { background:#F0F3FF; }
+    [data-theme="dark"] .att-mark-all { color:#818CF8; }
+    [data-theme="dark"] .att-mark-all:hover { background:rgba(20,58,195,.15); }
+
+    .att-list { max-height:220px; overflow-y:auto; }
+    .att-row {
+      display:flex; align-items:center; gap:10px;
+      padding:9px 14px; cursor:pointer;
+      border-bottom:1px solid var(--border-subtle);
+      background:var(--bg-surface); transition:background .12s;
+      user-select:none;
+    }
+    .att-row:last-child { border-bottom:none; }
+    .att-row:hover { background:var(--nav-item-hover-bg); }
+    .att-row.att-present { background:#f0fdf4; }
+    [data-theme="dark"] .att-row.att-present { background:rgba(21,128,61,.08); }
+    .att-row.att-present:hover { background:#dcfce7; }
+    [data-theme="dark"] .att-row.att-present:hover { background:rgba(21,128,61,.14); }
+
+    .att-avatar {
+      width:28px; height:28px; border-radius:50%; flex-shrink:0;
+      background:#e0e7ff; color:#4f46e5;
+      display:flex; align-items:center; justify-content:center;
+      font-size:10px; font-weight:700;
+    }
+    [data-theme="dark"] .att-avatar { background:rgba(99,102,241,.2); color:#A5B8FC; }
+    .att-row.att-present .att-avatar { background:#dcfce7; color:#16a34a; }
+    [data-theme="dark"] .att-row.att-present .att-avatar { background:rgba(21,128,61,.2); color:#4ade80; }
+
+    .att-name { flex:1; font-size:12px; font-weight:500; color:var(--text-primary); }
+    .att-row.att-present .att-name { color:#15803d; font-weight:600; }
+    [data-theme="dark"] .att-row.att-present .att-name { color:#4ade80; }
+
+    .att-cb {
+      width:18px; height:18px; border-radius:5px; flex-shrink:0;
+      border:1.5px solid var(--border-input); background:var(--bg-surface);
+      display:flex; align-items:center; justify-content:center; transition:all .12s;
+    }
+    .att-row.att-present .att-cb { background:#16a34a; border-color:#16a34a; }
+
+    /* Visitor check-in */
+    .visitor-row {
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px; padding:12px 14px;
+    }
+    .visitor-info { display:flex; align-items:center; gap:10px; }
+    .visitor-avatar {
+      width:32px; height:32px; border-radius:50%; flex-shrink:0;
+      background:linear-gradient(135deg,#d97706,#b45309);
+      display:flex; align-items:center; justify-content:center;
+      font-size:11px; font-weight:700; color:white;
+    }
+    .visitor-name { font-size:13px; font-weight:600; color:var(--text-primary); }
+    .visitor-sub  { font-size:11px; color:var(--text-secondary); margin-top:1px; }
+    .checkin-status {
+      padding:8px 14px; font-size:11px; font-weight:600;
+      display:flex; align-items:center; gap:6px;
+      border-top:1px solid var(--border-subtle);
+    }
+    .checkin-status.ci-yes { color:#16a34a; background:#f0fdf4; }
+    .checkin-status.ci-no  { color:var(--text-muted); background:var(--bg-surface); }
+    [data-theme="dark"] .checkin-status.ci-yes { background:rgba(21,128,61,.1); color:#4ade80; }
+
+    /* Mini toggle (visitor check-in) */
+    .tgl-mini { position:relative; width:40px; height:22px; flex-shrink:0; }
+    .tgl-mini input { opacity:0; width:0; height:0; position:absolute; }
+    .tgl-mini-track {
+      position:absolute; inset:0; border-radius:99px;
+      background:var(--border-input); cursor:pointer; transition:background .2s;
+    }
+    .tgl-mini input:checked + .tgl-mini-track { background:#16a34a; }
+    .tgl-mini-track::after {
+      content:''; position:absolute; left:3px; top:3px;
+      width:16px; height:16px; border-radius:50%; background:white;
+      transition:transform .2s; box-shadow:0 1px 3px rgba(0,0,0,.2);
+    }
+    .tgl-mini input:checked + .tgl-mini-track::after { transform:translateX(18px); }
+    .tgl-mini input:focus + .tgl-mini-track { box-shadow:0 0 0 3px rgba(21,128,61,.15); }
+
+    /* ── Action Suite ───────────────────────────────── */
+    .action-btn {
+      display:inline-flex; align-items:center; justify-content:center; gap:6px;
+      height:36px; width:100%; border-radius:8px;
+      font-size:13px; font-weight:600; cursor:pointer;
+      border:1.5px solid transparent; transition:all .13s; white-space:nowrap;
+    }
+    .action-btn:active { transform:scale(.98); }
+
+    .action-btn-success { background:#f0fdf4; color:#16a34a; border-color:#bbf7d0; }
+    .action-btn-success:hover { background:#dcfce7; border-color:#86efac; }
+    [data-theme="dark"] .action-btn-success { background:rgba(21,128,61,.12); border-color:rgba(21,128,61,.3); color:#4ade80; }
+
+    .action-btn-brand { background:#F0F3FF; color:#143AC3; border-color:#c7c6f5; }
+    .action-btn-brand:hover { background:#E0E8FF; border-color:#A5B8FC; }
+    .action-btn-brand:disabled { opacity:.4; cursor:not-allowed; pointer-events:none; }
+    [data-theme="dark"] .action-btn-brand { background:rgba(20,58,195,.15); border-color:rgba(99,102,241,.4); color:#818CF8; }
+
+    .action-btn-secondary { background:var(--bg-surface); color:var(--text-primary); border-color:var(--border-input); }
+    .action-btn-secondary:hover { background:var(--nav-item-hover-bg); }
+
+    .action-btn-ghost {
+      background:transparent; color:var(--text-secondary);
+      border:1.5px solid var(--border-subtle);
+      font-size:12px; height:32px;
+    }
+    .action-btn-ghost:hover { background:var(--nav-item-hover-bg); color:var(--text-primary); }
+
+    .action-btn-danger { background:#fff1f2; color:#dc2626; border-color:#fecaca; }
+    .action-btn-danger:hover { background:#fee2e2; border-color:#fca5a5; }
+    [data-theme="dark"] .action-btn-danger { background:rgba(220,38,38,.1); border-color:rgba(220,38,38,.3); color:#fca5a5; }
+
+    .action-btn-print {
+      width:30px; height:30px; border-radius:7px;
+      display:flex; align-items:center; justify-content:center;
+      background:transparent; border:1.5px solid var(--border-subtle);
+      cursor:pointer; color:var(--text-secondary); transition:all .13s;
+      flex-shrink:0;
+    }
+    .action-btn-print:hover { background:var(--nav-item-hover-bg); color:var(--text-primary); border-color:var(--border-input); }
+
+    /* Inline expandable forms */
+    .action-inline-form {
+      padding:14px; background:var(--nav-item-hover-bg);
+      border-top:1px solid var(--border-subtle);
+      animation:fadeInDown .15s ease;
+    }
+    @keyframes fadeInDown { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+    .action-form-label {
+      font-size:11px; font-weight:600; color:var(--text-secondary);
+      display:block; margin-bottom:5px;
+    }
+    .action-form-input {
+      width:100%; height:34px; padding:0 10px;
+      border:1.5px solid var(--border-input); border-radius:8px;
+      font-size:13px; color:var(--text-primary); background:var(--bg-surface);
+      outline:none; font-family:'Google Sans', sans-serif;
+    }
+    .action-form-input:focus { border-color:#143AC3; box-shadow:0 0 0 3px rgba(20,58,195,.1); }
+    .action-form-row2 { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px; }
+
+    /* Time slots mini (reschedule) */
+    .time-slots-mini { display:flex; flex-wrap:wrap; gap:4px; margin-top:6px; }
+    .tslot-mini {
+      padding:4px 8px; border-radius:6px; font-size:11px; font-weight:600;
+      border:1.5px solid var(--border-input); cursor:pointer;
+      color:var(--text-secondary); background:var(--bg-surface);
+      transition:all .12s;
+    }
+    .tslot-mini:hover { border-color:#143AC3; color:#143AC3; background:#F0F3FF; }
+    .tslot-mini.tslot-sel { background:#143AC3; color:white; border-color:#143AC3; }
+    [data-theme="dark"] .tslot-mini { background:var(--bg-input); }
+    [data-theme="dark"] .tslot-mini:hover { border-color:#818CF8; color:#818CF8; background:rgba(20,58,195,.12); }
+    [data-theme="dark"] .tslot-mini.tslot-sel { background:#143AC3; }
+
+    /* Cancel reason chip (shown when cancelled) */
+    .cancel-reason-chip {
+      display:inline-flex; align-items:center; gap:5px;
+      font-size:11px; font-weight:600; padding:3px 10px; border-radius:99px;
+      background:#fff1f2; color:#b91c1c; border:1px solid #fecaca; margin-bottom:8px;
+    }
+    [data-theme="dark"] .cancel-reason-chip { background:rgba(220,38,38,.1); border-color:rgba(220,38,38,.3); color:#fca5a5; }
+
+    [data-theme="dark"] #typeLegend .legend-type-label { color: var(--text-secondary) !important; }
+
+    /* ── Detail Panel v2 ──────────────────────────────────────── */
+    .dp-header-bar {
+      display:flex; align-items:flex-start; justify-content:space-between;
+      gap:12px; padding:18px 20px 16px;
+    }
+    .dp-header-left { flex:1; min-width:0; }
+    .dp-type-pill {
+      display:inline-flex; align-items:center; gap:5px;
+      font-size:11px; font-weight:700; padding:3px 10px; border-radius:6px;
+      margin-bottom:10px; letter-spacing:.01em;
+    }
+    .dp-title {
+      font-size:20px; font-weight:700; color:var(--text-primary);
+      line-height:1.2; margin-bottom:10px; word-break:break-word;
+    }
+    .dp-close-btn {
+      width:32px; height:32px; border-radius:8px; flex-shrink:0; margin-top:2px;
+      border:1.5px solid var(--border-subtle); background:none; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      color:var(--text-muted); transition:all .12s;
+    }
+    .dp-close-btn:hover { background:var(--nav-item-hover-bg); color:var(--text-primary); }
+
+    .dp-logistics {
+      margin:0 20px; padding:12px 14px; border-radius:8px;
+      background:#F6F6FA; border:1px solid var(--border-subtle);
+      display:grid; grid-template-columns:1fr 1fr; gap:10px 12px;
+    }
+    [data-theme="dark"] .dp-logistics { background:rgba(255,255,255,0.04); }
+    .dp-logistics-item { display:flex; align-items:center; gap:9px; min-width:0; }
+    .dp-logistics-icon {
+      width:28px; height:28px; border-radius:6px; flex-shrink:0;
+      background:var(--bg-surface); border:1px solid var(--border-subtle);
+      display:flex; align-items:center; justify-content:center;
+    }
+    .dp-logistics-label { font-size:10px; color:var(--text-muted); font-weight:500; text-transform:uppercase; letter-spacing:.04em; }
+    .dp-logistics-value { font-size:12px; font-weight:600; color:var(--text-primary); line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+    .dp-section { padding:16px 20px 0; }
+    .dp-section-label {
+      font-size:11px; font-weight:700; color:var(--text-secondary);
+      text-transform:uppercase; letter-spacing:.06em; margin-bottom:10px;
+      display:flex; align-items:center; gap:6px;
+    }
+    .dp-notes {
+      border-left:3px solid var(--border-input); padding:10px 14px;
+      border-radius:0 6px 6px 0; font-size:13px; color:var(--text-primary);
+      line-height:1.6; background:var(--nav-item-hover-bg);
+    }
+    .dp-notes.empty { color:var(--text-muted); font-style:italic; }
+
+    .dp-patient-card {
+      border:1.5px solid var(--border-subtle); border-radius:8px; overflow:hidden;
+    }
+    .dp-patient-inner { padding:14px 16px; display:flex; align-items:center; gap:12px; }
+    .dp-patient-avatar {
+      width:40px; height:40px; border-radius:50%; flex-shrink:0;
+      background:linear-gradient(135deg,#143AC3,#5F50E5);
+      display:flex; align-items:center; justify-content:center;
+      font-size:14px; font-weight:700; color:white;
+    }
+    .dp-patient-name { font-size:14px; font-weight:700; color:var(--text-primary); }
+    .dp-patient-id { font-size:11px; color:var(--text-muted); margin-top:2px; }
+    .dp-patient-profile-link {
+      display:flex; align-items:center; gap:6px; padding:10px 16px;
+      border-top:1px solid var(--border-subtle); font-size:12px; font-weight:600;
+      color:#143AC3; text-decoration:none; transition:background .12s; cursor:pointer;
+    }
+    .dp-patient-profile-link:hover { background:#F0F3FF; }
+
+    /* Footer */
+    #dpFooter { flex-shrink:0; border-top:1px solid var(--border-subtle); background:var(--bg-surface); }
+    .dp-footer-actions { padding:12px 16px; display:flex; flex-direction:column; gap:8px; }
+    .dp-footer-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+
+    /* Cancel / Reschedule / Edit views */
+    .dp-view-form { padding:16px; animation:fadeInDown .15s ease; }
+    .dp-view-header {
+      display:flex; align-items:center; gap:8px; margin-bottom:14px;
+      font-size:13px; font-weight:700;
+    }
+    .dp-recurring-choice {
+      margin-top:12px; padding:12px; border-radius:8px;
+      background:#fff1f2; border:1px solid #fecaca;
+    }
+    [data-theme="dark"] .dp-recurring-choice { background:rgba(220,38,38,.08); border-color:rgba(220,38,38,.25); }
+    .dp-recurring-choice-label {
+      font-size:11px; font-weight:700; color:#b91c1c; margin-bottom:8px; display:block;
+    }
+    [data-theme="dark"] .dp-recurring-choice-label { color:#fca5a5; }
+    .dp-radio-opt {
+      display:flex; align-items:flex-start; gap:9px; padding:8px;
+      border-radius:6px; cursor:pointer; transition:background .12s; user-select:none;
+    }
+    .dp-radio-opt:hover { background:rgba(220,38,38,0.06); }
+    .dp-radio-opt input[type="radio"] { margin-top:3px; accent-color:#dc2626; flex-shrink:0; cursor:pointer; }
+    .dp-radio-text { font-size:12px; color:var(--text-primary); font-weight:500; line-height:1.4; }
+    .dp-radio-sub { font-size:11px; color:var(--text-muted); margin-top:1px; }
+
+    /* ── Date Picker Popover ── */
+    #datePicker { user-select: none; }
+    @keyframes dp-pop {
+      from { opacity: 0; transform: translateY(-6px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0)   scale(1); }
+    }
+    .dp-inner {
+      width: 280px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-input);
+      border-radius: 8px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.08);
+      padding: 16px;
+      animation: dp-pop 0.15s ease;
+    }
+    [data-theme="dark"] .dp-inner {
+      box-shadow: 0 8px 32px rgba(0,0,0,0.48), 0 2px 8px rgba(0,0,0,0.28);
+    }
+    .dp-nav-btn {
+      width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
+      border: none; background: transparent; border-radius: 8px; cursor: pointer;
+      color: var(--text-secondary); transition: background 0.12s;
+      flex-shrink: 0;
+    }
+    .dp-nav-btn:hover { background: var(--nav-item-hover-bg); color: var(--text-primary); }
+    .dp-title-btn {
+      font-size: 14px; font-weight: 600; color: var(--text-primary);
+      background: transparent; border: none; cursor: default;
+      padding: 0; flex: 1; text-align: center;
+    }
+    /* Day grid */
+    .dp-weekdays { display: grid; grid-template-columns: repeat(7,1fr); margin-bottom: 2px; }
+    .dp-weekday  { text-align: center; font-size: 11px; font-weight: 600; color: var(--text-muted); padding: 4px 0; }
+    .dp-days     { display: grid; grid-template-columns: repeat(7,1fr); }
+    .dp-day {
+      position: relative; text-align: center; font-size: 13px;
+      height: 32px; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; border-radius: 50%;
+      color: var(--text-primary); transition: background 0.1s, color 0.1s;
+      z-index: 1;
+    }
+    .dp-day:hover:not(.selected):not(.range-start):not(.range-end) { background: var(--nav-item-hover-bg); }
+    .dp-day.other-month { color: var(--text-muted); }
+    .dp-day.today { font-weight: 700; color: #143AC3; }
+    .dp-day.today::after {
+      content: ''; position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%);
+      width: 4px; height: 4px; border-radius: 50%; background: #143AC3;
+    }
+    /* Day view single selection */
+    .dp-day.selected {
+      background: #143AC3 !important; color: white !important; border-radius: 50% !important;
+    }
+    .dp-day.selected::after { display: none; }
+    /* Week range */
+    .dp-day.in-range {
+      background: rgba(20,58,195,0.12); border-radius: 0; color: var(--text-primary);
+    }
+    .dp-day.range-start {
+      background: #143AC3 !important; color: white !important;
+      border-radius: 50% 0 0 50%;
+    }
+    .dp-day.range-start::after { display: none; }
+    .dp-day.range-end {
+      background: #143AC3 !important; color: white !important;
+      border-radius: 0 50% 50% 0;
+    }
+    .dp-day.range-end::after { display: none; }
+    /* Hover week preview */
+    .dp-day.hover-range { background: rgba(20,58,195,0.07); border-radius: 0; }
+    .dp-day.hover-range-start { border-radius: 50% 0 0 50%; }
+    .dp-day.hover-range-end   { border-radius: 0 50% 50% 0; }
+    .dp-day.hover-range.hover-range-start.hover-range-end { border-radius: 50%; }
+    /* Month picker grid */
+    .dp-months { display: grid; grid-template-columns: repeat(3,1fr); gap: 4px; }
+    .dp-month {
+      text-align: center; font-size: 13px; font-weight: 500; padding: 10px 4px;
+      border-radius: 8px; cursor: pointer; color: var(--text-primary);
+      transition: background 0.1s, color 0.1s;
+    }
+    .dp-month:hover:not(.dp-month-selected) { background: var(--nav-item-hover-bg); }
+    .dp-month.dp-month-selected { background: #143AC3; color: white; font-weight: 600; }
+    .dp-month.dp-month-today:not(.dp-month-selected) { color: #143AC3; font-weight: 700; }
+    /* Footer */
+    .dp-footer {
+      margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border-subtle);
+      display: flex; justify-content: center;
+    }
+    .dp-today-btn {
+      font-size: 13px; font-weight: 500; color: #143AC3;
+      background: transparent; border: none; cursor: pointer;
+      padding: 4px 12px; border-radius: 8px; display: flex; align-items: center; gap: 5px;
+      transition: background 0.12s;
+    }
+    .dp-today-btn:hover { background: rgba(20,58,195,0.08); }
+    /* viewTitle as button */
+    #viewTitle {
+      background: transparent; border: none; cursor: pointer;
+      display: flex; align-items: center; gap: 4px;
+      padding: 4px 8px; border-radius: 8px;
+      transition: background 0.12s;
+    }
+    #viewTitle:hover { background: var(--nav-item-hover-bg); }
+    #viewTitle.dp-active { background: var(--nav-item-hover-bg); }
+
+    /* ── Edit Appointment Full Modal ──────────────────────────── */
+    #editApptOverlay {
+      position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:300;
+      display:none; backdrop-filter:blur(2px);
+    }
+    #editApptModal {
+      position:fixed; z-index:301;
+      top:24px; left:270px; right:20px; bottom:20px;
+      background:var(--bg-surface); border-radius:12px;
+      box-shadow:0 24px 64px rgba(0,0,0,.3);
+      display:none; flex-direction:column; overflow:hidden;
+      border:1px solid var(--border-subtle);
+    }
+    .e-modal-hdr {
+      display:flex; align-items:center; gap:12px;
+      padding:0 24px; height:56px; flex-shrink:0;
+      border-bottom:1px solid var(--border-subtle); background:var(--bg-surface);
+    }
+    .e-modal-title {
+      flex:1; font-size:15px; font-weight:700; color:var(--text-primary);
+      display:flex; align-items:center; gap:8px; min-width:0;
+    }
+    .e-modal-close {
+      width:32px; height:32px; border-radius:8px; flex-shrink:0;
+      border:1.5px solid var(--border-subtle); background:none; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      color:var(--text-muted); transition:all .12s;
+    }
+    .e-modal-close:hover { background:var(--nav-item-hover-bg); color:var(--text-primary); }
+    .e-modal-body { flex:1; overflow:hidden; display:flex; }
+    .e-form-col { flex:1; overflow-y:auto; padding:24px; display:flex; flex-direction:column; gap:18px; }
+    .e-summary-col {
+      width:252px; flex-shrink:0;
+      border-left:1px solid var(--border-subtle);
+      background:var(--bg-surface); display:flex; flex-direction:column; overflow:hidden;
+    }
+    .e-sum-head {
+      padding:14px 18px 10px; border-bottom:1px solid var(--border-subtle);
+      font-size:11px; font-weight:700; color:var(--text-muted);
+      text-transform:uppercase; letter-spacing:.06em;
+    }
+    .e-sum-scroll { flex:1; overflow-y:auto; }
+    .e-sum-section { padding:11px 16px; border-bottom:1px solid var(--border-subtle); }
+    .e-sum-label { font-size:10px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:5px; }
+    .e-sum-value { font-size:12px; color:var(--text-secondary); font-weight:500; display:flex; align-items:center; gap:6px; line-height:1.4; }
+    .e-sum-value.e-set { color:var(--text-primary); }
+    .e-sum-value.e-set i { color:#143AC3; }
+    .e-sum-value i { font-size:14px; color:var(--text-muted); flex-shrink:0; }
+    .e-conflict-box {
+      margin:12px 14px; background:#fff1f2; border:1px solid #fecaca;
+      border-left:3px solid #ef4444; border-radius:8px; padding:10px 12px;
+      display:none; animation:fadeInDown .15s ease;
+    }
+    [data-theme="dark"] .e-conflict-box { background:rgba(239,68,68,.1); border-color:rgba(239,68,68,.3); border-left-color:#ef4444; }
+    .e-conflict-box.visible { display:block; }
+    .e-conflict-head { display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:#b91c1c; margin-bottom:4px; }
+    .e-conflict-body { font-size:11px; color:#7f1d1d; line-height:1.5; padding-left:20px; }
+    [data-theme="dark"] .e-conflict-head, [data-theme="dark"] .e-conflict-body { color:#fca5a5; }
+    .e-modal-ftr {
+      flex-shrink:0; padding:12px 24px;
+      border-top:1px solid var(--border-subtle); background:var(--bg-surface);
+      display:flex; align-items:center; justify-content:flex-end; gap:10px;
+    }
+    /* Form sections */
+    .e-section {
+      background:var(--bg-surface); border:1px solid var(--border-subtle);
+      border-radius:10px; padding:16px 18px;
+    }
+    .e-section-label {
+      font-size:11px; font-weight:700; color:var(--text-secondary);
+      text-transform:uppercase; letter-spacing:.06em; margin-bottom:14px;
+      display:flex; align-items:center; gap:6px;
+    }
+    .e-field { display:flex; flex-direction:column; gap:5px; }
+    .e-field-label { font-size:12px; font-weight:500; color:var(--text-primary); }
+    .e-input {
+      width:100%; height:40px; padding:0 12px;
+      border:1.5px solid var(--border-input); border-radius:8px;
+      font-size:14px; color:var(--text-primary); background:var(--bg-input);
+      outline:none; font-family:'Google Sans', sans-serif; transition:border-color .15s, box-shadow .15s;
+      appearance:auto;
+    }
+    .e-input:focus { border-color:#143AC3; box-shadow:0 0 0 3px rgba(20,58,195,.1); }
+    .e-input.e-error { border-color:#ef4444; box-shadow:0 0 0 3px rgba(239,68,68,.08); }
+    .e-field-hint { font-size:11px; color:var(--text-muted); }
+    .e-field-error { font-size:11px; color:#ef4444; display:none; }
+    .e-field-error.visible { display:block; }
+    .e-textarea {
+      width:100%; min-height:88px; padding:10px 12px;
+      border:1.5px solid var(--border-input); border-radius:8px;
+      font-size:13px; color:var(--text-primary); background:var(--bg-input);
+      outline:none; font-family:'Google Sans', sans-serif; resize:vertical; line-height:1.6;
+      transition:border-color .15s, box-shadow .15s;
+    }
+    .e-textarea:focus { border-color:#143AC3; box-shadow:0 0 0 3px rgba(20,58,195,.1); }
+    /* Time slots */
+    .e-time-slots { display:flex; flex-wrap:wrap; gap:6px; margin-top:4px; }
+    .e-tslot {
+      padding:5px 10px; border-radius:7px; font-size:12px; font-weight:600;
+      border:1.5px solid var(--border-input); cursor:pointer;
+      color:var(--text-secondary); background:var(--bg-surface); transition:all .13s;
+    }
+    .e-tslot:hover:not(.e-tslot-busy) { border-color:#143AC3; color:#143AC3; background:#F0F3FF; }
+    .e-tslot.e-tslot-sel { background:#143AC3; color:white; border-color:#143AC3; }
+    .e-tslot.e-tslot-busy {
+      background:var(--border-subtle); color:var(--text-muted); cursor:not-allowed;
+      border-color:var(--border-subtle); text-decoration:line-through; opacity:.6;
+    }
+    [data-theme="dark"] .e-tslot { background:var(--bg-input); }
+    [data-theme="dark"] .e-tslot:hover:not(.e-tslot-busy) { background:rgba(20,58,195,.15); }
+    /* Room grid */
+    .e-room-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(175px,1fr)); gap:10px; }
+    .e-room-card {
+      background:var(--bg-surface); border:1.5px solid var(--border-subtle);
+      border-radius:8px; padding:13px 14px; cursor:pointer;
+      transition:all .18s ease; position:relative;
+    }
+    .e-room-card:hover:not(.e-room-busy):not(.e-room-filtered) { border-color:#143AC3; box-shadow:0 4px 12px rgba(20,58,195,.1); transform:translateY(-1px); }
+    .e-room-card.e-room-sel { border:2px solid #143AC3; background:#F0F3FF; box-shadow:0 0 0 3px rgba(20,58,195,.1); }
+    [data-theme="dark"] .e-room-card.e-room-sel { background:rgba(20,58,195,.12); }
+    .e-room-card.e-room-busy { opacity:.55; cursor:not-allowed; border-color:#fecaca !important; }
+    [data-theme="dark"] .e-room-card.e-room-busy { border-color:rgba(239,68,68,.35) !important; }
+    .e-room-card.e-room-filtered { display:none; }
+    .e-room-sel-chk { position:absolute; top:10px; right:10px; width:18px; height:18px; border-radius:50%; background:#143AC3; color:white; display:none; align-items:center; justify-content:center; }
+    .e-room-card.e-room-sel .e-room-sel-chk { display:flex; }
+    .e-room-status { display:inline-flex; align-items:center; gap:4px; font-size:10px; font-weight:700; padding:2px 7px; border-radius:99px; margin-bottom:8px; }
+    .e-room-status.avail { background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0; }
+    .e-room-status.busy  { background:#fef2f2; color:#b91c1c; border:1px solid #fecaca; }
+    [data-theme="dark"] .e-room-status.avail { background:rgba(21,128,61,.12); border-color:rgba(21,128,61,.25); }
+    [data-theme="dark"] .e-room-status.busy  { background:rgba(185,28,28,.12); border-color:rgba(185,28,28,.25); }
+    .e-room-name { font-size:13px; font-weight:700; color:var(--text-primary); margin-bottom:2px; }
+    .e-room-type { font-size:11px; color:var(--text-secondary); margin-bottom:6px; }
+    .e-room-cap  { font-size:11px; color:var(--text-secondary); display:flex; align-items:center; gap:4px; margin-bottom:5px; }
+    .e-room-feats { display:flex; flex-wrap:wrap; gap:4px; }
+    .e-room-feat { font-size:10px; color:var(--text-muted); background:var(--border-subtle); padding:1px 6px; border-radius:99px; }
+    .e-room-card.e-room-sel .e-room-feat { background:rgba(20,58,195,.12); color:#143AC3; }
+    .e-room-busy-note { font-size:10px; color:#b91c1c; margin-top:6px; }
+    [data-theme="dark"] .e-room-busy-note { color:#fca5a5; }
+    /* Staff grid */
+    .e-staff-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .e-staff-card {
+      display:flex; align-items:center; gap:10px; padding:10px 11px; border-radius:8px; cursor:pointer;
+      border:1.5px solid var(--border-subtle); background:var(--bg-surface);
+      transition:all .15s ease; position:relative;
+    }
+    .e-staff-card:hover:not(.e-staff-busy) { border-color:#143AC3; background:#F0F3FF; }
+    [data-theme="dark"] .e-staff-card:hover:not(.e-staff-busy) { background:rgba(20,58,195,.1); }
+    .e-staff-card.e-staff-sel { border:2px solid #143AC3; background:#F0F3FF; box-shadow:0 0 0 3px rgba(20,58,195,.08); }
+    [data-theme="dark"] .e-staff-card.e-staff-sel { background:rgba(20,58,195,.12); }
+    .e-staff-card.e-staff-busy { opacity:.55; cursor:not-allowed; border-color:#fecaca !important; }
+    [data-theme="dark"] .e-staff-card.e-staff-busy { border-color:rgba(239,68,68,.35) !important; }
+    .e-staff-avatar { width:33px; height:33px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:white; }
+    .e-staff-name { font-size:12px; font-weight:600; color:var(--text-primary); line-height:1.2; }
+    .e-staff-role { font-size:10px; color:var(--text-secondary); margin-top:1px; }
+    .e-staff-badge { position:absolute; top:7px; right:7px; font-size:10px; font-weight:600; padding:1px 6px; border-radius:99px; display:flex; align-items:center; gap:3px; }
+    .e-staff-badge.avail { background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0; }
+    .e-staff-badge.busy  { background:#fef2f2; color:#b91c1c; border:1px solid #fecaca; }
+    [data-theme="dark"] .e-staff-badge.avail { background:rgba(21,128,61,.12); border-color:rgba(21,128,61,.25); }
+    [data-theme="dark"] .e-staff-badge.busy  { background:rgba(185,28,28,.12); border-color:rgba(185,28,28,.25); }
+    .e-staff-no-match { font-size:12px; color:var(--text-muted); padding:8px; text-align:center; width:100%; }
+    /* Focus banner (reschedule) */
+    .e-focus-banner {
+      display:flex; align-items:center; gap:8px; padding:10px 12px;
+      background:#F0F3FF; border-radius:8px; border-left:3px solid #143AC3;
+      font-size:12px; color:#143AC3; font-weight:500; margin-bottom:14px;
+    }
+    [data-theme="dark"] .e-focus-banner { background:rgba(20,58,195,.12); }
+    .e-reverify-banner {
+      display:flex; align-items:center; gap:8px; padding:9px 12px; margin-top:12px;
+      background:#fffbeb; border:1px solid #fcd34d;
+      border-radius:8px; font-size:12px; font-weight:500; color:#92400e;
+    }
+    [data-theme="dark"] .e-reverify-banner { background:rgba(251,191,36,.08); border-color:rgba(251,191,36,.3); color:#fcd34d; }
+    .e-info-note {
+      display:flex; align-items:center; gap:6px; font-size:12px;
+      color:#0C5E73; background:#E8F6FA; border:1px solid #B8DDE8;
+      border-radius:8px; padding:8px 12px; margin-bottom:12px;
+    }
+    [data-theme="dark"] .e-info-note { background:rgba(12,94,115,.1); border-color:rgba(12,94,115,.25); color:#22D3EE; }
+    .e-toggle-row { display:flex; align-items:center; justify-content:space-between; gap:16px; }
+    .tgl-blue input:checked + .tgl-mini-track { background:#143AC3 !important; }
+    .tgl-blue input:focus + .tgl-mini-track { box-shadow:0 0 0 3px rgba(20,58,195,.15) !important; }
+    @keyframes e-spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+    .e-spin { animation:e-spin 1s linear infinite; }
+    .e-btn-save {
+      height:40px; padding:0 24px;
+      background:var(--cta-gradient); color:white; border:none;
+      border-radius:8px; font-size:14px; font-weight:600; cursor:pointer;
+      display:flex; align-items:center; gap:8px;
+      box-shadow:0 2px 8px rgba(20,58,195,.25); transition:opacity .15s;
+    }
+    .e-btn-save:hover { opacity:.9; }
+    .e-btn-save:disabled { opacity:.4; cursor:not-allowed; }
+    .e-btn-discard {
+      height:40px; padding:0 20px;
+      background:var(--bg-surface); color:var(--text-secondary);
+      border:1.5px solid var(--border-input); border-radius:8px;
+      font-size:14px; font-weight:500; cursor:pointer; transition:background .12s;
+    }
+    .e-btn-discard:hover { background:var(--nav-item-hover-bg); color:var(--text-primary); }
+  </style>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            teal: {
+              50: '#f0fdfa', 100: '#ccfbf1', 200: '#99f6e4', 300: '#5eead4',
+              400: '#2dd4bf', 500: '#14b8a6', 600: '#0d9488', 700: '#0f766e',
+              800: '#115e59', 900: '#134e4a'
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body data-theme="dark">
+
+<!-- ==================== TOP HEADER ==================== -->
+<header id="appHeader">
+  <!-- Logo -->
+  <a href="#" class="header-logo">
+    <div class="header-logo-icon">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+    </div>
+    <span class="header-logo-text">
+      <span class="clear">Clear </span><span class="path">Path</span><span class="fdo"> FDO</span>
+    </span>
+  </a>
+
+  <!-- Global search -->
+  <div class="header-search-wrap">
+    <div class="header-search">
+      <i class="ti ti-search" style="font-size:16px;"></i>
+      <input id="headerSearch" type="text" placeholder="Search patients, appointments, rooms…" oninput="handleHeaderSearch(this.value)" />
+    </div>
+  </div>
+
+  <!-- Right: theme toggle + user avatar -->
+  <div class="header-right">
+    <button id="themeToggle" class="theme-toggle" onclick="toggleTheme()" title="Toggle theme" style="color:var(--text-secondary);">
+      <i class="ti ti-sun" style="font-size:17px;"></i>
+    </button>
+    <div class="user-dropdown-wrap">
+      <div class="user-avatar-wrap" onclick="toggleUserDropdown()" title="Jane Smith">
+        <div class="user-avatar">JS</div>
+        <i class="ti ti-chevron-down" style="font-size:14px;" id="avatarCaret"></i>
+      </div>
+      <div class="user-dropdown" id="userDropdown">
+        <div class="user-dropdown-info">
+          <div class="user-dropdown-name">Jane Smith</div>
+          <div class="user-dropdown-email">admin@clearpath.com</div>
+        </div>
+        <button class="user-dropdown-item" onclick="closeUserDropdown()">
+          <i class="ti ti-user" style="font-size:15px;"></i> My Profile
+        </button>
+        <button class="user-dropdown-item" onclick="closeUserDropdown()">
+          <i class="ti ti-settings" style="font-size:15px;"></i> Settings
+        </button>
+        <button class="user-dropdown-item logout" onclick="logout()">
+          <i class="ti ti-logout" style="font-size:15px;"></i> Sign Out
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ==================== APP BODY ==================== -->
+<div id="appBody">
+
+  <!-- ==================== SIDE NAVIGATION ==================== -->
+  <nav id="appSidebar">
+    <!-- MAIN section -->
+    <div class="nav-section-label">Main</div>
+
+    <a class="nav-item active" href="#" onclick="return false;">
+      <i class="ti ti-calendar" style="font-size:16px;"></i>
+      Appointments
+    </a>
+
+    <a class="nav-item" href="appointments2.html">
+      <i class="ti ti-calendar-stats" style="font-size:16px;"></i>
+      Appointments2
+    </a>
+
+    <a class="nav-item" href="#" onclick="return false;">
+      <i class="ti ti-users" style="font-size:16px;"></i>
+      Patients
+    </a>
+
+    <a class="nav-item" href="#" onclick="return false;">
+      <i class="ti ti-stethoscope" style="font-size:16px;"></i>
+      Providers
+    </a>
+
+    <a class="nav-item" href="#" onclick="return false;">
+      <i class="ti ti-door" style="font-size:16px;"></i>
+      Rooms
+    </a>
+
+    <!-- ADMIN section -->
+    <div class="nav-section-label admin-label">Admin</div>
+
+    <a class="nav-item" href="#" onclick="return false;">
+      <i class="ti ti-chart-bar" style="font-size:16px;"></i>
+      Reports
+    </a>
+
+    <a class="nav-item" href="#" onclick="return false;">
+      <i class="ti ti-settings" style="font-size:16px;"></i>
+      Settings
+    </a>
+
+    <!-- Spacer -->
+    <div class="nav-spacer"></div>
+
+    <!-- Bottom: Help -->
+    <div class="nav-bottom">
+      <a class="nav-item" href="#" onclick="return false;">
+        <i class="ti ti-help-circle" style="font-size:16px;"></i>
+        Help &amp; Support
+      </a>
+    </div>
+  </nav>
+
+  <!-- ==================== MAIN CONTENT ==================== -->
+  <main id="appMain">
+
+    <!-- ==================== VIEW CONTROLS BAR ==================== -->
+    <div class="view-controls-bar">
+      <!-- Left: date navigation -->
+      <div class="flex items-center gap-2">
+        <button onclick="navigatePrev()" class="w-8 h-8 flex items-center justify-center rounded border border-[#F0F0F7] hover:bg-gray-50 transition-colors text-[#666689]">
+          <i class="ti ti-chevron-left" style="font-size:16px;"></i>
+        </button>
+        <button id="viewTitle" onclick="toggleDatePicker()" title="Pick date" class="text-sm font-semibold min-w-48 text-center" style="color:var(--text-primary);">
+          <span id="viewTitleText">Mon, Mar 9 – Sun, Mar 15, 2026</span>
+          <i class="ti ti-chevron-down" style="font-size:11px;color:var(--text-muted);margin-left:2px;"></i>
+        </button>
+        <button onclick="navigateNext()" class="w-8 h-8 flex items-center justify-center rounded border border-[#F0F0F7] hover:bg-gray-50 transition-colors text-[#666689]">
+          <i class="ti ti-chevron-right" style="font-size:16px;"></i>
+        </button>
+        <button onclick="goToToday()" class="px-3 py-1.5 text-sm font-medium rounded border transition-colors hover:opacity-80" style="color:#143AC3;border-color:#c7c6f5;">Today</button>
+      </div>
+
+      <!-- Center: view tabs -->
+      <div class="flex items-center gap-0.5 px-1" style="background:rgba(255,255,255,0.9);border-radius:8px;height:40px;">
+        <button id="btnDay"      onclick="setView('day')"      class="view-btn h-8 px-3 text-sm font-medium transition-colors" style="color:var(--text-secondary);border-radius:8px;">Day</button>
+        <button id="btnWeek"     onclick="setView('week')"     class="view-btn h-8 px-3 text-sm font-medium transition-colors" style="color:#143ac3;background:rgba(81,99,229,0.08);border-radius:8px;box-shadow:0 1px 2px rgba(0,0,0,0.05);">Week</button>
+        <button id="btnMonth"    onclick="setView('month')"    class="view-btn h-8 px-3 text-sm font-medium transition-colors" style="color:var(--text-secondary);border-radius:8px;">Month</button>
+      </div>
+
+      <!-- Right: filter icon + New appointment button -->
+      <div class="flex items-center gap-2">
+        <!-- Filter icon only (no text label) -->
+        <button id="filterToggleBtn" onclick="toggleFilterBar()" title="Filters"
+          class="w-8 h-8 flex items-center justify-center rounded border border-[#F0F0F7] hover:bg-gray-50 transition-colors"
+          style="color:#666689;position:relative;">
+          <i class="ti ti-filter" style="font-size:16px;"></i>
+          <span id="filterActiveDot" style="display:none;position:absolute;top:3px;right:3px;width:7px;height:7px;border-radius:50%;background:#143AC3;border:1.5px solid white;"></span>
+        </button>
+        <!-- New appointment -->
+        <a href="new-appointment.html"
+          style="background:var(--cta-gradient);border-radius:8px;box-shadow:0 2px 8px rgba(20,58,195,.25);text-decoration:none;height:40px;padding:0 16px;font-size:14px;font-weight:600;"
+          class="flex items-center gap-2 text-white hover:opacity-90 transition-opacity">
+          <i class="ti ti-plus" style="font-size:16px;"></i>
+          Book Appointment
+        </a>
+      </div>
+    </div>
+
+    <!-- ==================== FILTER BAR (always visible, inline) ==================== -->
+    <div id="filterBar" class="filter-bar collapsed border-b border-gray-100" style="background:transparent;">
+      <div class="px-8 py-3 flex flex-wrap gap-3 items-center">
+        <!-- Search -->
+        <div class="relative flex-1 min-w-[200px] max-w-xs">
+          <i class="ti ti-search absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" style="font-size:14px;pointer-events:none;"></i>
+          <input id="filterSearch" type="text" placeholder="Search patient or appointment ID…"
+            class="w-full pl-8 pr-3 h-9 text-sm border border-[#F0F0F7] rounded-lg focus:outline-none"
+            style="color:#121219;" oninput="applyFilters()" />
+        </div>
+        <!-- Appointment Type -->
+        <select id="filterType" class="h-9 px-3 text-sm border border-[#F0F0F7] rounded-lg focus:outline-none" style="color:var(--text-primary);" onchange="applyFilters()">
+          <option value="">All types</option>
+          <option>Facility Tour</option>
+          <option>Counselling Session</option>
+          <option>Group Therapy</option>
+          <option>Psychological Evaluation</option>
+          <option>Medical Test</option>
+        </select>
+        <!-- Provider -->
+        <select id="filterProvider" class="h-9 px-3 text-sm border border-[#F0F0F7] rounded-lg focus:outline-none" style="color:#121219;" onchange="applyFilters()">
+          <option value="">All provider</option>
+          <option>Dr. Emily Chen</option>
+          <option>Dr. Patel</option>
+          <option>Nurse Kelly</option>
+        </select>
+        <!-- From date -->
+        <div class="relative">
+          <input id="filterFrom" type="date" placeholder="dd/mm/yyyy"
+            class="h-9 pl-3 pr-8 text-sm border border-[#F0F0F7] rounded-lg focus:outline-none" style="color:#121219;" onchange="applyFilters()" />
+        </div>
+        <!-- To date -->
+        <div class="relative">
+          <input id="filterTo" type="date" placeholder="dd/mm/yyyy"
+            class="h-9 pl-3 pr-8 text-sm border border-[#F0F0F7] rounded-lg focus:outline-none" style="color:#121219;" onchange="applyFilters()" />
+        </div>
+        <!-- Clear -->
+        <button onclick="clearFilters()" class="text-sm hover:underline" style="color:#666689;">Clear</button>
+      </div>
+    </div>
+
+    <!-- ==================== TYPE LEGEND ==================== -->
+    <!-- <div id="typeLegend" class="flex items-center gap-4 flex-wrap px-8 py-2.5">
+      <span class="flex items-center gap-1.5 text-xs font-medium" style="color:#9A3412;">
+        <span class="w-2.5 h-2.5 rounded-sm shrink-0" style="background:#FFF3EE;border-left:3px solid #9A3412;"></span>
+        <i class="ti ti-map-pin" style="font-size:11px;"></i> Facility Tour
+      </span>
+      <span class="flex items-center gap-1.5 text-xs font-medium" style="color:#0C5E73;">
+        <span class="w-2.5 h-2.5 rounded-sm shrink-0" style="background:#E8F6FA;border-left:3px solid #0C5E73;"></span>
+        <i class="ti ti-message-circle" style="font-size:11px;"></i> Counselling Session
+      </span>
+      <span class="flex items-center gap-1.5 text-xs font-medium" style="color:#A21CAF;">
+        <span class="w-2.5 h-2.5 rounded-sm shrink-0" style="background:#FCF0FD;border-left:3px solid #A21CAF;"></span>
+        <i class="ti ti-users" style="font-size:11px;"></i> Group Therapy
+      </span>
+      <span class="flex items-center gap-1.5 text-xs font-medium" style="color:#4A6B00;">
+        <span class="w-2.5 h-2.5 rounded-sm shrink-0" style="background:#F2F9E8;border-left:3px solid #4A6B00;"></span>
+        <i class="ti ti-bulb" style="font-size:11px;"></i> Psychological Evaluation
+      </span>
+      <span class="flex items-center gap-1.5 text-xs font-medium" style="color:#1E293B;">
+        <span class="w-2.5 h-2.5 rounded-sm shrink-0" style="background:#F1F5F9;border-left:3px solid #1E293B;"></span>
+        <i class="ti ti-flask" style="font-size:11px;"></i> Medical Test
+      </span>
+    </div> -->
+
+    <!-- ==================== CALENDAR AREA ==================== -->
+    <div id="calendarAreaWrap">
+      <div class="flex-1 overflow-auto" id="calendarContainer" style="background:#ffffff;margin:0 32px;border-radius:8px;">
+        <div id="calendarView" class="p-0"></div>
+      </div>
+    </div>
+
+  </main><!-- /appMain -->
+</div><!-- /appBody -->
+
+<!-- ==================== DETAIL SIDE PANEL ==================== -->
+<div id="detailOverlay" class="fixed inset-0 bg-black/20 opacity-0 pointer-events-none transition-opacity duration-300" style="z-index:199;" onclick="closeDetailPanel()"></div>
+<aside id="detailPanel" class="side-panel fixed inset-y-0 right-0 flex flex-col" style="z-index:200;background:#ffffff;" style="width:400px;background:var(--bg-surface);border-left:1px solid var(--border-subtle);box-shadow:-4px 0 32px rgba(0,0,0,0.10);">
+  <!-- Dynamic header (type pill + title + status + close) -->
+  <div id="dpHeader" style="flex-shrink:0;border-bottom:1px solid var(--border-subtle);"></div>
+  <!-- Scrollable body -->
+  <div id="detailContent" class="flex-1 overflow-y-auto" style="padding-bottom:8px;"></div>
+  <!-- Sticky footer (actions / cancel view / reschedule view) -->
+  <div id="dpFooter" style="flex-shrink:0;border-top:1px solid var(--border-subtle);background:var(--bg-surface);"></div>
+</aside>
+
+<!-- ==================== DELETE CONFIRMATION MODAL ==================== -->
+<div id="deleteModal" class="modal-backdrop fixed inset-0 bg-black/30 z-60 flex items-center justify-center p-4" style="z-index:60;">
+  <div class="modal-content bg-white rounded-lg shadow-sm border border-gray-100 w-full max-w-sm">
+    <div class="px-6 py-5">
+      <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <i class="ti ti-trash" style="font-size:24px;color:#ef4444;"></i>
+      </div>
+      <h3 class="text-center font-semibold text-lg mb-2" style="color:#121219;">Delete Appointment?</h3>
+      <p id="deleteMsg" class="text-center text-sm mb-5" style="color:#666689;">This action cannot be undone. The appointment will be permanently removed.</p>
+      <div class="flex gap-3">
+        <button onclick="closeDeleteModal()" class="flex-1 px-4 py-2 text-sm font-medium border border-[#F0F0F7] rounded-lg bg-white hover:bg-gray-50 transition-colors" style="color:#121219;">Keep Appointment</button>
+        <button onclick="confirmDelete()" class="flex-1 px-4 py-2 text-sm font-medium bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors" style="box-shadow:0 2px 8px rgba(239,68,68,.25);">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== OVERFLOW MODAL ==================== -->
+<div id="overflowModal" class="modal-backdrop fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
+  <div class="modal-content rounded-lg shadow-lg w-full max-w-sm max-h-[80vh] flex flex-col" style="background:var(--bg-surface);border:1px solid var(--border-subtle);">
+    <div class="flex items-center justify-between px-4 py-3 border-b" style="border-color:var(--border-subtle);">
+      <div>
+        <p class="text-xs font-medium" style="color:var(--text-secondary);">All appointments</p>
+        <h3 id="overflowModalTitle" class="text-sm font-semibold" style="color:var(--text-primary);"></h3>
+      </div>
+      <button onclick="closeOverflowModal()" class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors" style="color:var(--text-secondary);">
+        <i class="ti ti-x" style="font-size:16px;"></i>
+      </button>
+    </div>
+    <div id="overflowModalBody" class="flex-1 overflow-y-auto p-3 space-y-1"></div>
+  </div>
+</div>
+
+<!-- ==================== TOAST ==================== -->
+<div id="toast" class="fixed bottom-6 right-6 z-50 transition-all duration-300 translate-y-16 opacity-0 pointer-events-none">
+  <div class="bg-gray-900 text-white px-4 py-2.5 rounded shadow-sm text-sm font-medium" id="toastMsg"></div>
+</div>
+
+<!-- ==================== JAVASCRIPT ==================== -->
+<script>
+// ─── IST DATE HELPERS ──────────────────────────────────────────────────────────
+function getISTToday() {
+  const istStr = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+  const [y, m, d] = istStr.split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
+function getISTMondayOfWeek(date) {
+  const d = new Date(date);
+  const day = d.getDay(); // 0=Sun
+  const diff = (day === 0) ? -6 : 1 - day;
+  d.setDate(d.getDate() + diff);
+  return d;
+}
+
+// ─── STATE ─────────────────────────────────────────────────────────────────────
+let currentView = 'week';
+const TODAY = getISTToday();
+let currentWeekStart = getISTMondayOfWeek(TODAY);
+let currentDayDate   = new Date(TODAY);
+let currentMonthDate = new Date(TODAY.getFullYear(), TODAY.getMonth(), 1);
+let activeFilters = {};
+let selectedApptId = null;
+let pendingDeleteId = null;
+let filterBarVisible = false;
+
+// ─── APPOINTMENT DATA ───────────────────────────────────────────────────────────
+// wd(n): returns date string for Monday+n of the current week
+function wd(n) {
+  const d = new Date(currentWeekStart);
+  d.setDate(d.getDate() + n);
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+let appointments = [
+  // Mon (wd0)
+  { id: 1,  date: wd(0), time: '08:30', patient: 'David Park',      type: 'Facility Tour',            provider: 'Nurse Kelly',    room: 'Room 101', status: 'Completed' },
+  { id: 2,  date: wd(0), time: '09:00', patient: 'Fatima Yusuf',    type: 'Counselling Session',      provider: 'Dr. Emily Chen', room: 'Room 102', status: 'Completed', recurring: true },
+  { id: 3,  date: wd(0), time: '09:00', patient: 'Group Session',   type: 'Group Therapy',            provider: 'Dr. Patel',      room: 'Room 205', status: 'Completed', groupSize: 6 },
+  { id: 4,  date: wd(0), time: '10:30', patient: 'Leon Hart',       type: 'Psychological Evaluation', provider: 'Dr. Patel',      room: 'Room 203', status: 'Completed' },
+  { id: 5,  date: wd(0), time: '13:00', patient: 'Priya Nair',      type: 'Medical Test',             provider: 'Nurse Kelly',    room: 'Room 101', status: 'Completed' },
+  { id: 6,  date: wd(0), time: '15:00', patient: 'Owen Fletcher',   type: 'Counselling Session',      provider: 'Dr. Emily Chen', room: 'Room 102', status: 'Completed' },
+  // Tue (wd1)
+  { id: 7,  date: wd(1), time: '08:00', patient: 'Sarah Moore',     type: 'Counselling Session',      provider: 'Dr. Emily Chen', room: 'Room 102', status: 'Completed' },
+  { id: 8,  date: wd(1), time: '09:00', patient: 'Carlos Rivera',   type: 'Psychological Evaluation', provider: 'Dr. Patel',      room: 'Room 203', status: 'Completed' },
+  { id: 9,  date: wd(1), time: '09:00', patient: 'Group Session',   type: 'Group Therapy',            provider: 'Dr. Patel',      room: 'Room 205', status: 'Completed', groupSize: 4, recurring: true },
+  { id: 10, date: wd(1), time: '11:00', patient: 'Marcus Bell',     type: 'Medical Test',             provider: 'Nurse Kelly',    room: 'Room 101', status: 'Completed' },
+  { id: 11, date: wd(1), time: '13:30', patient: 'Anika Patel',     type: 'Facility Tour',            provider: 'Nurse Kelly',    room: 'Room 101', status: 'Completed' },
+  { id: 12, date: wd(1), time: '15:00', patient: 'Brian Okafor',    type: 'Counselling Session',      provider: 'Dr. Emily Chen', room: 'Room 102', status: 'Completed' },
+  // Wed (wd2)
+  { id: 13, date: wd(2), time: '09:00', patient: 'Maria Santos',    type: 'Counselling Session',      provider: 'Dr. Emily Chen', room: 'Room 102', status: 'Completed' },
+  { id: 14, date: wd(2), time: '09:00', patient: 'Group Session',   type: 'Group Therapy',            provider: 'Dr. Patel',      room: 'Room 205', status: 'Completed', groupSize: 7 },
+  { id: 15, date: wd(2), time: '09:00', patient: 'James Thornton',  type: 'Facility Tour',            provider: 'Nurse Kelly',    room: 'Room 101', status: 'Completed' },
+  { id: 16, date: wd(2), time: '11:30', patient: 'Lily Chang',      type: 'Psychological Evaluation', provider: 'Dr. Patel',      room: 'Room 203', status: 'Completed' },
+  { id: 17, date: wd(2), time: '13:00', patient: 'Robert Kim',      type: 'Medical Test',             provider: 'Nurse Kelly',    room: 'Room 101', status: 'Completed' },
+  { id: 18, date: wd(2), time: '15:00', patient: 'Raj Mehta',       type: 'Facility Tour',            provider: 'Nurse Kelly',    room: 'Room 101', status: 'Completed' },
+  // Wed (wd2) — cancelled demo
+  { id: 36, date: wd(2), time: '14:00', patient: 'Chandni Best',    type: 'Counselling Session',      provider: 'Dr. Emily Chen', room: 'Room 102', status: 'Cancelled' },
+  // Thu — TODAY (wd3)
+  { id: 19, date: wd(3), time: '08:30', patient: 'Emma Thompson',   type: 'Counselling Session',      provider: 'Dr. Emily Chen', room: 'Room 102', status: 'Ongoing',   recurring: true, notes: 'Patient expressed anxiety around upcoming family visit. Continue monitoring stress indicators closely.' },
+  { id: 20, date: wd(3), time: '08:30', patient: 'Group Session',   type: 'Group Therapy',            provider: 'Dr. Patel',      room: 'Room 205', status: 'Ongoing',   groupSize: 5, notes: 'Week 4 of 8-week program. Strong group cohesion noted. Encourage peer sharing exercises.' },
+  { id: 21, date: wd(3), time: '10:00', patient: 'Michael Brown',   type: 'Facility Tour',            provider: 'Nurse Kelly',    room: 'Room 101', status: 'Upcoming' },
+  { id: 22, date: wd(3), time: '10:00', patient: 'Diane Foster',    type: 'Psychological Evaluation', provider: 'Dr. Patel',      room: 'Room 203', status: 'Upcoming' },
+  { id: 23, date: wd(3), time: '11:30', patient: 'Kwame Asante',    type: 'Medical Test',             provider: 'Nurse Kelly',    room: 'Room 101', status: 'Upcoming' },
+  { id: 24, date: wd(3), time: '13:00', patient: 'Nora Kimani',     type: 'Counselling Session',      provider: 'Dr. Emily Chen', room: 'Room 102', status: 'Upcoming',  recurring: true, notes: 'Medication adjusted last week. Check for side effects — drowsiness and appetite changes reported.' },
+  { id: 25, date: wd(3), time: '15:30', patient: 'Hugo Reyes',      type: 'Psychological Evaluation', provider: 'Dr. Patel',      room: 'Room 203', status: 'Upcoming' },
+  // Fri (wd4)
+  { id: 26, date: wd(4), time: '09:00', patient: 'John Davis',      type: 'Psychological Evaluation', provider: 'Dr. Patel',      room: 'Room 203', status: 'Pending' },
+  { id: 27, date: wd(4), time: '10:30', patient: 'Patricia Lee',    type: 'Counselling Session',      provider: 'Dr. Emily Chen', room: 'Room 102', status: 'Upcoming' },
+  { id: 28, date: wd(4), time: '12:00', patient: 'Group Session',   type: 'Group Therapy',            provider: 'Dr. Patel',      room: 'Room 205', status: 'Upcoming',  groupSize: 9 },
+  { id: 29, date: wd(4), time: '14:00', patient: 'Serena Walsh',    type: 'Medical Test',             provider: 'Nurse Kelly',    room: 'Room 101', status: 'Upcoming' },
+  { id: 30, date: wd(4), time: '16:00', patient: 'Theo Andersen',   type: 'Facility Tour',            provider: 'Nurse Kelly',    room: 'Room 101', status: 'Pending' },
+  // Sat (wd5)
+  { id: 31, date: wd(5), time: '09:00', patient: 'Nora Kimani',     type: 'Counselling Session',      provider: 'Dr. Emily Chen', room: 'Room 102', status: 'Upcoming' },
+  { id: 32, date: wd(5), time: '11:00', patient: 'Group Session',   type: 'Group Therapy',            provider: 'Dr. Patel',      room: 'Room 205', status: 'Upcoming',  groupSize: 6 },
+  { id: 33, date: wd(5), time: '13:00', patient: 'Isla Brennan',    type: 'Medical Test',             provider: 'Nurse Kelly',    room: 'Room 101', status: 'Pending' },
+  // Sun (wd6)
+  { id: 34, date: wd(6), time: '10:00', patient: 'Theo Andersen',   type: 'Facility Tour',            provider: 'Nurse Kelly',    room: 'Room 101', status: 'Upcoming' },
+  { id: 35, date: wd(6), time: '13:00', patient: 'Isla Brennan',    type: 'Counselling Session',      provider: 'Dr. Emily Chen', room: 'Room 102', status: 'Pending' },
+];
+let nextId = 37;
+
+// ─── ATTENDANCE DATA ─────────────────────────────────────────────────────────────
+// Patient rosters keyed by appointment id (matches each groupSize count)
+const GROUP_ROSTERS = {
+  3:  ['Maria Santos',   'James Thornton', 'Aisha Williams', 'David Park',    'Carlos Rivera',  'Sarah Moore'],
+  9:  ['Priya Nair',     'Leon Hart',      'Brian Okafor',   'Fatima Yusuf'],
+  14: ['Emma Thompson',  'Owen Fletcher',  'Marcus Bell',    'Nora Kimani',   'Hugo Reyes',     'Patricia Lee', 'Kwame Asante'],
+  20: ['John Davis',     'Serena Walsh',   'Raj Mehta',      'Diane Foster',  'Robert Kim'],
+  28: ['Maria Santos',   'James Thornton', 'Aisha Williams', 'David Park',    'Carlos Rivera',  'Patricia Lee', 'Kwame Asante', 'Nora Kimani', 'Hugo Reyes'],
+  32: ['Brian Okafor',   'Marcus Bell',    'Lily Chang',     'Owen Fletcher', 'Isla Brennan',   'Robert Kim'],
+};
+
+// attendance[apptId][patientName] = true (present) | false/missing (absent)
+const attendance = {};
+// visitorCheckedIn[apptId] = true | false
+const visitorCheckedIn = {};
+
+// ─── TYPE COLOUR CONFIG ──────────────────────────────────────────────────────────
+const TYPE_META = {
+  'Facility Tour':            { icon: 'ti-map-pin',        color: '#9A3412', darkColor: '#FB923C', darkBorder: '#FB923C' },
+  'Counselling Session':      { icon: 'ti-message-circle', color: '#0C5E73', darkColor: '#22D3EE', darkBorder: '#22D3EE' },
+  'Group Therapy':            { icon: 'ti-users',          color: '#A21CAF', darkColor: '#E879F9', darkBorder: '#E879F9' },
+  'Psychological Evaluation': { icon: 'ti-bulb',           color: '#4A6B00', darkColor: '#A3E635', darkBorder: '#A3E635' },
+  'Medical Test':             { icon: 'ti-flask',          color: '#1E293B', darkColor: '#94A3B8', darkBorder: '#94A3B8' },
+};
+
+const typeConfigLight = {
+  'Facility Tour':            { bg: '#FFF3EE', border: '#9A3412', text: '#9A3412', pillBg: '#FDDCCC', pillText: '#5C1E08' },
+  'Counselling Session':      { bg: '#E8F6FA', border: '#0C5E73', text: '#0C5E73', pillBg: '#B8DDE8', pillText: '#073845' },
+  'Group Therapy':            { bg: '#FCF0FD', border: '#A21CAF', text: '#A21CAF', pillBg: '#F0B8F5', pillText: '#610B69' },
+  'Psychological Evaluation': { bg: '#F2F9E8', border: '#4A6B00', text: '#4A6B00', pillBg: '#D0E8A0', pillText: '#2C4000' },
+  'Medical Test':             { bg: '#F1F5F9', border: '#1E293B', text: '#1E293B', pillBg: '#CBD5E1', pillText: '#0F172A' },
+};
+const typeConfigDark = {
+  'Facility Tour':            { bg: 'var(--bg-surface)', border: '#FB923C', text: '#FB923C', pillBg: 'rgba(154,52,18,0.18)',  pillText: '#FDC8A0' },
+  'Counselling Session':      { bg: 'var(--bg-surface)', border: '#22D3EE', text: '#22D3EE', pillBg: 'rgba(12,94,115,0.18)',  pillText: '#A0EAF8' },
+  'Group Therapy':            { bg: 'var(--bg-surface)', border: '#E879F9', text: '#E879F9', pillBg: 'rgba(162,28,175,0.18)', pillText: '#F5B0FC' },
+  'Psychological Evaluation': { bg: 'var(--bg-surface)', border: '#A3E635', text: '#A3E635', pillBg: 'rgba(74,107,0,0.18)',   pillText: '#CCEE90' },
+  'Medical Test':             { bg: 'var(--bg-surface)', border: '#94A3B8', text: '#94A3B8', pillBg: 'rgba(30,41,59,0.18)',   pillText: '#CBD5E1' },
+};
+const defaultTypeLight = { bg: '#F9FAFB', border: '#666689', text: '#666689', pillBg: '#F0F3FF', pillText: '#143AC3' };
+const defaultTypeDark  = { bg: 'var(--bg-surface)', border: '#818CF8', text: '#A5B8FC', pillBg: 'rgba(20,58,195,0.18)', pillText: '#C7D2FE' };
+
+function isDarkMode() { return document.body.dataset.theme === 'dark'; }
+function getTypeConfig(type) {
+  return isDarkMode()
+    ? (typeConfigDark[type]  || defaultTypeDark)
+    : (typeConfigLight[type] || defaultTypeLight);
+}
+
+// ─── DISPLAY STATUS ──────────────────────────────────────────────────────────────
+function getDisplayStatus(appt) {
+  const nowIST   = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+  const todayStr = nowIST.getFullYear() + '-' + String(nowIST.getMonth()+1).padStart(2,'0') + '-' + String(nowIST.getDate()).padStart(2,'0');
+  const nowMins  = nowIST.getHours() * 60 + nowIST.getMinutes();
+
+  const isPast   = appt.date < todayStr;
+  const isFuture = appt.date > todayStr;
+  const isToday  = appt.date === todayStr;
+
+  // Future: never Completed or Ongoing — always Future
+  if (isFuture) {
+    if (appt.status === 'Pending' || appt.status === 'Upcoming' ||
+        appt.status === 'Completed' || appt.status === 'Ongoing') return 'Future';
+    return appt.status;
+  }
+
+  // Past: Due/Pending → Cancelled
+  if (isPast && (appt.status === 'Due' || appt.status === 'Pending')) return 'Cancelled';
+
+  // Today: auto-detect Ongoing based on IST current time
+  if (isToday && appt.status !== 'Completed' && appt.status !== 'Cancelled') {
+    const [h, m]      = appt.time.split(':').map(Number);
+    const apptMins    = h * 60 + m;
+    const apptEndMins = apptMins + 60; // 1-hour window
+    if (nowMins >= apptMins && nowMins < apptEndMins) return 'Ongoing';
+    // Past slot today + unresolved → Cancelled
+    if (nowMins >= apptEndMins && (appt.status === 'Due' || appt.status === 'Pending')) return 'Cancelled';
+  }
+
+  return appt.status;
+}
+
+// ─── TIME UTILITIES ─────────────────────────────────────────────────────────────
+const HOURS = [7,8,9,10,11,12,13,14,15,16,17,18,19]; // 7am–7pm
+
+function fmt12(time24) {
+  const [h, m] = time24.split(':').map(Number);
+  const ampm = h < 12 ? 'AM' : 'PM';
+  const hour = h === 0 ? 12 : h > 12 ? h - 12 : h;
+  return `${hour}:${String(m).padStart(2,'0')} ${ampm}`;
+}
+
+function timeToHour(time24) {
+  const [h, m] = time24.split(':').map(Number);
+  return h + m / 60;
+}
+
+function dateStr(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function isSameDay(d1, d2) {
+  return d1.getFullYear() === d2.getFullYear() && d1.getMonth() === d2.getMonth() && d1.getDate() === d2.getDate();
+}
+
+const DAY_NAMES = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+function getWeekDays(monday) {
+  return Array.from({length:7}, (_,i) => {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    return d;
+  });
+}
+
+// ─── FILTERED APPOINTMENTS ───────────────────────────────────────────────────────
+function getFiltered() {
+  let f = [...appointments];
+  const search = (activeFilters.search || '').toLowerCase();
+  if (search) f = f.filter(a => a.patient.toLowerCase().includes(search) || a.type.toLowerCase().includes(search));
+  if (activeFilters.type) f = f.filter(a => a.type === activeFilters.type);
+  if (activeFilters.provider) f = f.filter(a => a.provider === activeFilters.provider);
+  if (activeFilters.status) f = f.filter(a => a.status === activeFilters.status);
+  if (activeFilters.from) f = f.filter(a => a.date >= activeFilters.from);
+  if (activeFilters.to) f = f.filter(a => a.date <= activeFilters.to);
+  return f;
+}
+
+// ─── APPOINTMENT CARD HTML ────────────────────────────────────────────────────────
+function apptCardHTML(appt) {
+  const t   = getTypeConfig(appt.type);
+  const meta = TYPE_META[appt.type] || { icon: 'ti-calendar', color: t.border };
+  const ds  = getDisplayStatus(appt);
+  const isFuture    = ds === 'Future';
+  const isCancelled = ds === 'Cancelled';
+  const isCompleted = ds === 'Completed';
+  const isOngoing   = ds === 'Ongoing';
+
+  const borderStyle = isFuture
+    ? `border-left:4px solid ${t.border};`
+    : `border-left:4px solid ${t.border};`;
+
+  const cardOpacity = isCancelled ? 'opacity:0.5;' : '';
+  const typeStrike  = isCancelled ? 'text-decoration:line-through;' : '';
+
+  // Tick only valid for past/today completed — never future
+  const nowIST    = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+  const todayStr  = nowIST.getFullYear() + '-' + String(nowIST.getMonth()+1).padStart(2,'0') + '-' + String(nowIST.getDate()).padStart(2,'0');
+  const isPastOrToday = appt.date <= todayStr;
+
+  let chip = '';
+  if (isOngoing) {
+    chip = `<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs font-medium shrink-0" style="background:#FEF2F2;color:#DC2626;"><span class="inline-block w-1.5 h-1.5 rounded-full bg-red-500 pulse-dot"></span>Ongoing</span>`;
+  } else if (isCancelled) {
+    chip = `<span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium shrink-0" style="background:#F3F4F6;color:#6B7280;font-size:10px;">Cancelled</span>`;
+  } else if (isCompleted && isPastOrToday) {
+    chip = `<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-medium shrink-0" style="background:#F0FDF4;color:#16A34A;"><i class="ti ti-check" style="font-size:10px;"></i></span>`;
+  }
+
+  const patientLabel = appt.groupSize
+    ? `<i class="ti ti-users" style="font-size:11px;margin-right:3px;color:var(--text-secondary);"></i>${appt.groupSize} patients`
+    : appt.patient;
+
+  return `
+    <div class="appt-card rounded-lg p-2 mb-1 select-none" role="button" aria-label="${appt.type}: ${appt.groupSize ? appt.groupSize+' patients' : appt.patient}"
+         style="background:${t.bg};${borderStyle}${cardOpacity}"
+         onclick="openDetailPanel(${appt.id})">
+      <div class="flex items-start justify-between gap-1">
+        <span class="text-xs font-semibold leading-tight flex items-center gap-1" style="color:${t.text};${typeStrike}">
+          <i class="ti ${meta.icon}" style="font-size:11px;flex-shrink:0;"></i>${appt.type}
+        </span>
+        <span class="flex items-center gap-1 shrink-0">
+          ${appt.recurring ? `<span title="Recurring" style="color:${t.text};opacity:0.7;line-height:1;"><i class="ti ti-repeat" style="font-size:11px;"></i></span>` : ''}
+          ${chip}
+        </span>
+      </div>
+    </div>`;
+}
+
+// ─── WEEK VIEW ───────────────────────────────────────────────────────────────────
+function renderWeekView() {
+  const days = getWeekDays(currentWeekStart);
+  const filtered = getFiltered();
+
+  // Update title
+  document.getElementById('viewTitleText').textContent = `${DAY_NAMES[0]}, ${MONTH_NAMES[days[0].getMonth()]} ${days[0].getDate()} – ${DAY_NAMES[6]}, ${MONTH_NAMES[days[6].getMonth()]} ${days[6].getDate()}, ${days[6].getFullYear()}`;
+
+  let html = `<div class="overflow-x-auto"><div id="weekTableWrapper" style="position:relative;">
+    <table class="w-full border-separate border-spacing-0" style="min-width:900px;">
+      <thead>
+        <tr>
+          <th class="w-16 bg-white sticky left-0 z-10 border-b border-gray-100"></th>`;
+
+  days.forEach((d, i) => {
+    const isToday = isSameDay(d, TODAY);
+    html += `<th class="text-center py-3 px-1 border-b border-gray-100" style="background:${isToday ? 'var(--today-bg)' : 'var(--bg-surface)'}">
+      <div class="text-xs font-medium" style="color:var(--text-secondary);">${DAY_NAMES[i]}</div>
+      <div class="text-lg font-bold" style="color:${isToday ? 'var(--today-color)' : (d.getDay() === 0 || d.getDay() === 6) ? '#f64f29' : 'var(--text-primary)'};">${d.getDate()}</div>
+      ${isToday ? '<div class="w-1.5 h-1.5 rounded-full mx-auto -mt-1" style="background:var(--today-color);"></div>' : ''}
+    </th>`;
+  });
+
+  html += `</tr></thead><tbody>`;
+
+  HOURS.forEach(hour => {
+    html += `<tr id="week-hour-row-${hour}">
+      <td class="sticky left-0 z-10 text-right pr-3 pt-2 align-top border-b border-gray-100" style="background:var(--bg-surface);">
+        <span class="text-xs font-medium" style="color:var(--text-secondary);">${hour === 12 ? '12 PM' : hour < 12 ? hour+' AM' : (hour-12)+' PM'}</span>
+      </td>`;
+
+    days.forEach(d => {
+      const isToday = isSameDay(d, TODAY);
+      const ds = dateStr(d);
+      const slotAppts = filtered.filter(a => {
+        if (a.date !== ds) return false;
+        const h = Math.floor(timeToHour(a.time));
+        return h === hour;
+      });
+
+      const MAX_VISIBLE = 4;
+      const overflow = slotAppts.length > MAX_VISIBLE ? slotAppts.length - MAX_VISIBLE : 0;
+      const visible = overflow ? slotAppts.slice(0, MAX_VISIBLE) : slotAppts;
+
+      html += `<td class="border-b border-gray-100 border-r border-gray-50 align-top px-1 pt-1 pb-0.5" style="background:${isToday ? 'var(--today-bg)' : 'var(--bg-surface)'};min-height:64px;">`;
+      visible.forEach(a => { html += apptCardHTML(a); });
+      if (overflow > 0) {
+        const overflowIds = JSON.stringify(slotAppts.slice(MAX_VISIBLE).map(a => a.id));
+        html += `<div class="overflow-badge text-xs font-semibold px-2 py-1 rounded-md cursor-pointer text-center mt-0.5"
+          style="background:var(--today-bg);color:var(--today-color);border:1px dashed var(--today-color);"
+          onclick="event.stopPropagation();openOverflowModal(${JSON.stringify(dateStr(d))}, ${hour}, ${JSON.stringify(overflowIds)})"
+          title="Show ${overflow} more appointments">+${overflow} more</div>`;
+      }
+      html += `</td>`;
+    });
+
+    html += `</tr>`;
+  });
+
+  html += `</tbody></table></div></div>`;
+
+  // Check for no results
+  const weekDates = days.map(d => dateStr(d));
+  const weekAppts = filtered.filter(a => weekDates.includes(a.date));
+  if (weekAppts.length === 0 && Object.keys(activeFilters).some(k => activeFilters[k])) {
+    html = emptyStateHTML();
+  }
+
+  document.getElementById('calendarView').innerHTML = html;
+}
+
+// ─── DAY VIEW ────────────────────────────────────────────────────────────────────
+function renderDayView() {
+  const d = currentDayDate;
+  const isToday = isSameDay(d, TODAY);
+  const ds = dateStr(d);
+  const filtered = getFiltered().filter(a => a.date === ds);
+
+  const dayLabel = d.toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric', year:'numeric'});
+  document.getElementById('viewTitleText').textContent = dayLabel;
+
+  let html = `<div class="w-full">
+    <div class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+      <div class="px-5 py-3 border-b border-gray-100 flex items-center gap-2" style="background:${isToday ? 'var(--today-bg)' : 'var(--bg-surface)'};">
+        <div class="text-lg font-bold" style="color:${isToday ? 'var(--today-color)' : 'var(--text-primary)'};">${d.getDate()}</div>
+        <div>
+          <div class="text-sm font-semibold" style="color:var(--text-primary);">${d.toLocaleDateString('en-US', {weekday:'long'})}</div>
+          <div class="text-xs" style="color:var(--text-secondary);">${d.toLocaleDateString('en-US', {month:'long', year:'numeric'})}</div>
+        </div>
+        ${isToday ? '<span class="ml-auto text-xs font-semibold rounded-full px-2 py-0.5" style="color:var(--today-color);background:var(--today-bg);">Today</span>' : ''}
+      </div>
+      <div class="overflow-y-auto" style="max-height:calc(100vh - 320px);">`;
+
+  if (filtered.length === 0) {
+    html += `<div class="py-16 text-center"><div class="text-4xl mb-3">📅</div><div class="font-medium" style="color:#666689;">No appointments this day</div><div class="text-sm mt-1" style="color:#666689;">Enjoy the free day or <a href="new-appointment.html" style="color:#143AC3;" class="underline">book an appointment</a></div></div>`;
+  } else {
+    HOURS.forEach(hour => {
+      const slotAppts = filtered.filter(a => Math.floor(timeToHour(a.time)) === hour);
+      const label = hour === 12 ? '12:00 PM' : hour < 12 ? `${hour}:00 AM` : `${hour-12}:00 PM`;
+
+      const MAX_VISIBLE_DAY = 4;
+      const overflowDay = slotAppts.length > MAX_VISIBLE_DAY ? slotAppts.length - MAX_VISIBLE_DAY : 0;
+      const visibleDay = overflowDay ? slotAppts.slice(0, MAX_VISIBLE_DAY) : slotAppts;
+
+      html += `<div class="flex border-b border-gray-50" id="day-hour-${hour}" style="border-color:var(--border-subtle);position:relative;">
+        <div class="w-20 shrink-0 pt-3 pr-3 text-right">
+          <span class="text-xs font-medium" style="color:var(--text-secondary);">${label}</span>
+        </div>
+        <div class="flex-1 py-1.5 px-2 min-h-16">`;
+
+      visibleDay.forEach(a => { html += apptCardHTML(a); });
+      if (overflowDay > 0) {
+        const overflowDayIds = JSON.stringify(slotAppts.slice(MAX_VISIBLE_DAY).map(a => a.id));
+        html += `<div class="overflow-badge text-xs font-semibold px-2 py-1 rounded-md cursor-pointer text-center mt-0.5"
+          style="background:var(--today-bg);color:var(--today-color);border:1px dashed var(--today-color);"
+          onclick="event.stopPropagation();openOverflowModal(${JSON.stringify(dateStr(d))}, ${hour}, ${JSON.stringify(overflowDayIds)})"
+          title="Show ${overflowDay} more appointments">+${overflowDay} more</div>`;
+      }
+      html += `</div></div>`;
+    });
+  }
+
+  html += `</div></div></div>`;
+  document.getElementById('calendarView').innerHTML = html;
+}
+
+// ─── MONTH VIEW ──────────────────────────────────────────────────────────────────
+function renderMonthView() {
+  const year = currentMonthDate.getFullYear();
+  const month = currentMonthDate.getMonth();
+  document.getElementById('viewTitleText').textContent = `${MONTH_NAMES[month]} ${year}`;
+
+  const firstDay = new Date(year, month, 1);
+  // JS Sunday=0, Mon=1...; we want Mon=0
+  let startDow = firstDay.getDay(); // 0=Sun
+  startDow = startDow === 0 ? 6 : startDow - 1; // convert to Mon-based
+
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const filtered = getFiltered();
+
+  let html = `<div class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+    <div class="grid grid-cols-7 border-b border-gray-100">`;
+
+  ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].forEach(d => {
+    html += `<div class="text-center py-2 text-xs font-semibold" style="color:var(--text-secondary);">${d}</div>`;
+  });
+  html += `</div><div class="grid grid-cols-7">`;
+
+  // Empty cells before first day
+  for (let i = 0; i < startDow; i++) {
+    html += `<div class="month-cell border-b border-r border-gray-100 p-1" style="background:#fafafa;"></div>`;
+  }
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const d = new Date(year, month, day);
+    const ds = dateStr(d);
+    const dayAppts = filtered.filter(a => a.date === ds);
+    const isToday = isSameDay(d, TODAY);
+    const isWeekend = d.getDay() === 0 || d.getDay() === 6;
+
+    html += `<div class="month-cell border-b border-r border-gray-100 p-1.5 cursor-pointer hover:bg-gray-50 transition-colors" style="background:${isToday ? 'var(--today-bg)' : isWeekend ? 'var(--weekend-bg)' : 'var(--bg-surface)'};" onclick="switchToDayView('${ds}')">
+      <div class="flex items-center justify-between mb-1">
+        <span class="text-sm font-${isToday ? 'bold' : 'medium'}" ${isToday ? 'style="color:#fff;background:var(--today-color);width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:50%;font-size:12px;"' : `style="color:var(--text-primary);"`}>${day}</span>
+      </div>`;
+
+    const visible = dayAppts.slice(0, 3);
+    const overflow = dayAppts.length - 3;
+
+    visible.forEach(a => {
+      const t = getTypeConfig(a.type);
+      const ds = getDisplayStatus(a);
+      const label = a.groupSize ? `${a.groupSize} patients` : a.patient;
+      const style = ds === 'Future'
+        ? `color:${t.pillText};background:${t.pillBg};border:1px solid ${t.border}80;opacity:0.8;`
+        : `color:${t.pillText};background:${t.pillBg};`;
+      html += `<div class="text-xs px-1.5 py-0.5 rounded mb-0.5 truncate font-medium cursor-pointer" style="${style}" onclick="event.stopPropagation();openDetailPanel(${a.id})">${label}</div>`;
+    });
+
+    if (overflow > 0) {
+      html += `<div class="text-xs font-medium" style="color:#666689;">+${overflow} more</div>`;
+    }
+
+    html += `</div>`;
+  }
+
+  // Fill remaining cells
+  const totalCells = startDow + daysInMonth;
+  const remainder = totalCells % 7;
+  if (remainder !== 0) {
+    for (let i = 0; i < 7 - remainder; i++) {
+      html += `<div class="month-cell border-b border-r border-gray-100 p-1" style="background:#fafafa;"></div>`;
+    }
+  }
+
+  html += `</div></div>`;
+  document.getElementById('calendarView').innerHTML = html;
+}
+
+// ─── ROOM VIEW ────────────────────────────────────────────────────────────────────
+
+function switchToDayView(ds) {
+  const [y, m, d] = ds.split('-').map(Number);
+  currentDayDate = new Date(y, m-1, d);
+  setView('day');
+}
+
+// ─── EMPTY STATE ─────────────────────────────────────────────────────────────────
+function emptyStateHTML() {
+  return `<div class="flex flex-col items-center justify-center py-20 text-center">
+    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+      <i class="ti ti-calendar" style="font-size:32px;color:#666689;"></i>
+    </div>
+    <h3 class="text-lg font-semibold mb-1" style="color:#121219;">No appointments found</h3>
+    <p class="text-sm mb-4" style="color:#666689;">Try adjusting your filters or book a new appointment</p>
+    <a href="new-appointment.html" class="px-4 py-2 text-white text-sm font-medium rounded-lg transition-colors hover:opacity-90" style="background:var(--cta-gradient);text-decoration:none;box-shadow:0 2px 8px rgba(20,58,195,.25);">Book your first appointment</a>
+  </div>`;
+}
+
+// ─── TODAY STATS ─────────────────────────────────────────────────────────────────
+function renderTodayStats() {
+  const todayAppts = appointments.filter(a => a.date === dateStr(TODAY));
+  const counts = {};
+  todayAppts.forEach(a => {
+    const ds = getDisplayStatus(a);
+    counts[ds] = (counts[ds] || 0) + 1;
+  });
+
+  const order = ['Ongoing', 'Completed', 'Cancelled'];
+  const dotStyle = { Ongoing: 'background:#EF4444;', Completed: 'background:#9CA3AF;', Cancelled: 'background:#D1D5DB;' };
+
+  let html = '';
+  order.forEach(s => {
+    if (counts[s]) {
+      html += `<div class="flex items-center justify-between">
+        <div class="flex items-center gap-1.5">
+          <div class="w-2 h-2 rounded-full" style="${dotStyle[s]}"></div>
+          <span class="text-xs" style="color:var(--text-secondary);">${s}</span>
+        </div>
+        <span class="text-xs font-semibold" style="color:var(--text-primary);">${counts[s]}</span>
+      </div>`;
+    }
+  });
+
+  html += `<div class="flex items-center justify-between border-t border-gray-100 pt-1.5 mt-1.5">
+    <span class="text-xs font-medium" style="color:var(--text-secondary);">Total</span>
+    <span class="text-xs font-bold" style="color:var(--text-primary);">${todayAppts.length}</span>
+  </div>`;
+
+  const el = document.getElementById('todayStats');
+  if (el) el.innerHTML = html;
+}
+
+// ─── THEME TOGGLE ──────────────────────────────────────────────────────────────────
+function toggleTheme() {
+  const dark = document.body.dataset.theme !== 'dark';
+  document.body.dataset.theme = dark ? 'dark' : 'light';
+  const icon = document.querySelector('#themeToggle i');
+  if (icon) icon.className = dark ? 'ti ti-sun' : 'ti ti-moon';
+  renderCalendar();
+  renderTodayStats();
+  localStorage.setItem('cpfdo-theme', dark ? 'dark' : 'light');
+}
+
+// ─── VIEW SWITCHING ───────────────────────────────────────────────────────────────
+function setView(view) {
+  currentView = view;
+  document.querySelectorAll('.view-btn').forEach(b => {
+    b.style.color = 'var(--text-secondary)';
+    b.style.background = '';
+    b.style.boxShadow = '';
+  });
+  const id = view.charAt(0).toUpperCase() + view.slice(1);
+  const btn = document.getElementById(`btn${id}`);
+  if (btn) {
+    btn.style.color = '#143ac3';
+    btn.style.background = 'rgba(81,99,229,0.08)';
+    btn.style.boxShadow = '0 1px 2px rgba(0,0,0,0.05)';
+  }
+  renderCalendar();
+}
+
+function injectCurrentTimeIndicator() {
+  const nowIST = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+  const h = nowIST.getHours();
+  const m = nowIST.getMinutes();
+  if (!HOURS.includes(h)) return;
+
+  const frac = m / 60;
+  const timeStr = h < 12
+    ? `${h}:${String(m).padStart(2,'0')} AM`
+    : h === 12
+    ? `12:${String(m).padStart(2,'0')} PM`
+    : `${h - 12}:${String(m).padStart(2,'0')} PM`;
+
+  const makeHTML = (labelWidth) => `
+    <div style="width:${labelWidth}px;flex-shrink:0;text-align:right;padding-right:6px;">
+      <span style="font-size:10px;font-weight:700;color:#DC2626;line-height:1;">${timeStr}</span>
+    </div>
+    <div style="display:flex;align-items:center;flex:1;min-width:0;">
+      <div style="width:8px;height:8px;border-radius:50%;background:#DC2626;flex-shrink:0;box-shadow:0 0 0 3px rgba(220,38,38,0.18);"></div>
+      <div style="flex:1;height:2px;background:linear-gradient(90deg,#DC2626,rgba(220,38,38,0.25));"></div>
+    </div>`;
+
+  if (currentView === 'day') {
+    if (!isSameDay(currentDayDate, TODAY)) return;
+    const row = document.getElementById(`day-hour-${h}`);
+    if (!row) return;
+    const el = document.createElement('div');
+    el.id = 'currentTimeIndicator';
+    el.style.cssText = `position:absolute;left:0;right:0;top:${frac * row.offsetHeight}px;z-index:20;pointer-events:none;display:flex;align-items:center;`;
+    el.innerHTML = makeHTML(80);
+    row.appendChild(el);
+  }
+
+  if (currentView === 'week') {
+    const days = getWeekDays(currentWeekStart);
+    if (!days.some(d => isSameDay(d, TODAY))) return;
+    const wrapper = document.getElementById('weekTableWrapper');
+    const row = document.getElementById(`week-hour-row-${h}`);
+    if (!wrapper || !row) return;
+    const wrapperTop = wrapper.getBoundingClientRect().top;
+    const rowRect = row.getBoundingClientRect();
+    const top = (rowRect.top - wrapperTop) + frac * rowRect.height;
+    const el = document.createElement('div');
+    el.id = 'currentTimeIndicator';
+    el.style.cssText = `position:absolute;left:0;right:0;top:${top}px;z-index:20;pointer-events:none;display:flex;align-items:center;`;
+    el.innerHTML = makeHTML(64);
+    wrapper.appendChild(el);
+  }
+}
+
+function renderCalendar() {
+  if (currentView === 'week')     renderWeekView();
+  else if (currentView === 'day') renderDayView();
+  else renderMonthView();
+  injectCurrentTimeIndicator();
+}
+
+function navigatePrev() {
+  if (currentView === 'week') {
+    currentWeekStart = new Date(currentWeekStart);
+    currentWeekStart.setDate(currentWeekStart.getDate() - 7);
+  } else if (currentView === 'day') {
+    currentDayDate = new Date(currentDayDate);
+    currentDayDate.setDate(currentDayDate.getDate() - 1);
+  } else {
+    currentMonthDate = new Date(currentMonthDate.getFullYear(), currentMonthDate.getMonth() - 1, 1);
+  }
+  renderCalendar();
+}
+
+function navigateNext() {
+  if (currentView === 'week') {
+    currentWeekStart = new Date(currentWeekStart);
+    currentWeekStart.setDate(currentWeekStart.getDate() + 7);
+  } else if (currentView === 'day') {
+    currentDayDate = new Date(currentDayDate);
+    currentDayDate.setDate(currentDayDate.getDate() + 1);
+  } else {
+    currentMonthDate = new Date(currentMonthDate.getFullYear(), currentMonthDate.getMonth() + 1, 1);
+  }
+  renderCalendar();
+}
+
+function goToToday() {
+  currentWeekStart = new Date(2026, 2, 9);
+  currentDayDate = new Date(TODAY);
+  currentMonthDate = new Date(2026, 2, 1);
+  renderCalendar();
+}
+
+// ─── FILTER BAR ──────────────────────────────────────────────────────────────────
+function toggleFilterBar() {
+  filterBarVisible = !filterBarVisible;
+  document.getElementById('filterBar').classList.toggle('collapsed', !filterBarVisible);
+  const btn = document.getElementById('filterToggleBtn');
+  if (filterBarVisible) {
+    btn.style.color = '#143AC3';
+    btn.style.borderColor = '#c7c6f5';
+    btn.style.background = '#F0F3FF';
+  } else {
+    btn.style.color = '#666689';
+    btn.style.borderColor = '';
+    btn.style.background = '';
+  }
+}
+
+function updateFilterIndicator() {
+  const count = Object.keys(activeFilters).filter(k => activeFilters[k]).length;
+  const dot = document.getElementById('filterActiveDot');
+  if (dot) dot.style.display = count > 0 ? 'block' : 'none';
+}
+
+function applyFilters() {
+  activeFilters = {
+    search: document.getElementById('filterSearch').value,
+    type: document.getElementById('filterType').value,
+    provider: document.getElementById('filterProvider').value,
+    from: document.getElementById('filterFrom').value,
+    to: document.getElementById('filterTo').value,
+  };
+  // Remove empty
+  Object.keys(activeFilters).forEach(k => { if (!activeFilters[k]) delete activeFilters[k]; });
+  renderCalendar();
+  updateFilterIndicator();
+}
+
+function clearFilters() {
+  document.getElementById('filterSearch').value = '';
+  document.getElementById('filterType').value = '';
+  document.getElementById('filterProvider').value = '';
+  document.getElementById('filterFrom').value = '';
+  document.getElementById('filterTo').value = '';
+  document.getElementById('headerSearch').value = '';
+  activeFilters = {};
+  renderCalendar();
+  updateFilterIndicator();
+}
+
+function handleHeaderSearch(val) {
+  activeFilters.search = val || undefined;
+  if (!val) delete activeFilters.search;
+  renderCalendar();
+  updateFilterIndicator();
+}
+
+// ─── OVERFLOW MODAL ───────────────────────────────────────────────────────────────
+function openOverflowModal(dateString, hour, idsJson) {
+  const ids = typeof idsJson === 'string' ? JSON.parse(idsJson) : idsJson;
+  const appts = ids.map(id => appointments.find(a => a.id === id)).filter(Boolean);
+  const label = hour === 12 ? '12:00 PM' : hour < 12 ? `${hour}:00 AM` : `${hour-12}:00 PM`;
+  const dateLabel = new Date(dateString + 'T00:00:00').toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric'});
+
+  const cardsHtml = appts.map(a => apptCardHTML(a)).join('');
+
+  document.getElementById('overflowModalTitle').textContent = `${dateLabel} · ${label}`;
+  document.getElementById('overflowModalBody').innerHTML = cardsHtml;
+  document.getElementById('overflowModal').classList.add('open');
+}
+
+function closeOverflowModal() {
+  document.getElementById('overflowModal').classList.remove('open');
+}
+
+// ─── ATTENDANCE MODULE ────────────────────────────────────────────────────────────
+function nameInitials(name) {
+  return name.split(' ').filter(Boolean).map(w => w[0]).join('').toUpperCase().slice(0, 2);
+}
+
+function buildAttendanceInner(appt) {
+  const id = appt.id;
+
+  // ── Group Therapy ──
+  if (appt.type === 'Group Therapy') {
+    const roster = GROUP_ROSTERS[id] || [];
+    const att    = attendance[id] || {};
+    const presentCount = roster.filter(n => att[n]).length;
+    const allPresent   = roster.length > 0 && presentCount === roster.length;
+
+    const rows = roster.map(name => {
+      const present  = !!att[name];
+      const initials = nameInitials(name);
+      const safeName = name.replace(/'/g, "\\'");
+      return `
+        <div class="att-row${present ? ' att-present' : ''}" onclick="toggleAttendance(${id},'${safeName}')">
+          <div class="att-avatar">${initials}</div>
+          <span class="att-name">${name}</span>
+          <div class="att-cb">
+            ${present ? '<i class="ti ti-check" style="font-size:9px;color:white;"></i>' : ''}
+          </div>
+        </div>`;
+    }).join('');
+
+    return `
+      <div class="att-module-head">
+        <div class="att-module-title">
+          <i class="ti ti-users" style="font-size:12px;"></i>
+          Attendance
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="att-present-badge">${presentCount} / ${roster.length} present</span>
+          ${!allPresent ? `<button class="att-mark-all" onclick="event.stopPropagation();markAllPresent(${id})">Mark All</button>` : ''}
+        </div>
+      </div>
+      <div class="att-list">${rows || '<div style="padding:14px;font-size:12px;color:var(--text-muted);text-align:center;">No roster on file</div>'}</div>`;
+  }
+
+  // ── Facility Tour ──
+  if (appt.type === 'Facility Tour') {
+    const checked  = !!visitorCheckedIn[id];
+    const initials = nameInitials(appt.patient);
+    return `
+      <div class="att-module-head">
+        <div class="att-module-title">
+          <i class="ti ti-user-check" style="font-size:12px;color:#D97706;"></i>
+          Visitor Check-in
+        </div>
+      </div>
+      <div class="visitor-row">
+        <div class="visitor-info">
+          <div class="visitor-avatar">${initials}</div>
+          <div>
+            <div class="visitor-name">${appt.patient}</div>
+            <div class="visitor-sub">Facility Tour Visitor</div>
+          </div>
+        </div>
+        <label class="tgl-mini">
+          <input type="checkbox" ${checked ? 'checked' : ''} onchange="toggleVisitorCheckin(${id})" />
+          <span class="tgl-mini-track"></span>
+        </label>
+      </div>
+      <div class="checkin-status ${checked ? 'ci-yes' : 'ci-no'}">
+        ${checked
+          ? '<i class="ti ti-circle-check" style="font-size:13px;"></i> Visitor checked in'
+          : '<i class="ti ti-clock" style="font-size:13px;"></i> Not yet checked in'}
+      </div>`;
+  }
+
+  return '';
+}
+
+function refreshAttendanceModule(apptId) {
+  const el   = document.getElementById('attendanceModule');
+  const appt = appointments.find(a => a.id === apptId);
+  if (el && appt) el.innerHTML = buildAttendanceInner(appt);
+}
+
+function toggleAttendance(apptId, name) {
+  if (!attendance[apptId]) attendance[apptId] = {};
+  attendance[apptId][name] = !attendance[apptId][name];
+  refreshAttendanceModule(apptId);
+}
+
+function markAllPresent(apptId) {
+  if (!attendance[apptId]) attendance[apptId] = {};
+  (GROUP_ROSTERS[apptId] || []).forEach(n => { attendance[apptId][n] = true; });
+  refreshAttendanceModule(apptId);
+}
+
+function toggleVisitorCheckin(apptId) {
+  visitorCheckedIn[apptId] = !visitorCheckedIn[apptId];
+  refreshAttendanceModule(apptId);
+}
+
+// ─── DETAIL PANEL ────────────────────────────────────────────────────────────────
+
+// Per-type metadata for the detail panel
+const PANEL_TYPE_META = {
+  'Facility Tour':            { personLabel: 'Lead / Visitor', personIcon: 'ti-user-check',  desc: 'Walk-through for prospective patients & families' },
+  'Counselling Session':      { personLabel: 'Patient',        personIcon: 'ti-user',         desc: '1-on-1 session with a licensed counselor'          },
+  'Group Therapy':            { personLabel: 'Participants',   personIcon: 'ti-users',        desc: 'Peer support group session'                         },
+  'Psychological Evaluation': { personLabel: 'Patient',        personIcon: 'ti-user',         desc: 'Comprehensive psychological assessment'             },
+  'Medical Test':             { personLabel: 'Patient',        personIcon: 'ti-user',         desc: 'Lab work, drug screening & vitals'                  },
+};
+
+
+function openDetailPanel(id) {
+  selectedApptId = id;
+  const appt = appointments.find(a => a.id === id);
+  if (!appt) return;
+
+  const t    = getTypeConfig(appt.type);
+  const meta = TYPE_META[appt.type] || { icon: 'ti-calendar' };
+  const ds   = getDisplayStatus(appt);
+  const dateFormatted = new Date(appt.date + 'T00:00:00').toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric', year:'numeric' });
+
+  // Status chip
+  const statusChipMap = {
+    Ongoing:   `<span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;font-size:11px;font-weight:700;background:#FEF2F2;color:#991B1B;"><span style="width:7px;height:7px;border-radius:50%;background:#DC2626;display:inline-block;" class="pulse-dot"></span>Ongoing</span>`,
+    Completed: `<span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;font-size:11px;font-weight:700;background:#F0FDF4;color:#16A34A;"><i class="ti ti-circle-check" style="font-size:11px;"></i>Completed</span>`,
+    Cancelled: `<span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;font-size:11px;font-weight:700;background:#FEF2F2;color:#DC2626;"><i class="ti ti-x" style="font-size:11px;"></i>Cancelled</span>`,
+    Future:    `<span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;font-size:11px;font-weight:700;background:${t.pillBg};color:${t.pillText};border:1px solid ${t.border}60;"><i class="ti ti-clock" style="font-size:11px;"></i>Scheduled</span>`,
+  };
+  const statusChip = statusChipMap[ds] || statusChipMap.Future;
+  const panelTitle = appt.groupSize ? appt.type : appt.patient;
+
+  // ── Header ──
+  document.getElementById('dpHeader').innerHTML = `
+    <div class="dp-header-bar">
+      <div class="dp-header-left">
+        <div class="dp-type-pill" style="background:${t.pillBg};color:${t.text};">
+          <i class="ti ${meta.icon}" style="font-size:11px;"></i>${appt.type}${appt.recurring ? `<i class="ti ti-repeat" style="font-size:10px;opacity:.8;margin-left:2px;" title="Recurring"></i>` : ''}
+        </div>
+        <div class="dp-title">${panelTitle}</div>
+        ${statusChip}
+      </div>
+      <button class="dp-close-btn" onclick="closeDetailPanel()" aria-label="Close">
+        <i class="ti ti-x" style="font-size:16px;"></i>
+      </button>
+    </div>`;
+
+  // ── Notes ──
+  const noteHtml = appt.notes
+    ? `<div class="dp-notes">${appt.notes}</div>`
+    : `<div class="dp-notes empty"><i class="ti ti-pencil-off" style="font-size:12px;margin-right:5px;"></i>No notes added.</div>`;
+
+  // ── Conditional workspace ──
+  let workspaceHtml = '';
+  if (appt.groupSize) {
+    workspaceHtml = `
+      <div class="dp-section" style="padding-bottom:16px;">
+        <div class="dp-section-label"><i class="ti ti-users" style="font-size:12px;"></i>Attendance</div>
+        <div class="att-module" id="attendanceModule">${buildAttendanceInner(appt)}</div>
+      </div>`;
+  } else {
+    const initials = nameInitials(appt.patient);
+    const ptId = `PT-${String(appt.id).padStart(5,'0')}`;
+    workspaceHtml = `
+      <div class="dp-section" style="padding-bottom:16px;">
+        <div class="dp-section-label"><i class="ti ti-user" style="font-size:12px;"></i>Patient</div>
+        <div class="dp-patient-card">
+          <div class="dp-patient-inner">
+            <div class="dp-patient-avatar">${initials}</div>
+            <div>
+              <div class="dp-patient-name">${appt.patient}</div>
+              <div class="dp-patient-id">${ptId}</div>
+            </div>
+          </div>
+          <div class="dp-patient-profile-link" onclick="showToast('Patient profile coming soon')">
+            <i class="ti ti-external-link" style="font-size:13px;"></i>View Full Profile
+          </div>
+        </div>
+      </div>`;
+  }
+
+  // ── Body ──
+  document.getElementById('detailContent').innerHTML = `
+    <div style="padding:16px 20px 0;">
+      <div class="dp-logistics">
+        <div class="dp-logistics-item">
+          <div class="dp-logistics-icon"><i class="ti ti-clock" style="font-size:13px;color:${t.text};"></i></div>
+          <div><div class="dp-logistics-label">Time</div><div class="dp-logistics-value">${fmt12(appt.time)}</div></div>
+        </div>
+        <div class="dp-logistics-item">
+          <div class="dp-logistics-icon"><i class="ti ti-calendar" style="font-size:13px;color:${t.text};"></i></div>
+          <div><div class="dp-logistics-label">Date</div><div class="dp-logistics-value">${dateFormatted}</div></div>
+        </div>
+        <div class="dp-logistics-item">
+          <div class="dp-logistics-icon"><i class="ti ti-door" style="font-size:13px;color:${t.text};"></i></div>
+          <div><div class="dp-logistics-label">Room</div><div class="dp-logistics-value">${appt.room}</div></div>
+        </div>
+        <div class="dp-logistics-item">
+          <div class="dp-logistics-icon"><i class="ti ti-stethoscope" style="font-size:13px;color:${t.text};"></i></div>
+          <div><div class="dp-logistics-label">Staff</div><div class="dp-logistics-value">${appt.provider}</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="dp-section">
+      <div class="dp-section-label"><i class="ti ti-notes" style="font-size:12px;"></i>Appointment Notes</div>
+      ${noteHtml}
+    </div>
+    ${workspaceHtml}`;
+
+  // ── Footer ──
+  document.getElementById('dpFooter').innerHTML = dpNormalFooter(id, appt);
+
+  document.getElementById('detailPanel').classList.add('open');
+  document.getElementById('detailOverlay').classList.add('open');
+  document.getElementById('detailOverlay').style.opacity = '1';
+  document.getElementById('detailOverlay').style.pointerEvents = 'all';
+}
+
+// ─── PANEL FOOTER VIEWS ───────────────────────────────────────────────────────
+function dpNormalFooter(id, appt) {
+  const isCancelled = appt.status === 'Cancelled';
+  return `
+    <div class="dp-footer-actions">
+      <div class="dp-footer-row">
+        <button class="action-btn action-btn-secondary" onclick="showDpReschedule(${id})">
+          <i class="ti ti-calendar-event" style="font-size:14px;"></i>Reschedule
+        </button>
+        <button class="action-btn action-btn-secondary" onclick="showDpEdit(${id})">
+          <i class="ti ti-edit" style="font-size:14px;"></i>Edit
+        </button>
+      </div>
+      ${!isCancelled ? `
+      <button class="action-btn action-btn-danger" onclick="showCancelView(${id})">
+        <i class="ti ti-ban" style="font-size:14px;"></i>Cancel Appointment
+      </button>` : ''}
+    </div>`;
+}
+
+function showCancelView(id) {
+  const appt = appointments.find(a => a.id === id);
+  if (!appt) return;
+  document.getElementById('dpFooter').innerHTML = `
+    <div class="dp-view-form">
+      <div class="dp-view-header" style="color:#b91c1c;">
+        <i class="ti ti-alert-triangle" style="font-size:16px;"></i>Cancel Appointment
+      </div>
+      <label class="action-form-label"><i class="ti ti-message-circle" style="font-size:11px;margin-right:3px;"></i>Reason for cancellation</label>
+      <select id="dpCancelReason" class="action-form-input" style="height:36px;">
+        <option value="">— Select a reason —</option>
+        <option>Patient request</option>
+        <option>Provider unavailable</option>
+        <option>Room conflict</option>
+        <option>Medical emergency</option>
+        <option>No-show</option>
+        <option>Insurance issue</option>
+        <option>Other</option>
+      </select>
+      ${appt.recurring ? `
+      <div class="dp-recurring-choice">
+        <span class="dp-recurring-choice-label"><i class="ti ti-repeat" style="font-size:11px;margin-right:4px;"></i>This is a recurring appointment</span>
+        <label class="dp-radio-opt">
+          <input type="radio" name="dpCancelScope" value="this" checked />
+          <div><div class="dp-radio-text">Cancel this session only</div><div class="dp-radio-sub">All other scheduled sessions remain unchanged</div></div>
+        </label>
+        <label class="dp-radio-opt">
+          <input type="radio" name="dpCancelScope" value="all" />
+          <div><div class="dp-radio-text">Cancel all future sessions</div><div class="dp-radio-sub">This and all upcoming recurrences will be removed</div></div>
+        </label>
+      </div>` : ''}
+      <div class="dp-footer-row" style="margin-top:12px;">
+        <button class="action-btn action-btn-ghost" onclick="hideDpView(${id})">
+          <i class="ti ti-arrow-left" style="font-size:13px;"></i>Go Back
+        </button>
+        <button class="action-btn action-btn-danger" onclick="confirmCancelAppt(${id})">
+          <i class="ti ti-check" style="font-size:13px;"></i>Confirm
+        </button>
+      </div>
+    </div>`;
+}
+
+function showDpReschedule(id) {
+  showEditMode(id, 'reschedule');
+}
+
+function showDpEdit(id) {
+  showEditMode(id, 'edit');
+}
+
+// ─── FULL EDIT MODE ───────────────────────────────────────────────────────────
+const _editState = {};
+
+function showEditMode(id, mode) {
+  const appt = appointments.find(a => a.id === id);
+  if (!appt) return;
+
+  const t    = getTypeConfig(appt.type);
+  const meta = TYPE_META[appt.type] || { icon: 'ti-calendar' };
+  const isReschedule = mode === 'reschedule';
+  const title = isReschedule ? 'Reschedule Appointment' : 'Edit Appointment';
+  const titleIcon = isReschedule ? 'ti-calendar-event' : 'ti-edit';
+
+  // ── Header ──
+  document.getElementById('dpHeader').innerHTML = `
+    <div class="dp-header-bar" style="padding:14px 20px 12px;">
+      <div class="dp-header-left">
+        <div class="dp-type-pill" style="background:${t.pillBg};color:${t.text};margin-bottom:8px;">
+          <i class="ti ${meta.icon}" style="font-size:11px;"></i>${appt.type}
+        </div>
+        <div style="font-size:17px;font-weight:700;color:var(--text-primary);line-height:1.2;display:flex;align-items:center;gap:7px;">
+          <i class="ti ${titleIcon}" style="font-size:16px;color:#143AC3;"></i>${title}
+        </div>
+        <div style="font-size:12px;color:var(--text-secondary);margin-top:4px;">
+          ${appt.groupSize ? `<i class="ti ti-users" style="font-size:11px;margin-right:3px;"></i>${appt.groupSize} patients` : `<i class="ti ti-user" style="font-size:11px;margin-right:3px;"></i>${appt.patient}`}
+        </div>
+      </div>
+      <button class="dp-close-btn" onclick="closeDetailPanel()" aria-label="Close">
+        <i class="ti ti-x" style="font-size:16px;"></i>
+      </button>
+    </div>`;
+
+  // ── Reschedule callout banner ──
+  const rescheduleBanner = isReschedule ? `
+    <div style="margin:0 0 4px;padding:10px 14px;background:#F0F3FF;border-radius:8px;border-left:3px solid #143AC3;display:flex;align-items:center;gap:8px;">
+      <i class="ti ti-info-circle" style="font-size:14px;color:#143AC3;flex-shrink:0;"></i>
+      <span style="font-size:12px;color:#143AC3;font-weight:500;">Update the date and time to reschedule this appointment.</span>
+    </div>` : '';
+
+  const slots = ['08:00','08:30','09:00','09:30','10:00','10:30','11:00','11:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30'];
+  const providers = ['Dr. Emily Chen','Dr. Patel','Nurse Kelly','Dr. Rivera','Dr. Thompson'];
+  const rooms = ['Room 101','Room 102','Room 203','Room 204','Room 205'];
+
+  // ── Body ──
+  document.getElementById('detailContent').innerHTML = `
+    <div style="padding:16px 20px;display:flex;flex-direction:column;gap:20px;">
+      ${rescheduleBanner}
+
+      <!-- Date -->
+      <div>
+        <label style="display:block;font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">
+          <i class="ti ti-calendar" style="font-size:11px;margin-right:4px;"></i>Date
+        </label>
+        <div style="position:relative;">
+          <i class="ti ti-calendar" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--text-muted);pointer-events:none;"></i>
+          <input type="date" id="editDate" value="${appt.date}"
+                 style="width:100%;height:40px;padding:0 12px 0 38px;border:1.5px solid var(--border-input);border-radius:8px;font-size:14px;color:var(--text-primary);background:var(--bg-input);outline:none;font-family:'Google Sans', sans-serif;"
+                 onfocus="this.style.borderColor='#143AC3';this.style.boxShadow='0 0 0 3px rgba(20,58,195,.1)'"
+                 onblur="this.style.borderColor='';this.style.boxShadow=''" />
+        </div>
+      </div>
+
+      <!-- Time slots -->
+      <div>
+        <label style="display:block;font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">
+          <i class="ti ti-clock" style="font-size:11px;margin-right:4px;"></i>Time
+        </label>
+        <div class="time-slots-mini" id="editTimeSlots">
+          ${slots.map(s => `<button class="tslot-mini${s === appt.time ? ' tslot-sel' : ''}" onclick="pickEditSlot(${id},'${s}')">${fmt12(s)}</button>`).join('')}
+        </div>
+      </div>
+
+      <!-- Provider -->
+      <div>
+        <label style="display:block;font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">
+          <i class="ti ti-stethoscope" style="font-size:11px;margin-right:4px;"></i>Provider
+        </label>
+        <select id="editProvider"
+                style="width:100%;height:40px;padding:0 12px;border:1.5px solid var(--border-input);border-radius:8px;font-size:14px;color:var(--text-primary);background:var(--bg-input);outline:none;font-family:'Google Sans', sans-serif;"
+                onfocus="this.style.borderColor='#143AC3';this.style.boxShadow='0 0 0 3px rgba(20,58,195,.1)'"
+                onblur="this.style.borderColor='';this.style.boxShadow=''">
+          ${providers.map(p => `<option value="${p}"${p === appt.provider ? ' selected' : ''}>${p}</option>`).join('')}
+        </select>
+      </div>
+
+      <!-- Room -->
+      <div>
+        <label style="display:block;font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">
+          <i class="ti ti-door" style="font-size:11px;margin-right:4px;"></i>Room
+        </label>
+        <select id="editRoom"
+                style="width:100%;height:40px;padding:0 12px;border:1.5px solid var(--border-input);border-radius:8px;font-size:14px;color:var(--text-primary);background:var(--bg-input);outline:none;font-family:'Google Sans', sans-serif;"
+                onfocus="this.style.borderColor='#143AC3';this.style.boxShadow='0 0 0 3px rgba(20,58,195,.1)'"
+                onblur="this.style.borderColor='';this.style.boxShadow=''">
+          ${rooms.map(r => `<option value="${r}"${r === appt.room ? ' selected' : ''}>${r}</option>`).join('')}
+        </select>
+      </div>
+
+      <!-- Notes -->
+      <div>
+        <label style="display:block;font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">
+          <i class="ti ti-notes" style="font-size:11px;margin-right:4px;"></i>Appointment Notes
+        </label>
+        <textarea id="editNotes"
+                  style="width:100%;min-height:88px;padding:10px 12px;border:1.5px solid var(--border-input);border-radius:8px;font-size:13px;color:var(--text-primary);background:var(--bg-input);outline:none;font-family:'Google Sans', sans-serif;resize:vertical;line-height:1.6;"
+                  placeholder="Add clinical notes, observations, or reminders…"
+                  onfocus="this.style.borderColor='#143AC3';this.style.boxShadow='0 0 0 3px rgba(20,58,195,.1)'"
+                  onblur="this.style.borderColor='';this.style.boxShadow=''">${appt.notes || ''}</textarea>
+      </div>
+    </div>`;
+
+  // Track selected slot
+  if (!_editState[id]) _editState[id] = {};
+  _editState[id].slot = appt.time;
+
+  // ── Footer ──
+  document.getElementById('dpFooter').innerHTML = `
+    <div class="dp-footer-actions">
+      <div class="dp-footer-row">
+        <button class="action-btn action-btn-ghost" onclick="openDetailPanel(${id})">
+          <i class="ti ti-arrow-left" style="font-size:13px;"></i>Discard
+        </button>
+        <button class="action-btn" style="background:var(--cta-gradient);color:white;border:none;box-shadow:0 2px 8px rgba(20,58,195,.25);flex:1;" onclick="confirmEditMode(${id})">
+          <i class="ti ti-check" style="font-size:13px;"></i>Save Changes
+        </button>
+      </div>
+    </div>`;
+}
+
+function pickEditSlot(id, slot) {
+  if (!_editState[id]) _editState[id] = {};
+  _editState[id].slot = slot;
+  document.querySelectorAll('#editTimeSlots .tslot-mini').forEach(b => {
+    b.classList.toggle('tslot-sel', b.textContent.trim() === fmt12(slot));
+  });
+}
+
+function confirmEditMode(id) {
+  const appt = appointments.find(a => a.id === id);
+  if (!appt) return;
+
+  const dateEl     = document.getElementById('editDate');
+  const providerEl = document.getElementById('editProvider');
+  const roomEl     = document.getElementById('editRoom');
+  const notesEl    = document.getElementById('editNotes');
+  const s          = _editState[id] || {};
+
+  if (dateEl && dateEl.value) appt.date     = dateEl.value;
+  if (s.slot)                  appt.time     = s.slot;
+  if (providerEl)              appt.provider = providerEl.value;
+  if (roomEl)                  appt.room     = roomEl.value;
+  if (notesEl) {
+    const notes = notesEl.value.trim();
+    if (notes) appt.notes = notes; else delete appt.notes;
+  }
+
+  delete _editState[id];
+  renderCalendar();
+  renderTodayStats();
+  openDetailPanel(id);
+  showToast('Appointment updated successfully');
+}
+
+function hideDpView(id) {
+  const appt = appointments.find(a => a.id === id);
+  if (appt) document.getElementById('dpFooter').innerHTML = dpNormalFooter(id, appt);
+}
+
+
+function closeDetailPanel() {
+  document.getElementById('detailPanel').classList.remove('open');
+  document.getElementById('detailOverlay').style.opacity = '0';
+  document.getElementById('detailOverlay').style.pointerEvents = 'none';
+  selectedApptId = null;
+}
+
+function changeStatus(id, status) {
+  const appt = appointments.find(a => a.id === id);
+  if (!appt) return;
+  appt.status = status;
+  openDetailPanel(id);
+  renderCalendar();
+  renderTodayStats();
+  showToast(`Status updated to ${status}`);
+}
+
+// ─── ACTION SUITE STATE ───────────────────────────────────────────────────────
+// Tracks per-appointment inline form state
+const _rescheduleState = {}; // { [id]: { date, slot } }
+
+function toggleActionPanel(formId) {
+  const target = document.getElementById(formId);
+  if (!target) return;
+  const isOpen = target.style.display !== 'none';
+  // Close all inline forms in the panel first
+  document.querySelectorAll('.action-inline-form').forEach(f => f.style.display = 'none');
+  // Toggle target
+  if (!isOpen) target.style.display = 'block';
+}
+
+function pickRescheduleSlot(id, slot) {
+  if (!_rescheduleState[id]) _rescheduleState[id] = {};
+  _rescheduleState[id].slot = slot;
+  // Update chip UI
+  const container = document.getElementById(`rescheduleSlots${id}`);
+  if (container) {
+    container.querySelectorAll('.tslot-mini').forEach(b => {
+      b.classList.toggle('tslot-sel', b.textContent.trim() === fmt12(slot));
+    });
+  }
+  _syncRescheduleConfirm(id);
+}
+
+function onRescheduleDateChange(id) {
+  if (!_rescheduleState[id]) _rescheduleState[id] = {};
+  const input = document.getElementById(`rescheduleDate${id}`);
+  _rescheduleState[id].date = input ? input.value : '';
+  _syncRescheduleConfirm(id);
+}
+
+function _syncRescheduleConfirm(id) {
+  const btn = document.getElementById(`confirmRescheduleBtn${id}`);
+  if (!btn) return;
+  const s = _rescheduleState[id] || {};
+  btn.disabled = !(s.date && s.slot);
+}
+
+function confirmReschedule(id) {
+  const s = _rescheduleState[id] || {};
+  if (!s.date || !s.slot) return;
+  const appt = appointments.find(a => a.id === id);
+  if (!appt) return;
+  appt.date = s.date;
+  appt.time = s.slot;
+  delete _rescheduleState[id];
+  renderCalendar();
+  renderTodayStats();
+  openDetailPanel(id);
+  showToast('Appointment rescheduled');
+}
+
+function confirmEditDetails(id) {
+  const appt = appointments.find(a => a.id === id);
+  if (!appt) return;
+  const roomEl     = document.getElementById(`editRoom${id}`);
+  const providerEl = document.getElementById(`editProvider${id}`);
+  if (roomEl)     appt.room     = roomEl.value;
+  if (providerEl) appt.provider = providerEl.value;
+  renderCalendar();
+  renderTodayStats();
+  openDetailPanel(id);
+  showToast('Details updated');
+}
+
+function confirmCancelAppt(id) {
+  const appt = appointments.find(a => a.id === id);
+  if (!appt) return;
+  const reasonEl = document.getElementById('dpCancelReason');
+  const reason   = reasonEl ? reasonEl.value : '';
+  if (!reason) { showToast('Please select a cancellation reason', 'warn'); return; }
+  const scopeEl = document.querySelector('input[name="dpCancelScope"]:checked');
+  const scope   = scopeEl ? scopeEl.value : 'this';
+  appt.status = 'Cancelled';
+  appt.cancelReason = reason;
+  if (scope === 'all') appt.recurring = false;
+  renderCalendar();
+  renderTodayStats();
+  openDetailPanel(id);
+  showToast(scope === 'all' ? 'All future sessions cancelled' : `Appointment cancelled — ${reason}`);
+}
+
+function printApptSummary(id) {
+  const appt = appointments.find(a => a.id === id);
+  if (!appt) return;
+  const dateStr = new Date(appt.date + 'T00:00:00').toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  const win = window.open('', '_blank', 'width=680,height=520');
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+  <title>ClearPath FDO — Appointment Summary</title>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{font-family:'Google Sans', sans-serif;margin:0;padding:0;box-sizing:border-box;}
+    body{padding:40px;color:#121219;background:#fff;}
+    .logo{font-size:16px;font-weight:700;color:#143AC3;margin-bottom:32px;display:flex;align-items:center;gap:8px;}
+    .logo-dot{width:10px;height:10px;border-radius:50%;background:#0d9488;display:inline-block;}
+    h1{font-size:22px;font-weight:700;margin-bottom:4px;}
+    .sub{font-size:13px;color:#666689;margin-bottom:24px;}
+    table{width:100%;border-collapse:collapse;font-size:13px;}
+    td{padding:10px 0;border-bottom:1px solid #f3f4f6;}
+    td:first-child{color:#666689;width:160px;font-weight:600;}
+    td:last-child{color:#121219;}
+    .footer{margin-top:32px;font-size:11px;color:#9ca3af;border-top:1px solid #f3f4f6;padding-top:16px;}
+  </style></head><body>
+  <div class="logo"><span class="logo-dot"></span> ClearPath FDO</div>
+  <h1>Appointment Summary</h1>
+  <p class="sub">Printed on ${new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}</p>
+  <table>
+    <tr><td>Type</td><td>${appt.type}</td></tr>
+    <tr><td>Patient / Group</td><td>${appt.groupSize ? appt.groupSize + ' Participants' : appt.patient}</td></tr>
+    <tr><td>Date</td><td>${dateStr}</td></tr>
+    <tr><td>Time</td><td>${fmt12(appt.time)}</td></tr>
+    <tr><td>Provider</td><td>${appt.provider}</td></tr>
+    <tr><td>Room</td><td>${appt.room}</td></tr>
+    <tr><td>Status</td><td>${appt.status}${appt.cancelReason ? ' — ' + appt.cancelReason : ''}</td></tr>
+  </table>
+  <div class="footer">This document is confidential and intended for internal use only. ClearPath FDO &copy; ${new Date().getFullYear()}</div>
+  <script>window.onload=()=>window.print();<\/script>
+  </body></html>`);
+  win.document.close();
+}
+
+// ─── DELETE MODAL ────────────────────────────────────────────────────────────────
+function openDeleteModal(id) {
+  pendingDeleteId = id;
+  const appt = appointments.find(a => a.id === id);
+  if (appt) {
+    document.getElementById('deleteMsg').textContent = `This action cannot be undone. The appointment for ${appt.patient} will be permanently removed.`;
+  }
+  document.getElementById('deleteModal').classList.add('open');
+}
+
+function closeDeleteModal() {
+  document.getElementById('deleteModal').classList.remove('open');
+  pendingDeleteId = null;
+}
+
+function confirmDelete() {
+  if (pendingDeleteId === null) return;
+  const appt = appointments.find(a => a.id === pendingDeleteId);
+  const name = appt ? appt.patient : 'the patient';
+  appointments = appointments.filter(a => a.id !== pendingDeleteId);
+  closeDeleteModal();
+  closeDetailPanel();
+  renderCalendar();
+  renderTodayStats();
+  showToast(`Appointment for ${name} deleted`);
+}
+
+// ─── TOAST ────────────────────────────────────────────────────────────────────────
+function showToast(msg, error = false) {
+  const toast = document.getElementById('toast');
+  const msgEl = document.getElementById('toastMsg');
+  msgEl.textContent = msg;
+  toast.querySelector('div').className = `${error ? 'bg-red-700' : 'bg-gray-900'} text-white px-4 py-2.5 rounded shadow-sm text-sm font-medium`;
+  toast.classList.remove('translate-y-16', 'opacity-0');
+  toast.classList.add('translate-y-0', 'opacity-100');
+  setTimeout(() => {
+    toast.classList.add('translate-y-16', 'opacity-0');
+    toast.classList.remove('translate-y-0', 'opacity-100');
+  }, 3000);
+}
+
+// ─── DATE PICKER ─────────────────────────────────────────────────────────────────
+let dpOpen = false;
+let dpViewDate = new Date(2026, 2, 1);
+let dpHoveredWs = null;
+let dpHoverHandlerFn = null;
+let dpLeaveHandlerFn = null;
+
+function dpIsWeekLike() {
+  return currentView === 'week';
+}
+
+function toggleDatePicker() {
+  if (dpOpen) { closeDatePicker(); return; }
+  openDatePicker();
+}
+
+function openDatePicker() {
+  // Sync dpViewDate to current calendar state
+  if (currentView === 'month') {
+    dpViewDate = new Date(currentMonthDate.getFullYear(), currentMonthDate.getMonth(), 1);
+  } else if (currentView === 'day') {
+    dpViewDate = new Date(currentDayDate.getFullYear(), currentDayDate.getMonth(), 1);
+  } else {
+    dpViewDate = new Date(currentWeekStart.getFullYear(), currentWeekStart.getMonth(), 1);
+  }
+
+  const picker = document.getElementById('datePicker');
+  picker.style.display = 'block';
+  renderDatePicker();
+  dpAttachWeekHover(); // always refresh — removes old listener first
+
+  // Position below #viewTitle
+  const btn = document.getElementById('viewTitle');
+  const rect = btn.getBoundingClientRect();
+  const pw = 280;
+  let left = rect.left + rect.width / 2 - pw / 2;
+  left = Math.max(8, Math.min(left, window.innerWidth - pw - 8));
+  picker.style.top  = (rect.bottom + 6) + 'px';
+  picker.style.left = left + 'px';
+
+  document.getElementById('viewTitle').classList.add('dp-active');
+  dpOpen = true;
+}
+
+function closeDatePicker() {
+  document.getElementById('datePicker').style.display = 'none';
+  document.getElementById('viewTitle').classList.remove('dp-active');
+  dpOpen = false;
+  dpHoveredWs = null;
+}
+
+function renderDatePicker() {
+  const titleEl = document.getElementById('dpTitle');
+  const bodyEl  = document.getElementById('dpBody');
+
+  if (currentView === 'month') {
+    titleEl.textContent = dpViewDate.getFullYear();
+    bodyEl.innerHTML = dpBuildMonthGrid();
+  } else {
+    titleEl.textContent = MONTH_NAMES[dpViewDate.getMonth()] + ' ' + dpViewDate.getFullYear();
+    bodyEl.innerHTML = dpBuildDayGrid();
+  }
+}
+
+// ── helpers ──
+function dpWeekStart(d) {
+  const day = d.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  const r = new Date(d);
+  r.setDate(d.getDate() + diff);
+  r.setHours(0, 0, 0, 0);
+  return r;
+}
+function dpWeekStartStr(d) { return dateStr(dpWeekStart(d)); }
+
+function dpDayClass(ds, d) {
+  if (currentView === 'day') {
+    return ds === dateStr(currentDayDate) ? 'selected' : '';
+  }
+  if (dpIsWeekLike()) {
+    const ws = currentWeekStart;
+    const wsStr = dateStr(ws);
+    const weStr = dateStr(new Date(ws.getFullYear(), ws.getMonth(), ws.getDate() + 6));
+    if (ds === wsStr) return 'range-start';
+    if (ds === weStr) return 'range-end';
+    if (ds > wsStr && ds < weStr) return 'in-range';
+  }
+  return '';
+}
+
+// ── day grid ──
+function dpBuildDayGrid() {
+  const y = dpViewDate.getFullYear(), m = dpViewDate.getMonth();
+  const firstDay = new Date(y, m, 1);
+  const lastDay  = new Date(y, m + 1, 0);
+  let startOffset = firstDay.getDay(); // 0=Sun
+  startOffset = startOffset === 0 ? 6 : startOffset - 1; // Mon-based
+
+  const DAY_ABBR = ['Mo','Tu','We','Th','Fr','Sa','Su'];
+  let html = `<div class="dp-weekdays">`;
+  DAY_ABBR.forEach(a => { html += `<div class="dp-weekday">${a}</div>`; });
+  html += `</div><div class="dp-days">`;
+
+  // Leading cells (prev month)
+  for (let i = 0; i < startOffset; i++) {
+    const d = new Date(y, m, i - startOffset + 1);
+    const ds = dateStr(d);
+    const cls = dpDayClass(ds, d);
+    html += `<div class="dp-day other-month ${cls}" data-date="${ds}" data-ws="${dpWeekStartStr(d)}" onclick="dpPickDate('${ds}')">${d.getDate()}</div>`;
+  }
+
+  // Current month
+  for (let n = 1; n <= lastDay.getDate(); n++) {
+    const d = new Date(y, m, n);
+    const ds = dateStr(d);
+    const isToday = ds === dateStr(TODAY);
+    const cls = dpDayClass(ds, d);
+    const isWe = d.getDay() === 0 || d.getDay() === 6;
+    html += `<div class="dp-day ${cls}${isToday ? ' today' : ''}${isWe ? ' dp-weekend' : ''}" data-date="${ds}" data-ws="${dpWeekStartStr(d)}" onclick="dpPickDate('${ds}')">${n}</div>`;
+  }
+
+  // Trailing cells (next month)
+  const total = Math.ceil((startOffset + lastDay.getDate()) / 7) * 7;
+  for (let n = 1; n <= total - startOffset - lastDay.getDate(); n++) {
+    const d = new Date(y, m + 1, n);
+    const ds = dateStr(d);
+    const cls = dpDayClass(ds, d);
+    html += `<div class="dp-day other-month ${cls}" data-date="${ds}" data-ws="${dpWeekStartStr(d)}" onclick="dpPickDate('${ds}')">${n}</div>`;
+  }
+
+  html += `</div>`;
+  return html;
+}
+
+// ── month grid (for Month view) ──
+function dpBuildMonthGrid() {
+  const year = dpViewDate.getFullYear();
+  const selM = currentMonthDate.getMonth(), selY = currentMonthDate.getFullYear();
+  const ABBR = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  let html = `<div class="dp-months">`;
+  ABBR.forEach((name, i) => {
+    const isSel  = year === selY && i === selM;
+    const isCurr = year === TODAY.getFullYear() && i === TODAY.getMonth();
+    html += `<div class="dp-month ${isSel ? 'dp-month-selected' : ''} ${isCurr && !isSel ? 'dp-month-today' : ''}" onclick="dpPickMonth(${year},${i})">${name}</div>`;
+  });
+  html += `</div>`;
+  return html;
+}
+
+// ── pick actions ──
+function dpPickDate(ds) {
+  const [y, m, d] = ds.split('-').map(Number);
+  const date = new Date(y, m - 1, d);
+  if (currentView === 'day') {
+    currentDayDate = date;
+  } else {
+    currentWeekStart = dpWeekStart(date);
+  }
+  closeDatePicker();
+  renderCalendar();
+}
+
+function dpPickMonth(year, month) {
+  currentMonthDate = new Date(year, month, 1);
+  closeDatePicker();
+  renderCalendar();
+}
+
+function dpNavPrev() {
+  if (currentView === 'month') {
+    dpViewDate = new Date(dpViewDate.getFullYear() - 1, 0, 1);
+  } else {
+    dpViewDate = new Date(dpViewDate.getFullYear(), dpViewDate.getMonth() - 1, 1);
+  }
+  renderDatePicker();
+  dpAttachWeekHover();
+}
+
+function dpNavNext() {
+  if (currentView === 'month') {
+    dpViewDate = new Date(dpViewDate.getFullYear() + 1, 0, 1);
+  } else {
+    dpViewDate = new Date(dpViewDate.getFullYear(), dpViewDate.getMonth() + 1, 1);
+  }
+  renderDatePicker();
+  dpAttachWeekHover();
+}
+
+function dpSelectToday() {
+  closeDatePicker();
+  goToToday();
+}
+
+// ── week hover ──
+function dpAttachWeekHover() {
+  const bodyEl = document.getElementById('dpBody');
+  // Remove any prior listeners
+  if (dpHoverHandlerFn)  bodyEl.removeEventListener('mouseover',  dpHoverHandlerFn);
+  if (dpLeaveHandlerFn)  bodyEl.removeEventListener('mouseleave', dpLeaveHandlerFn);
+
+  if (!dpIsWeekLike()) { dpHoverHandlerFn = dpLeaveHandlerFn = null; return; }
+
+  dpHoverHandlerFn = e => {
+    const cell = e.target.closest('.dp-day');
+    if (!cell) return;
+    const ws = cell.dataset.ws;
+    if (ws === dpHoveredWs) return;
+    dpHoveredWs = ws;
+    dpClearHover(bodyEl);
+    const group = bodyEl.querySelectorAll(`.dp-day[data-ws="${ws}"]`);
+    group.forEach((c, idx) => {
+      c.classList.add('hover-range');
+      if (idx === 0)              c.classList.add('hover-range-start');
+      if (idx === group.length-1) c.classList.add('hover-range-end');
+    });
+  };
+
+  dpLeaveHandlerFn = () => {
+    dpClearHover(bodyEl);
+    dpHoveredWs = null;
+  };
+
+  bodyEl.addEventListener('mouseover',  dpHoverHandlerFn);
+  bodyEl.addEventListener('mouseleave', dpLeaveHandlerFn);
+}
+
+function dpClearHover(bodyEl) {
+  bodyEl.querySelectorAll('.dp-day').forEach(c => {
+    c.classList.remove('hover-range','hover-range-start','hover-range-end');
+  });
+}
+
+// Close picker on outside click
+document.addEventListener('click', e => {
+  if (dpOpen && !e.target.closest('#datePicker') && !e.target.closest('#viewTitle')) {
+    closeDatePicker();
+  }
+
+});
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  // Restore theme preference
+  const savedTheme = localStorage.getItem('cpfdo-theme') || 'dark';
+  document.body.dataset.theme = savedTheme;
+  const themeIcon = document.querySelector('#themeToggle i');
+  if (themeIcon) themeIcon.className = savedTheme === 'dark' ? 'ti ti-sun' : 'ti ti-moon';
+  renderCalendar();
+  renderTodayStats();
+
+  // Pick up appointment booked from new-appointment page
+  const pending = sessionStorage.getItem('pendingAppointment');
+  if (pending) {
+    try {
+      const a = JSON.parse(pending);
+      const newAppt = { id: nextId++, date: a.date, time: a.time, patient: a.patient, type: a.type, provider: a.provider, room: a.room, status: 'Upcoming' };
+      appointments.push(newAppt);
+      renderCalendar();
+      renderTodayStats();
+    } catch(e) {}
+    sessionStorage.removeItem('pendingAppointment');
+  }
+  const toastMsg = sessionStorage.getItem('bookingToast');
+  if (toastMsg) { showToast(toastMsg); sessionStorage.removeItem('bookingToast'); }
+
+  // Filter starts visible — set active state on button
+  const btn = document.getElementById('filterToggleBtn');
+  if (btn) { btn.style.color = '#143AC3'; btn.style.borderColor = '#c7c6f5'; btn.style.background = '#F0F3FF'; }
+
+  // Refresh time indicator every minute
+  setInterval(() => {
+    const existing = document.getElementById('currentTimeIndicator');
+    if (existing) existing.remove();
+    injectCurrentTimeIndicator();
+  }, 60000);
+});
+
+// ─── USER DROPDOWN ───────────────────────────────────────────────────────────
+function toggleUserDropdown() {
+  const dd = document.getElementById('userDropdown');
+  const caret = document.getElementById('avatarCaret');
+  const isOpen = dd.classList.toggle('open');
+  caret.style.transform = isOpen ? 'rotate(180deg)' : '';
+  caret.style.transition = 'transform .2s';
+}
+function closeUserDropdown() {
+  document.getElementById('userDropdown').classList.remove('open');
+  document.getElementById('avatarCaret').style.transform = '';
+}
+function logout() {
+  window.location.href = 'signin.html';
+}
+// Close dropdown when clicking outside
+document.addEventListener('click', e => {
+  const wrap = document.querySelector('.user-dropdown-wrap');
+  if (wrap && !wrap.contains(e.target)) closeUserDropdown();
+});
+
+// Close modals on backdrop click
+document.getElementById('deleteModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('deleteModal')) closeDeleteModal();
+});
+document.getElementById('overflowModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('overflowModal')) closeOverflowModal();
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    if (dpOpen) { closeDatePicker(); return; }
+    if (document.getElementById('overflowModal').classList.contains('open')) closeOverflowModal();
+    else if (document.getElementById('deleteModal').classList.contains('open')) closeDeleteModal();
+    else if (document.getElementById('detailPanel').classList.contains('open')) closeDetailPanel();
+  }
+});
+</script>
+
+<!-- ==================== DATE PICKER POPOVER ==================== -->
+<div id="datePicker" style="display:none;position:fixed;z-index:300;" onclick="event.stopPropagation()">
+  <div class="dp-inner">
+    <!-- Header -->
+    <div style="display:flex;align-items:center;gap:4px;margin-bottom:12px;">
+      <button class="dp-nav-btn" onclick="dpNavPrev()" title="Previous">
+        <i class="ti ti-chevron-left" style="font-size:15px;"></i>
+      </button>
+      <span id="dpTitle" class="dp-title-btn"></span>
+      <button class="dp-nav-btn" onclick="dpNavNext()" title="Next">
+        <i class="ti ti-chevron-right" style="font-size:15px;"></i>
+      </button>
+    </div>
+    <!-- Body -->
+    <div id="dpBody"></div>
+    <!-- Footer -->
+    <div class="dp-footer">
+      <button class="dp-today-btn" onclick="dpSelectToday()">
+        <i class="ti ti-calendar-event" style="font-size:13px;"></i>
+        Today
+      </button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

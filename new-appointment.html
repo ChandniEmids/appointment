@@ -1,0 +1,2311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>New Appointment — ClearPath FDO</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+  <style>
+    * { font-family:'Google Sans', sans-serif; box-sizing:border-box; }
+
+    :root {
+      --header-height: 64px;
+      --sidebar-width: 240px;
+      --bg-page: linear-gradient(180deg,rgba(235,235,237,.6) 0%,rgba(220,220,236,.6) 100%),#fff;
+      --bg-header: #F9F9FB;
+      --bg-surface: #ffffff;
+      --bg-input: #ffffff;
+      --text-primary: #121219;
+      --text-secondary: #666689;
+      --text-muted: #9ca3af;
+      --border-subtle: #f3f4f6;
+      --border-input: #F0F0F7;
+      --nav-item-color: #374151;
+      --nav-item-hover-bg: #f9fafb;
+      --nav-active-bg: #F0F3FF;
+      --nav-active-text: #143AC3;
+      --nav-active-border: #143AC3;
+      --cta-gradient: linear-gradient(90deg,#143AC3 0%,#5F50E5 100%);
+      --teal-50:#f0fdfa; --teal-100:#ccfbf1; --teal-200:#99f6e4;
+      --teal-400:#2dd4bf; --teal-500:#14b8a6; --teal-600:#0d9488;
+      --teal-700:#0f766e; --teal-800:#115e59;
+    }
+    [data-theme="dark"] {
+      --bg-page:#0D0D1C; --bg-header:#12121F; --bg-surface:#1A1A2E;
+      --bg-input:#1C1C30; --text-primary:#E8E8F4; --text-secondary:#7878A0;
+      --text-muted:#44446A; --border-subtle:#232340; --border-input:#2A2A46;
+      --nav-active-bg:rgba(20,58,195,.18); --nav-item-color:#8080B0;
+      --nav-item-hover-bg:rgba(255,255,255,.05);
+    }
+
+    body { background:var(--bg-page); margin:0; padding:0; }
+    *,*::before,*::after { transition:background-color .2s ease,border-color .2s ease,color .15s ease; }
+    ::-webkit-scrollbar { width:5px; height:5px; }
+    ::-webkit-scrollbar-track { background:transparent; }
+    ::-webkit-scrollbar-thumb { background:#cbd5e1; border-radius:3px; }
+
+    /* ── Header ── */
+    #appHeader {
+      position:fixed; top:0; left:0; right:0; height:var(--header-height);
+      background:var(--bg-header); border-bottom:1px solid var(--border-subtle);
+      z-index:50; display:flex; align-items:center; padding:0 24px; gap:16px;
+    }
+    .header-logo { display:flex; align-items:center; gap:8px; text-decoration:none; flex-shrink:0; }
+    .header-logo-icon { width:32px; height:32px; background:linear-gradient(90deg,#143AC3,#5F50E5); border-radius:6px; display:flex; align-items:center; justify-content:center; }
+    .header-logo-icon svg { width:18px; height:18px; fill:white; }
+    .header-logo-text { font-size:16px; font-weight:700; letter-spacing:-.01em; line-height:1.2; }
+    .header-logo-text .clear { color:var(--text-primary); }
+    .header-logo-text .path  { color:#143AC3; }
+    .header-logo-text .fdo   { color:var(--text-secondary); font-weight:500; margin-left:2px; }
+    .header-search-wrap { flex:1; display:flex; justify-content:center; }
+    .header-search { position:relative; width:100%; min-width:320px; max-width:480px; }
+    .header-search i { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-muted); pointer-events:none; }
+    .header-search input { width:100%; height:40px; padding:0 12px 0 40px; border:1px solid var(--border-input); border-radius:8px; font-size:14px; color:var(--text-primary); background:var(--bg-input); outline:none; }
+    .header-search input:focus { border-color:#143AC3; box-shadow:0 0 0 3px rgba(20,58,195,.15); }
+    .header-search input::placeholder { color:var(--text-muted); }
+    .header-right { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+    .user-avatar { width:32px; height:32px; border-radius:50%; background:#0d9488; color:white; font-size:12px; font-weight:600; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+    .user-avatar-wrap { display:flex; align-items:center; gap:4px; cursor:pointer; padding:4px; border-radius:8px; }
+    .user-avatar-wrap:hover { background:var(--nav-item-hover-bg); }
+    .theme-toggle { width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; cursor:pointer; border:none; background:transparent; }
+    .theme-toggle:hover { background:var(--nav-item-hover-bg); }
+
+    /* ── Nav Sidebar ── */
+    #appSidebar {
+      position:fixed; top:var(--header-height); left:0;
+      width:var(--sidebar-width); height:calc(100vh - var(--header-height));
+      background:transparent; display:flex; flex-direction:column; z-index:40; overflow-y:auto;
+    }
+    .nav-section-label { font-size:11px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; padding:24px 16px 8px; }
+    .nav-section-label.admin-label { margin-top:32px; }
+    .nav-item { display:flex; align-items:center; gap:8px; height:40px; padding:0 16px; font-size:14px; font-weight:500; color:var(--nav-item-color); text-decoration:none; border-radius:8px; margin:0 8px; cursor:pointer; border-left:3px solid transparent; }
+    .nav-item:hover:not(.active) { background:var(--nav-item-hover-bg); }
+    .nav-item.active { background:var(--nav-active-bg); color:var(--nav-active-text); border-left-color:var(--nav-active-border); font-weight:600; }
+    .nav-spacer { flex:1; }
+    .nav-bottom { border-top:1px solid var(--border-subtle); padding:8px 0; }
+    .nav-bottom .nav-item { color:var(--text-secondary); }
+
+    /* ── Layout ── */
+    #appBody { display:flex; padding-top:var(--header-height); }
+    #appMain { flex:1; margin-left:var(--sidebar-width); min-height:calc(100vh - var(--header-height)); display:flex; flex-direction:column; }
+    .booking-shell { display:flex; flex:1; height:calc(100vh - var(--header-height)); overflow:hidden; }
+
+    /* ── LEFT STEPPER RAIL ── */
+    .stepper-rail {
+      width:220px; flex-shrink:0;
+      /* background:var(--bg-surface); */
+       border-right:1px solid var(--border-subtle);
+      display:flex; flex-direction:column; padding:32px 0; overflow-y:auto;
+    }
+    .stepper-header { padding:0 24px 28px; }
+    .stepper-header h2 { font-size:11px; font-weight:700; color:var(--text-muted); letter-spacing:.08em; text-transform:uppercase; margin:0 0 4px; }
+    .stepper-header p { font-size:11px; color:var(--text-muted); margin:0; }
+    .live-badge { display:inline-flex; align-items:center; gap:5px; font-size:10px; font-weight:700; color:#0f766e; background:var(--teal-50); border:1px solid var(--teal-200); padding:2px 8px; border-radius:99px; margin-bottom:10px; }
+    [data-theme="dark"] .live-badge { background:rgba(13,148,136,.15); border-color:rgba(13,148,136,.3); color:var(--teal-400); }
+    .live-dot { width:6px; height:6px; border-radius:50%; background:#0d9488; animation:pulse-dot 1.5s ease-in-out infinite; }
+
+    .stepper-steps { padding:0 12px; flex:1; }
+    .step-item { display:flex; align-items:flex-start; gap:12px; padding:10px 8px; border-radius:10px; cursor:pointer; margin-bottom:2px; }
+    .step-item:hover:not(.active) { background:var(--nav-item-hover-bg); }
+    .step-item.active { background:var(--teal-50); }
+    [data-theme="dark"] .step-item.active { background:rgba(13,148,136,.1); }
+    .step-item.completed .step-num { background:var(--teal-600); border-color:var(--teal-600); color:white; }
+    .step-connector { width:2px; height:20px; background:var(--border-subtle); margin:0 0 2px 27px; border-radius:2px; }
+    .step-connector.done { background:var(--teal-400); }
+    .step-num {
+      width:32px; height:32px; border-radius:50%; flex-shrink:0;
+      border:2px solid var(--border-input);
+      display:flex; align-items:center; justify-content:center;
+      font-size:11px; font-weight:700; color:var(--text-muted); background:var(--bg-surface);
+    }
+    .step-item.active .step-num { border-color:var(--teal-600); background:var(--teal-600); color:white; }
+    .step-info { flex:1; padding-top:4px; }
+    .step-label { font-size:10px; font-weight:600; color:var(--text-muted); letter-spacing:.04em; text-transform:uppercase; }
+    .step-item.active .step-label { color:var(--teal-700); }
+    [data-theme="dark"] .step-item.active .step-label { color:var(--teal-400); }
+    .step-title { font-size:14px; font-weight:600; color:var(--text-primary); margin-top:1px; line-height:1.43; }
+    .step-item.active .step-title { color:var(--teal-800); }
+    [data-theme="dark"] .step-item.active .step-title { color:var(--teal-200); }
+    .step-desc { font-size:11px; color:var(--text-muted); margin-top:1px; line-height:1.4; }
+    .step-item.active .step-desc { color:var(--teal-600); }
+    [data-theme="dark"] .step-item.active .step-desc { color:var(--teal-400); }
+    .stepper-footer { padding:20px 16px 0; border-top:1px solid var(--border-subtle); margin-top:auto; }
+    .stepper-footer p { font-size:11px; color:var(--text-muted); line-height:1.5; }
+
+    /* ── CENTER CANVAS ── */
+    .booking-canvas { flex:1; overflow-y:auto; padding:32px; display:flex; flex-direction:column; gap:24px; }
+    .canvas-header h1 { font-size:20px; font-weight:700; color:var(--text-primary); margin:0 0 6px; line-height:1.2; }
+    .canvas-header p { font-size:14px; color:var(--text-secondary); margin:0; line-height:1.43; }
+    .breadcrumb { display:flex; align-items:center; gap:6px; margin-bottom:8px; }
+    .breadcrumb span { font-size:12px; color:var(--text-muted); }
+    .breadcrumb i { font-size:10px; color:var(--text-muted); }
+    .step-pills { display:flex; gap:6px; }
+    .step-pill { height:4px; border-radius:4px; transition:all .3s ease; }
+    .step-pill.active { width:32px; background:var(--teal-600); }
+    .step-pill.done   { width:16px; background:var(--teal-400); }
+    .step-pill.todo   { width:16px; background:var(--border-input); }
+
+    /* ── TYPE CARDS ── */
+    .type-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(175px,1fr)); gap:14px; margin-top:24px; }
+    .type-card {
+      background:var(--bg-surface); border:1.5px solid var(--border-subtle);
+      border-radius:8px; padding:20px 16px; cursor:pointer;
+      display:flex; flex-direction:column; align-items:flex-start; gap:10px;
+      transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+      position:relative; overflow:hidden;
+    }
+    .type-card:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,.07); }
+    .type-card.selected { border:2px solid var(--teal-600); background:var(--card-bg); box-shadow:0 0 0 3px rgba(13,148,136,.12); }
+    .selected-badge { position:absolute; top:10px; right:10px; width:20px; height:20px; border-radius:50%; background:var(--card-color); color:white; display:none; align-items:center; justify-content:center; }
+    .type-card.selected .selected-badge { display:flex; }
+    .type-icon { width:44px; height:44px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:20px; }
+    .type-name { font-size:14px; font-weight:600; color:var(--text-primary); line-height:1.43; }
+    .type-desc { font-size:12px; color:var(--text-secondary); line-height:1.43; }
+    .type-tag { font-size:10px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; padding:2px 8px; border-radius:99px; }
+
+    .type-card[data-type="tour"]    { --card-color:#9A3412; --card-bg:#FFF3EE; --card-ring:rgba(154,52,18,.1); }
+    .type-card[data-type="counsel"] { --card-color:#0C5E73; --card-bg:#E8F6FA; --card-ring:rgba(12,94,115,.1); }
+    .type-card[data-type="group"]   { --card-color:#A21CAF; --card-bg:#FCF0FD; --card-ring:rgba(162,28,175,.1); }
+    .type-card[data-type="psych"]   { --card-color:#4A6B00; --card-bg:#F2F9E8; --card-ring:rgba(74,107,0,.1); }
+    .type-card[data-type="medical"] { --card-color:#1E293B; --card-bg:#F1F5F9; --card-ring:rgba(30,41,59,.1); }
+
+    .type-card[data-type="tour"]    .type-icon { background:#FFF3EE; color:#9A3412; }
+    .type-card[data-type="counsel"] .type-icon { background:#E8F6FA; color:#0C5E73; }
+    .type-card[data-type="group"]   .type-icon { background:#FCF0FD; color:#A21CAF; }
+    .type-card[data-type="psych"]   .type-icon { background:#F2F9E8; color:#4A6B00; }
+    .type-card[data-type="medical"] .type-icon { background:#F1F5F9; color:#1E293B; }
+    .type-card[data-type="tour"].selected    .type-icon { background:rgba(154,52,18,.18); }
+    .type-card[data-type="counsel"].selected .type-icon { background:rgba(12,94,115,.18); }
+    .type-card[data-type="group"].selected   .type-icon { background:rgba(162,28,175,.18); }
+    .type-card[data-type="psych"].selected   .type-icon { background:rgba(74,107,0,.18); }
+    .type-card[data-type="medical"].selected .type-icon { background:rgba(30,41,59,.18); }
+    .type-card[data-type="tour"]    .type-tag { background:#FFF3EE; color:#9A3412; }
+    .type-card[data-type="counsel"] .type-tag { background:#E8F6FA; color:#0C5E73; }
+    .type-card[data-type="group"]   .type-tag { background:#FCF0FD; color:#A21CAF; }
+    .type-card[data-type="psych"]   .type-tag { background:#F2F9E8; color:#4A6B00; }
+    .type-card[data-type="medical"] .type-tag { background:#F1F5F9; color:#1E293B; }
+    [data-theme="dark"] .type-card { background:var(--bg-surface); border-color:var(--border-subtle); }
+    [data-theme="dark"] .type-card[data-type="tour"].selected    { --card-bg:rgba(154,52,18,.08); }
+    [data-theme="dark"] .type-card[data-type="counsel"].selected { --card-bg:rgba(12,94,115,.08); }
+    [data-theme="dark"] .type-card[data-type="group"].selected   { --card-bg:rgba(162,28,175,.08); }
+    [data-theme="dark"] .type-card[data-type="psych"].selected   { --card-bg:rgba(74,107,0,.08); }
+    [data-theme="dark"] .type-card[data-type="medical"].selected { --card-bg:rgba(30,41,59,.08); }
+
+    /* ── Section card ── */
+    .section-card { background:var(--bg-surface); border:none; border-radius:8px; padding:20px; box-shadow:0 1px 3px rgba(0,0,0,.06),0 0 0 1px rgba(0,0,0,.05); }
+    [data-theme="dark"] .section-card { box-shadow:0 1px 3px rgba(0,0,0,.3),0 0 0 1px rgba(255,255,255,.06); }
+    .section-label { font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:14px; display:flex; align-items:center; gap:6px; }
+
+    /* ── Search bar ── */
+    .search-bar { display:flex; gap:8px; align-items:center; background:var(--bg-input); border:1.5px solid var(--border-input); border-radius:8px; padding:0 14px; height:46px; }
+    .search-bar:focus-within { border-color:var(--teal-600); box-shadow:0 0 0 3px rgba(13,148,136,.1); }
+    .search-bar i { color:var(--text-muted); font-size:18px; flex-shrink:0; }
+    .search-bar input { flex:1; border:none; outline:none; background:transparent; font-size:14px; color:var(--text-primary); }
+    .search-bar input::placeholder { color:var(--text-muted); }
+    .search-bar .search-kbd { font-size:10px; font-weight:600; color:var(--text-muted); background:var(--border-subtle); padding:2px 6px; border-radius:4px; flex-shrink:0; }
+
+    /* Patient result */
+    .patient-result { display:none; margin-top:12px; background:var(--teal-50); border:2px solid var(--teal-600); border-radius:8px; padding:14px; align-items:center; gap:14px; box-shadow:0 0 0 3px rgba(13,148,136,.08); }
+    [data-theme="dark"] .patient-result { background:rgba(13,148,136,.08); border-color:rgba(13,148,136,.25); }
+    .patient-result.visible { display:flex; }
+    .patient-result-photo { width:44px; height:44px; border-radius:50%; flex-shrink:0; background:linear-gradient(135deg,#0d9488,#0f766e); display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:700; color:white; }
+    .patient-result-name { font-size:14px; font-weight:600; color:var(--text-primary); line-height:1.43; }
+    .patient-result-meta { font-size:12px; color:var(--text-secondary); margin-top:2px; line-height:1.43; }
+    .patient-tag { display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:600; color:var(--teal-700); background:white; border:1px solid var(--teal-200); padding:2px 8px; border-radius:99px; margin-top:5px; }
+    [data-theme="dark"] .patient-tag { background:rgba(13,148,136,.18); border-color:rgba(13,148,136,.4); color:var(--teal-200); }
+
+    /* Quick-add grid */
+    .quick-add-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .quick-add-grid.cols3 { grid-template-columns:1fr 1fr 1fr; }
+    .field-group label { display:block; font-size:12px; font-weight:500; color:var(--text-primary); margin-bottom:6px; }
+    .field-group label span { color:#ef4444; }
+    .field-input { width:100%; height:40px; padding:0 12px; border:1.5px solid var(--border-input); border-radius:8px; font-size:14px; color:var(--text-primary); background:var(--bg-input); outline:none; }
+    .field-input:focus { border-color:var(--teal-600); box-shadow:0 0 0 3px rgba(13,148,136,.1); }
+    .field-input::placeholder { color:var(--text-muted); }
+    .field-input.input-error { border-color:#ef4444; }
+    .field-input.input-error:focus { border-color:#ef4444; box-shadow:0 0 0 3px rgba(239,68,68,.1); }
+    .field-error-msg { display:none; font-size:11px; color:#ef4444; margin-top:4px; }
+    .field-error-msg.visible { display:block; }
+
+    /* ── STAFF CARDS ── */
+    .staff-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .staff-card {
+      display:flex; align-items:center; gap:10px;
+      padding:12px; border-radius:8px; cursor:pointer;
+      border:1.5px solid var(--border-subtle); background:var(--bg-surface);
+      transition:all .18s ease; position:relative;
+    }
+    .staff-card:hover:not(.busy-card) { border-color:var(--teal-400); background:var(--teal-50); }
+    [data-theme="dark"] .staff-card:hover:not(.busy-card) { background:rgba(13,148,136,.08); }
+    .staff-card.selected { border:2px solid var(--teal-600); background:var(--teal-50); box-shadow:0 0 0 3px rgba(13,148,136,.1); }
+    [data-theme="dark"] .staff-card.selected { background:rgba(13,148,136,.12); }
+    .staff-card.busy-card { opacity:.5; cursor:not-allowed; }
+    .staff-avatar { width:36px; height:36px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:white; }
+    .staff-name { font-size:14px; font-weight:600; color:var(--text-primary); line-height:1.43; }
+    .staff-role { font-size:12px; color:var(--text-secondary); margin-top:1px; line-height:1.43; }
+    .staff-status { position:absolute; top:8px; right:8px; display:flex; align-items:center; gap:4px; font-size:10px; font-weight:600; padding:2px 6px; border-radius:99px; }
+    .staff-status.avail { background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0; }
+    .staff-status.busy  { background:#fef2f2; color:#b91c1c; border:1px solid #fecaca; }
+    [data-theme="dark"] .staff-status.avail { background:rgba(21,128,61,.15); border-color:rgba(21,128,61,.3); }
+    [data-theme="dark"] .staff-status.busy  { background:rgba(185,28,28,.15); border-color:rgba(185,28,28,.3); }
+    .avail-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+    .avail-dot.green { background:#22c55e; }
+    .avail-dot.red   { background:#ef4444; animation:pulse-dot 1.5s infinite; }
+    .staff-busy-until { font-size:10px; color:var(--text-muted); margin-top:2px; }
+
+    /* Re-verifying overlay */
+    @keyframes shimmer {
+      0%   { background-position:-600px 0; }
+      100% { background-position: 600px 0; }
+    }
+    @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.3)} }
+    @keyframes fadeSlideIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+    .reverifying-overlay {
+      position:absolute; inset:0; border-radius:8px; z-index:5;
+      background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.7) 50%,transparent 100%);
+      background-size:600px 100%;
+      animation:shimmer 1.2s linear infinite;
+      pointer-events:none; display:none;
+    }
+    [data-theme="dark"] .reverifying-overlay { background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.15) 50%,transparent 100%); background-size:600px 100%; animation:shimmer 1.2s linear infinite; }
+    .reverifying .reverifying-overlay { display:block; }
+    .reverifying { pointer-events:none; }
+
+    .reverify-banner {
+      display:none; align-items:center; gap:8px;
+      background:#fffbeb; border:1px solid #fcd34d;
+      border-radius:8px; padding:10px 14px;
+      font-size:12px; font-weight:500; color:#92400e;
+    }
+    [data-theme="dark"] .reverify-banner { background:rgba(251,191,36,.08); border-color:rgba(251,191,36,.3); color:#fcd34d; }
+    .reverify-banner.visible { display:flex; }
+    .spin { animation:spin 1s linear infinite; }
+    @keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+
+    /* ── STEP 2 ── */
+    #step2Content { display:none; flex-direction:column; gap:24px; }
+    #step2Content.visible { display:flex; }
+
+    /* Date + time section */
+    .datetime-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .date-input-wrap { position:relative; }
+    .date-input-wrap i { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-muted); pointer-events:none; }
+    .date-input-wrap input { padding-left:38px; }
+
+    /* Time slots */
+    .time-slots { display:flex; flex-wrap:wrap; gap:8px; margin-top:4px; }
+    .time-slot {
+      padding:6px 12px; border-radius:8px; font-size:12px; font-weight:600;
+      border:1.5px solid var(--border-input); cursor:pointer;
+      color:var(--text-secondary); background:var(--bg-surface);
+      transition:all .15s ease; white-space:nowrap;
+    }
+    .time-slot:hover:not(.taken) { border-color:var(--teal-400); color:var(--teal-700); background:var(--teal-50); }
+    [data-theme="dark"] .time-slot:hover:not(.taken) { background:rgba(13,148,136,.1); }
+    .time-slot.selected { border:2px solid var(--teal-600); background:var(--teal-600); color:white; box-shadow:0 0 0 2px rgba(13,148,136,.15); }
+    .time-slot.taken { background:var(--border-subtle); color:var(--text-muted); cursor:not-allowed; border-color:var(--border-subtle); text-decoration:line-through; opacity:.6; }
+
+    /* Room cards */
+    .room-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; }
+    .room-card {
+      background:var(--bg-surface); border:1.5px solid var(--border-subtle);
+      border-radius:8px; padding:18px 16px; cursor:pointer;
+      transition:all .2s ease; position:relative; overflow:hidden;
+    }
+    .room-card:hover:not(.room-busy) { border-color:var(--teal-400); box-shadow:0 4px 16px rgba(0,0,0,.06); transform:translateY(-1px); }
+    .room-card.room-selected { border:2px solid var(--teal-600); background:var(--teal-50); box-shadow:0 0 0 3px rgba(13,148,136,.1); }
+    [data-theme="dark"] .room-card.room-selected { background:rgba(13,148,136,.1); }
+    .room-card.room-busy { opacity:.5; cursor:not-allowed; }
+    .room-card.room-filtered { display:none; }
+    .room-status-badge { display:inline-flex; align-items:center; gap:5px; font-size:10px; font-weight:700; padding:3px 8px; border-radius:99px; margin-bottom:10px; }
+    .room-status-badge.avail { background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0; }
+    .room-status-badge.busy  { background:#fef2f2; color:#b91c1c; border:1px solid #fecaca; }
+    [data-theme="dark"] .room-status-badge.avail { background:rgba(21,128,61,.12); border-color:rgba(21,128,61,.25); }
+    [data-theme="dark"] .room-status-badge.busy  { background:rgba(185,28,28,.12); border-color:rgba(185,28,28,.25); }
+    .room-name { font-size:14px; font-weight:700; color:var(--text-primary); margin-bottom:2px; line-height:1.43; }
+    .room-type { font-size:12px; color:var(--text-secondary); margin-bottom:10px; line-height:1.43; }
+    .room-capacity { display:flex; align-items:center; gap:5px; font-size:12px; color:var(--text-secondary); margin-bottom:8px; line-height:1.43; }
+    .room-features { display:flex; flex-wrap:wrap; gap:5px; }
+    .room-feature { font-size:10px; font-weight:500; color:var(--text-muted); background:var(--border-subtle); padding:2px 7px; border-radius:99px; }
+    .room-card.room-selected .room-feature { background:rgba(13,148,136,.12); color:var(--teal-700); }
+    [data-theme="dark"] .room-card.room-selected .room-feature { color:var(--teal-300, #5eead4); }
+    .room-busy-label { font-size:11px; color:#b91c1c; margin-top:8px; }
+    [data-theme="dark"] .room-busy-label { color:#fca5a5; }
+    .room-selected-check { position:absolute; top:12px; right:12px; width:20px; height:20px; border-radius:50%; background:var(--teal-600); color:white; display:none; align-items:center; justify-content:center; }
+    .room-card.room-selected .room-selected-check { display:flex; }
+
+    .filter-note { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--teal-700); background:var(--teal-50); border:1px solid var(--teal-200); border-radius:8px; padding:8px 12px; }
+    [data-theme="dark"] .filter-note { background:rgba(13,148,136,.08); border-color:rgba(13,148,136,.2); color:var(--teal-400); }
+
+    /* ── Bottom actions ── */
+    .canvas-actions { display:flex; align-items:center; justify-content:space-between; padding:20px 0 0; border-top:1px solid rgba(0,0,0,.06); }
+    [data-theme="dark"] .canvas-actions { border-top-color:rgba(255,255,255,.06); }
+    .btn-back { display:flex; align-items:center; gap:8px; height:40px; padding:0 16px; border:1.5px solid var(--border-input); border-radius:8px; font-size:14px; font-weight:500; color:var(--text-primary); background:var(--bg-surface); cursor:pointer; text-decoration:none; }
+    .btn-back:hover { background:var(--nav-item-hover-bg); }
+    .btn-next { display:flex; align-items:center; gap:8px; height:40px; padding:0 24px; background:var(--cta-gradient); border:none; border-radius:8px; font-size:14px; font-weight:600; color:white; cursor:pointer; box-shadow:0 2px 8px rgba(20,58,195,.25); opacity:.4; pointer-events:none; transition:opacity .2s; }
+    .btn-next.enabled { opacity:1; pointer-events:all; }
+    .btn-next:hover { opacity:.9; }
+
+    /* ── RIGHT SIDEBAR ── */
+    .sidebar-head { padding:20px 20px 14px; border-bottom:1px solid rgba(0,0,0,.06); }
+    [data-theme="dark"] .sidebar-head { border-bottom-color:rgba(255,255,255,.06); }
+    .sidebar-head h3 { font-size:14px; font-weight:700; color:var(--text-primary); margin:0 0 2px; line-height:1.2; }
+    .sidebar-head p { font-size:12px; color:var(--text-secondary); margin:0; line-height:1.43; }
+
+    .sidebar-empty { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:32px 20px; text-align:center; }
+    .sidebar-empty .empty-icon { width:56px; height:56px; border-radius:14px; background:var(--teal-50); color:var(--teal-600); display:flex; align-items:center; justify-content:center; font-size:26px; margin:0 auto 14px; }
+    [data-theme="dark"] .sidebar-empty .empty-icon { background:rgba(13,148,136,.1); }
+    .sidebar-empty h4 { font-size:14px; font-weight:600; color:var(--text-primary); margin:0 0 6px; line-height:1.2; }
+    .sidebar-empty p  { font-size:12px; color:var(--text-secondary); line-height:1.43; margin:0; }
+    .empty-steps { margin-top:18px; text-align:left; width:100%; }
+    .empty-step { display:flex; gap:10px; align-items:flex-start; margin-bottom:10px; }
+    .empty-step-num { width:20px; height:20px; border-radius:50%; background:var(--teal-600); color:white; font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
+    .empty-step-text { font-size:12px; color:var(--text-secondary); line-height:1.43; }
+
+    .sidebar-summary { display:none; flex-direction:column; }
+    .sidebar-summary.visible { display:flex; }
+    .summary-section { padding:14px 20px; border-bottom:1px solid rgba(0,0,0,.05); }
+    [data-theme="dark"] .summary-section { border-bottom-color:rgba(255,255,255,.05); }
+    .summary-section:last-child { border-bottom:none; }
+    .sum-label { font-size:10px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:8px; }
+
+    .patient-card-sm { display:flex; gap:10px; align-items:center; }
+    .patient-photo-sm { width:40px; height:40px; border-radius:50%; flex-shrink:0; background:linear-gradient(135deg,#0d9488,#0f766e); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; color:white; }
+    .patient-name-sm { font-size:14px; font-weight:600; color:var(--text-primary); line-height:1.43; }
+    .patient-id-sm { font-size:11px; color:var(--text-muted); margin-top:1px; }
+    .patient-pill { display:inline-flex; align-items:center; gap:4px; font-size:10px; font-weight:600; padding:2px 7px; border-radius:99px; margin-top:5px; }
+    .patient-pill.active { color:#0f766e; background:var(--teal-50); border:1px solid var(--teal-200); }
+    .patient-pill.lead   { color:#9a3412; background:#fff7ed; border:1px solid #fed7aa; }
+    [data-theme="dark"] .patient-pill.active { background:rgba(13,148,136,.15); border-color:rgba(13,148,136,.3); }
+    [data-theme="dark"] .patient-pill.lead   { background:rgba(194,65,12,.12); border-color:rgba(194,65,12,.3); }
+
+    .sum-type-pill { display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; padding:5px 12px; border-radius:99px; }
+    .caretaker-row { display:flex; align-items:center; gap:10px; background:var(--nav-item-hover-bg); border-radius:8px; padding:10px 12px; }
+    .caretaker-avatar { width:30px; height:30px; border-radius:50%; background:#e0e7ff; color:#143AC3; font-size:11px; font-weight:600; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .caretaker-name { font-size:12px; font-weight:600; color:var(--text-primary); }
+    .caretaker-rel  { font-size:11px; color:var(--text-muted); }
+
+    /* Summary detail rows */
+    .sum-detail { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--text-secondary); padding:4px 0; line-height:1.43; }
+    .sum-detail i { font-size:14px; color:var(--text-muted); flex-shrink:0; }
+    .sum-detail.highlight { color:var(--teal-700); font-weight:500; }
+    [data-theme="dark"] .sum-detail.highlight { color:var(--teal-400); }
+
+    /* Progress checklist */
+    .checklist-item { display:flex; align-items:center; gap:10px; padding:6px 0; border-bottom:1px solid rgba(0,0,0,.04); }
+    [data-theme="dark"] .checklist-item { border-bottom-color:rgba(255,255,255,.04); }
+    .checklist-item:last-child { border-bottom:none; }
+    .check-icon { width:18px; height:18px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:9px; }
+    .check-icon.done   { background:var(--teal-100); color:var(--teal-700); }
+    .check-icon.todo   { background:var(--border-subtle); color:var(--text-muted); }
+    .check-icon.active { background:#dbeafe; color:#1d4ed8; }
+    .checklist-text { font-size:12px; color:var(--text-secondary); line-height:1.43; }
+    .checklist-text.done { color:var(--text-muted); text-decoration:line-through; }
+    .checklist-text.active { color:var(--text-primary); font-weight:500; }
+
+    /* Conflict alert — sidebar */
+    .conflict-alert {
+      margin:12px 16px 4px;
+      background:#fff1f2;
+      border-left:3px solid #ef4444;
+      border:1px solid #fecaca;
+      border-left-width:3px;
+      border-radius:10px; padding:12px 14px; display:none;
+    }
+    [data-theme="dark"] .conflict-alert { background:rgba(239,68,68,.1); border-color:rgba(239,68,68,.3); border-left-color:#ef4444; }
+    .conflict-alert.visible { display:block; animation:fadeSlideIn .2s ease; }
+    .conflict-head { display:flex; align-items:center; gap:7px; font-size:12px; font-weight:700; color:#b91c1c; margin-bottom:5px; }
+    .conflict-head i { font-size:14px; flex-shrink:0; }
+    .conflict-body { font-size:11px; color:#7f1d1d; line-height:1.5; padding-left:21px; }
+    [data-theme="dark"] .conflict-head { color:#fca5a5; }
+    [data-theme="dark"] .conflict-body { color:#fca5a5; }
+
+    /* ── STEP 3: CHECKLIST ITEMS ── */
+    .checklist-card {
+      display:flex; align-items:center; gap:14px;
+      padding:14px 16px; border-radius:10px; cursor:pointer;
+      border:1.5px solid var(--border-subtle);
+      background:var(--bg-surface);
+      margin-bottom:8px; transition:all .15s ease;
+      user-select:none;
+    }
+    .checklist-card:last-child { margin-bottom:0; }
+    .checklist-card:hover { border-color:var(--teal-400); background:var(--teal-50); }
+    [data-theme="dark"] .checklist-card:hover { background:rgba(13,148,136,.06); }
+    .checklist-card.checked { border-color:var(--teal-600); background:var(--teal-50); }
+    [data-theme="dark"] .checklist-card.checked { background:rgba(13,148,136,.1); }
+
+    .cl-checkbox {
+      width:20px; height:20px; border-radius:6px; flex-shrink:0;
+      border:2px solid var(--border-input);
+      display:flex; align-items:center; justify-content:center;
+      transition:all .15s ease; background:var(--bg-surface);
+    }
+    .checklist-card.checked .cl-checkbox {
+      background:var(--teal-600); border-color:var(--teal-600);
+    }
+    .cl-checkbox i { display:none; font-size:11px; color:white; }
+    .checklist-card.checked .cl-checkbox i { display:block; }
+
+    .cl-icon { width:32px; height:32px; border-radius:8px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:15px; background:var(--border-subtle); color:var(--text-secondary); transition:all .15s; }
+    .checklist-card.checked .cl-icon { background:var(--teal-100); color:var(--teal-700); }
+    [data-theme="dark"] .checklist-card.checked .cl-icon { background:rgba(13,148,136,.2); color:var(--teal-400); }
+
+    .cl-label { flex:1; font-size:14px; font-weight:500; color:var(--text-primary); line-height:1.43; }
+    .checklist-card.checked .cl-label { color:var(--teal-800); }
+    [data-theme="dark"] .checklist-card.checked .cl-label { color:var(--teal-300, #5eead4); }
+    .cl-req { font-size:10px; font-weight:600; color:#ef4444; background:#fef2f2; border:1px solid #fecaca; padding:2px 7px; border-radius:99px; flex-shrink:0; }
+    [data-theme="dark"] .cl-req { background:rgba(239,68,68,.12); border-color:rgba(239,68,68,.3); }
+    .cl-req.satisfied { color:#15803d; background:#f0fdf4; border-color:#bbf7d0; }
+    [data-theme="dark"] .cl-req.satisfied { background:rgba(21,128,61,.12); border-color:rgba(21,128,61,.3); }
+
+    /* ── NOTES AREA ── */
+    .notes-wrap { position:relative; }
+    .notes-area {
+      width:100%; min-height:120px; padding:14px 16px;
+      border:1.5px solid var(--border-input); border-radius:10px;
+      font-size:14px; line-height:1.43; color:var(--text-primary);
+      background:var(--bg-input); outline:none; resize:vertical;
+      font-family:'Google Sans',monospace; /* monospace feel for markdown */
+    }
+    .notes-area:focus { border-color:var(--teal-600); box-shadow:0 0 0 3px rgba(13,148,136,.1); }
+    .notes-area::placeholder { color:var(--text-muted); }
+    .notes-hint { display:flex; align-items:center; gap:8px; margin-top:8px; flex-wrap:wrap; }
+    .md-badge { display:inline-flex; align-items:center; gap:4px; font-size:10px; font-weight:600; color:var(--text-muted); background:var(--border-subtle); padding:2px 8px; border-radius:99px; }
+    .md-sample { font-size:11px; color:var(--text-muted); font-family:monospace; background:var(--border-subtle); padding:1px 6px; border-radius:4px; }
+
+    /* ── TOGGLE SWITCHES ── */
+    .toggle-row {
+      display:flex; align-items:center; justify-content:space-between;
+      gap:16px; padding:14px 0;
+      border-bottom:1px solid var(--border-subtle);
+    }
+    .toggle-row:last-child { border-bottom:none; padding-bottom:0; }
+    .toggle-row:first-child { padding-top:0; }
+    .toggle-left { display:flex; align-items:center; gap:12px; }
+    .toggle-icon { width:34px; height:34px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+    .toggle-icon.sms   { background:#eff6ff; color:#0369a1; }
+    .toggle-icon.email { background:#f5f3ff; color:#6d28d9; }
+    [data-theme="dark"] .toggle-icon.sms   { background:rgba(3,105,161,.12); }
+    [data-theme="dark"] .toggle-icon.email { background:rgba(109,40,217,.12); }
+    .toggle-title { font-size:14px; font-weight:600; color:var(--text-primary); line-height:1.43; }
+    .toggle-sub   { font-size:11px; color:var(--text-muted); margin-top:1px; }
+
+    .tgl { position:relative; width:44px; height:24px; flex-shrink:0; }
+    .tgl input { opacity:0; width:0; height:0; position:absolute; }
+    .tgl-track {
+      position:absolute; inset:0; border-radius:99px;
+      background:var(--border-input); cursor:pointer;
+      transition:background .2s ease;
+    }
+    .tgl input:checked + .tgl-track { background:var(--teal-600); }
+    .tgl-track::after {
+      content:''; position:absolute; left:3px; top:3px;
+      width:18px; height:18px; border-radius:50%; background:white;
+      transition:transform .2s ease;
+      box-shadow:0 1px 4px rgba(0,0,0,.18);
+    }
+    .tgl input:checked + .tgl-track::after { transform:translateX(20px); }
+    .tgl input:focus + .tgl-track { box-shadow:0 0 0 3px rgba(13,148,136,.15); }
+
+    /* ── BOOKING SNAPSHOT (step 3 mini-summary) ── */
+    .booking-snapshot {
+      display:grid; grid-template-columns:1fr 1fr; gap:0;
+      background:var(--teal-50); border:1.5px solid var(--teal-200);
+      border-radius:8px; overflow:hidden;
+    }
+    [data-theme="dark"] .booking-snapshot { background:rgba(13,148,136,.08); border-color:rgba(13,148,136,.2); }
+    .snap-cell {
+      padding:14px 16px;
+      border-right:1px solid rgba(13,148,136,.15); border-bottom:1px solid rgba(13,148,136,.15);
+    }
+    [data-theme="dark"] .snap-cell { border-color:rgba(13,148,136,.15); }
+    .snap-cell:nth-child(2n) { border-right:none; }
+    .snap-cell:nth-last-child(-n+2) { border-bottom:none; }
+    .snap-cell-label { font-size:10px; font-weight:700; color:var(--teal-700); text-transform:uppercase; letter-spacing:.06em; margin-bottom:3px; }
+    [data-theme="dark"] .snap-cell-label { color:var(--teal-400); }
+    .snap-cell-value { font-size:14px; font-weight:600; color:var(--text-primary); display:flex; align-items:center; gap:6px; line-height:1.43; }
+
+    /* ── SIDEBAR: scrollable + pinned CTA ── */
+    .booking-sidebar {
+      width:288px; flex-shrink:0; background:var(--bg-surface);
+      border-left:1px solid var(--border-subtle);
+      display:flex; flex-direction:column; overflow:hidden;
+    }
+    .sidebar-scroll { flex:1; overflow-y:auto; display:flex; flex-direction:column; }
+    .sidebar-confirm {
+      flex-shrink:0; padding:16px 20px;
+      border-top:1px solid var(--border-subtle);
+      background:var(--bg-surface);
+    }
+    .btn-confirm {
+      width:100%; height:48px; border:none; border-radius:8px;
+      font-size:14px; font-weight:700; color:white; cursor:pointer;
+      display:flex; align-items:center; justify-content:center; gap:8px;
+      transition:all .2s ease; letter-spacing:.01em;
+      background:linear-gradient(135deg,#0d9488 0%,#0f766e 100%);
+      box-shadow:0 4px 16px rgba(13,148,136,.35),0 1px 3px rgba(13,148,136,.2);
+    }
+    .btn-confirm:hover:not(:disabled) { transform:translateY(-1px); box-shadow:0 6px 20px rgba(13,148,136,.45),0 2px 6px rgba(13,148,136,.2); }
+    .btn-confirm:active:not(:disabled) { transform:translateY(0); }
+    .btn-confirm:disabled {
+      background:var(--border-subtle); color:var(--text-muted);
+      box-shadow:none; cursor:not-allowed; transform:none;
+      font-weight:500; letter-spacing:0;
+    }
+    .confirm-note { font-size:11px; color:var(--text-muted); text-align:center; margin-top:8px; display:flex; align-items:center; justify-content:center; gap:4px; }
+
+    /* ── SUCCESS OVERLAY ── */
+    .success-overlay {
+      position:fixed; inset:0; z-index:200;
+      background:rgba(0,0,0,.4);
+      display:none; align-items:center; justify-content:center;
+      padding:24px;
+    }
+    .success-overlay.show { display:flex; }
+    @keyframes scaleIn { from{opacity:0;transform:scale(.9)} to{opacity:1;transform:scale(1)} }
+    .success-card {
+      background:var(--bg-surface); border-radius:8px;
+      padding:40px 32px; max-width:420px; width:100%;
+      text-align:center; animation:scaleIn .25s ease;
+      box-shadow:0 24px 64px rgba(0,0,0,.2);
+    }
+    .success-icon { width:72px; height:72px; border-radius:50%; background:linear-gradient(135deg,#0d9488,#0f766e); margin:0 auto 20px; display:flex; align-items:center; justify-content:center; box-shadow:0 8px 24px rgba(13,148,136,.35); }
+    .success-icon i { font-size:32px; color:white; }
+    .success-card h2 { font-size:24px; font-weight:700; color:var(--text-primary); margin:0 0 8px; line-height:1.2; }
+    .success-card p  { font-size:14px; color:var(--text-secondary); margin:0 0 24px; line-height:1.43; }
+    .success-meta { background:var(--teal-50); border:1px solid var(--teal-200); border-radius:8px; padding:14px 16px; margin-bottom:24px; text-align:left; }
+    [data-theme="dark"] .success-meta { background:rgba(13,148,136,.1); border-color:rgba(13,148,136,.25); }
+    .success-meta-row { display:flex; align-items:center; gap:8px; font-size:14px; color:var(--text-secondary); padding:4px 0; line-height:1.43; }
+    .success-meta-row i { font-size:14px; color:var(--teal-600); flex-shrink:0; }
+    .btn-view-calendar { display:inline-flex; align-items:center; gap:8px; height:44px; padding:0 28px; background:linear-gradient(135deg,#0d9488,#0f766e); color:white; font-size:14px; font-weight:600; border:none; border-radius:8px; cursor:pointer; text-decoration:none; box-shadow:0 2px 12px rgba(13,148,136,.3); }
+    .btn-view-calendar:hover { opacity:.9; }
+
+    /* Toast */
+    #toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px); background:#121219; color:#fff; border-radius:8px; padding:10px 20px; font-size:14px; font-weight:500; box-shadow:0 4px 16px rgba(0,0,0,.18); transition:transform .3s ease,opacity .3s ease; opacity:0; z-index:9999; }
+    #toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+
+    /* ── STEP 2: PATIENT SEARCH ── */
+    .pt-search-results {
+      margin-top:8px; border:1.5px solid var(--border-input);
+      border-radius:8px; overflow:hidden; display:none;
+    }
+    .pt-search-results.visible { display:block; animation:fadeSlideIn .15s ease; }
+    .pt-result-row {
+      display:flex; align-items:center; gap:12px;
+      padding:10px 14px; cursor:pointer;
+      border-bottom:1px solid var(--border-subtle);
+      background:var(--bg-surface); transition:background .12s;
+    }
+    .pt-result-row:last-child { border-bottom:none; }
+    .pt-result-row:hover:not(.already-added) { background:var(--teal-50); }
+    [data-theme="dark"] .pt-result-row:hover:not(.already-added) { background:rgba(13,148,136,.07); }
+    .pt-result-row.already-added { opacity:.5; cursor:default; }
+    .pt-result-photo { width:36px; height:36px; border-radius:50%; flex-shrink:0;
+      background:linear-gradient(135deg,#0d9488,#0f766e);
+      display:flex; align-items:center; justify-content:center;
+      font-size:13px; font-weight:700; color:white; }
+    .pt-result-info { flex:1; min-width:0; }
+    .pt-result-name { font-size:14px; font-weight:600; color:var(--text-primary); display:flex; align-items:center; gap:6px; line-height:1.43; }
+    .pt-result-meta { font-size:11px; color:var(--text-secondary); margin-top:1px; }
+    .btn-add-pt {
+      flex-shrink:0; height:28px; padding:0 10px;
+      background:var(--teal-50); color:var(--teal-700);
+      border:1.5px solid var(--teal-200); border-radius:6px;
+      font-size:12px; font-weight:600; cursor:pointer;
+      display:flex; align-items:center; gap:4px; transition:all .12s;
+    }
+    .btn-add-pt:hover { background:var(--teal-100); border-color:var(--teal-400); }
+    [data-theme="dark"] .btn-add-pt { background:rgba(13,148,136,.12); border-color:rgba(13,148,136,.3); color:var(--teal-300,#5eead4); }
+
+    /* Selected patients list */
+    .selected-patients { margin-top:12px; display:flex; flex-direction:column; gap:7px; }
+    .selected-pt-card {
+      display:flex; align-items:center; gap:10px;
+      padding:10px 12px; border-radius:8px;
+      background:var(--teal-50); border:1.5px solid var(--teal-200);
+      animation:fadeSlideIn .18s ease; position:relative;
+    }
+    [data-theme="dark"] .selected-pt-card { background:rgba(13,148,136,.1); border-color:rgba(13,148,136,.25); }
+    .selected-pt-card.has-conflict {
+      background:#fff1f2; border-color:#fecaca;
+      box-shadow:0 0 0 3px rgba(239,68,68,.1);
+    }
+    [data-theme="dark"] .selected-pt-card.has-conflict { background:rgba(239,68,68,.08); border-color:rgba(239,68,68,.3); }
+    .selected-pt-photo { width:32px; height:32px; border-radius:50%; flex-shrink:0;
+      background:linear-gradient(135deg,#0d9488,#0f766e);
+      display:flex; align-items:center; justify-content:center;
+      font-size:11px; font-weight:700; color:white; }
+    .selected-pt-card.has-conflict .selected-pt-photo { background:linear-gradient(135deg,#ef4444,#dc2626); }
+    .selected-pt-name { font-size:14px; font-weight:600; color:var(--text-primary); line-height:1.43; }
+    .selected-pt-meta { font-size:11px; color:var(--text-secondary); margin-top:1px; }
+    .conflict-chip { display:inline-flex; align-items:center; gap:4px; font-size:10px; font-weight:700;
+      color:#b91c1c; background:#fef2f2; border:1px solid #fecaca;
+      padding:2px 7px; border-radius:99px; margin-top:3px; }
+    [data-theme="dark"] .conflict-chip { background:rgba(239,68,68,.12); border-color:rgba(239,68,68,.3); color:#fca5a5; }
+    .btn-remove-pt { margin-left:auto; flex-shrink:0; width:24px; height:24px;
+      border-radius:50%; background:transparent; border:none;
+      display:flex; align-items:center; justify-content:center;
+      cursor:pointer; color:var(--text-muted); transition:all .12s; }
+    .btn-remove-pt:hover { background:rgba(239,68,68,.1); color:#ef4444; }
+
+    /* Conflict glow on busy staff/room cards */
+    .staff-card.busy-card {
+      border-color:#fecaca;
+      box-shadow:0 0 0 3px rgba(239,68,68,.08);
+    }
+    .room-card.room-busy {
+      border-color:#fecaca;
+      box-shadow:0 0 0 3px rgba(239,68,68,.08);
+    }
+
+    /* Conflict tooltip */
+    .has-tip { position:relative; }
+    .has-tip::before {
+      content:attr(data-tip);
+      position:absolute; bottom:calc(100% + 8px); left:50%; transform:translateX(-50%);
+      background:#1f2937; color:#fff; font-size:11px; font-weight:500;
+      padding:5px 10px; border-radius:6px; white-space:nowrap;
+      opacity:0; pointer-events:none; transition:opacity .15s; z-index:60;
+    }
+    .has-tip::after {
+      content:''; position:absolute; bottom:calc(100% + 4px); left:50%; transform:translateX(-50%);
+      border:4px solid transparent; border-top-color:#1f2937;
+      opacity:0; pointer-events:none; transition:opacity .15s; z-index:60;
+    }
+    .has-tip:hover::before,.has-tip:hover::after { opacity:1; }
+
+    /* Recurrence expand */
+    .recurrence-expand {
+      margin-top:14px; padding-top:14px;
+      border-top:1px dashed var(--border-subtle);
+      display:none;
+    }
+    .recurrence-expand.visible { display:grid; grid-template-columns:1fr 1fr; gap:12px; animation:fadeSlideIn .2s ease; }
+    .group-hint {
+      display:flex; align-items:center; gap:8px;
+      font-size:12px; color:var(--text-secondary);
+      background:var(--teal-50); border:1px solid var(--teal-200);
+      border-radius:8px; padding:8px 12px; margin-bottom:12px;
+    }
+    [data-theme="dark"] .group-hint { background:rgba(13,148,136,.08); border-color:rgba(13,148,136,.2); }
+
+    /* ── SIDEBAR: group patient rows ── */
+    .sum-group-row {
+      display:flex; align-items:center; gap:9px;
+      padding:6px 0; border-bottom:1px solid rgba(0,0,0,.04);
+    }
+    [data-theme="dark"] .sum-group-row { border-bottom-color:rgba(255,255,255,.04); }
+    .sum-group-row:last-child { border-bottom:none; }
+    .sum-group-avatar {
+      width:26px; height:26px; border-radius:50%; flex-shrink:0;
+      background:linear-gradient(135deg,#0d9488,#0f766e);
+      display:flex; align-items:center; justify-content:center;
+      font-size:10px; font-weight:700; color:white;
+    }
+    .sum-group-avatar.conflict { background:linear-gradient(135deg,#ef4444,#dc2626); }
+    .sum-group-name { font-size:12px; font-weight:600; color:var(--text-primary); }
+    .sum-group-id   { font-size:11px; color:var(--text-muted); }
+    .sum-conflict-dot { width:6px; height:6px; border-radius:50%; background:#ef4444;
+      flex-shrink:0; margin-left:auto; }
+
+    /* ── SIDEBAR: recurrence row ── */
+    .sum-recurrence-row {
+      display:flex; align-items:center; gap:8px;
+      font-size:12px; font-weight:500; color:var(--teal-700);
+      background:var(--teal-50); border:1px solid var(--teal-200);
+      border-radius:8px; padding:7px 10px; margin-top:4px;
+    }
+    [data-theme="dark"] .sum-recurrence-row { background:rgba(13,148,136,.1); border-color:rgba(13,148,136,.25); color:var(--teal-300,#5eead4); }
+
+    /* ── Step 3: confirm button (canvas) ── */
+    .btn-confirm-canvas {
+      display:flex; align-items:center; gap:8px;
+      height:44px; padding:0 28px;
+      background:linear-gradient(135deg,#0d9488 0%,#0f766e 100%);
+      border:none; border-radius:8px;
+      font-size:14px; font-weight:700; color:white; cursor:pointer;
+      box-shadow:0 4px 16px rgba(13,148,136,.35),0 1px 4px rgba(13,148,136,.2);
+      letter-spacing:.01em; transition:all .2s ease;
+    }
+    .btn-confirm-canvas:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(13,148,136,.45); opacity:.95; }
+    .btn-confirm-canvas:active { transform:translateY(0); }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header id="appHeader">
+  <a href="appointments.html" class="header-logo">
+    <div class="header-logo-icon">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+    </div>
+    <span class="header-logo-text"><span class="clear">Clear </span><span class="path">Path</span><span class="fdo"> FDO</span></span>
+  </a>
+  <div class="header-search-wrap">
+    <div class="header-search">
+      <i class="ti ti-search" style="font-size:16px;"></i>
+      <input type="text" placeholder="Search patients, appointments, rooms…" />
+    </div>
+  </div>
+  <div class="header-right">
+    <button id="themeToggle" class="theme-toggle" onclick="toggleTheme()" title="Toggle theme" style="color:var(--text-secondary);">
+      <i class="ti ti-sun" style="font-size:17px;"></i>
+    </button>
+    <div class="user-avatar-wrap">
+      <div class="user-avatar">JS</div>
+      <i class="ti ti-chevron-down" style="font-size:14px;color:var(--text-muted);"></i>
+    </div>
+  </div>
+</header>
+
+<div id="appBody">
+
+  <!-- NAV SIDEBAR -->
+  <nav id="appSidebar">
+    <div class="nav-section-label">Main</div>
+    <a class="nav-item active" href="appointments.html"><i class="ti ti-calendar" style="font-size:16px;"></i> Appointments</a>
+    <a class="nav-item" href="appointments2.html"><i class="ti ti-calendar-stats" style="font-size:16px;"></i> Appointments2</a>
+    <a class="nav-item" href="#" onclick="return false;"><i class="ti ti-users" style="font-size:16px;"></i> Patients</a>
+    <a class="nav-item" href="#" onclick="return false;"><i class="ti ti-stethoscope" style="font-size:16px;"></i> Providers</a>
+    <a class="nav-item" href="#" onclick="return false;"><i class="ti ti-door" style="font-size:16px;"></i> Rooms</a>
+    <div class="nav-section-label admin-label">Admin</div>
+    <a class="nav-item" href="#" onclick="return false;"><i class="ti ti-chart-bar" style="font-size:16px;"></i> Reports</a>
+    <a class="nav-item" href="#" onclick="return false;"><i class="ti ti-settings" style="font-size:16px;"></i> Settings</a>
+    <div class="nav-spacer"></div>
+    <div class="nav-bottom">
+      <a class="nav-item" href="#" onclick="return false;"><i class="ti ti-help-circle" style="font-size:16px;"></i> Help &amp; Support</a>
+    </div>
+  </nav>
+
+  <main id="appMain">
+    <div class="booking-shell">
+
+      <!-- ══════════════════════════════════
+           LEFT STEPPER RAIL
+      ══════════════════════════════════ -->
+      <aside class="stepper-rail">
+        <div class="stepper-header">
+          <div class="live-badge"><span class="live-dot"></span> Live Booking</div>
+          <h2>New Appointment</h2>
+          <p>Drug Rehab Facility</p>
+        </div>
+        <div class="stepper-steps">
+          <div class="step-item active" id="stepItem1">
+            <div class="step-num" id="stepNum1"><span>01</span></div>
+            <div class="step-info">
+              <div class="step-label">Step 01</div>
+              <div class="step-title">Participants</div>
+              <div class="step-desc">Type &amp; patient</div>
+            </div>
+          </div>
+          <div class="step-connector" id="conn1"></div>
+          <div class="step-item" id="stepItem2">
+            <div class="step-num" id="stepNum2"><span>02</span></div>
+            <div class="step-info">
+              <div class="step-label">Step 02</div>
+              <div class="step-title">Space &amp; Time</div>
+              <div class="step-desc">Room &amp; schedule</div>
+            </div>
+          </div>
+          <div class="step-connector" id="conn2"></div>
+          <div class="step-item" id="stepItem3">
+            <div class="step-num" id="stepNum3"><span>03</span></div>
+            <div class="step-info">
+              <div class="step-label">Step 03</div>
+              <div class="step-title">Finalize</div>
+              <div class="step-desc">Notes &amp; confirm</div>
+            </div>
+          </div>
+        </div>
+        <div class="stepper-footer">
+          <p>Patient data handled per HIPAA guidelines.</p>
+        </div>
+      </aside>
+
+      <!-- ══════════════════════════════════
+           CENTER CANVAS
+      ══════════════════════════════════ -->
+      <section class="booking-canvas" id="bookingCanvas">
+
+        <!-- ── STEP 1 CONTENT ── -->
+        <div id="step1Content">
+
+          <div class="canvas-header">
+            <div class="breadcrumb">
+              <span>Appointments</span>
+              <i class="ti ti-chevron-right"></i>
+              <span style="color:var(--text-primary);font-weight:500;">New Booking</span>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+              <h1>Select Appointment Type</h1>
+              <div class="step-pills">
+                <div class="step-pill active" id="pill1"></div>
+                <div class="step-pill todo"   id="pill2"></div>
+                <div class="step-pill todo"   id="pill3"></div>
+              </div>
+            </div>
+            <p>Choose the care type to begin building the booking.</p>
+          </div>
+
+          <!-- Appointment type cards -->
+          <div class="type-grid" style="margin-bottom:24px;">
+            <div class="type-card" data-type="tour"    onclick="selectType(this,'tour')">
+              <div class="selected-badge"><i class="ti ti-check" style="font-size:10px;"></i></div>
+              <div class="type-icon"><i class="ti ti-building"></i></div>
+              <div><div class="type-name">Facility Tour</div><div class="type-desc" style="margin-top:3px;">Walk-through for new patients &amp; families</div></div>
+              <span class="type-tag">New Lead</span>
+            </div>
+            <div class="type-card" data-type="counsel" onclick="selectType(this,'counsel')">
+              <div class="selected-badge"><i class="ti ti-check" style="font-size:10px;"></i></div>
+              <div class="type-icon"><i class="ti ti-heart-handshake"></i></div>
+              <div><div class="type-name">Counselling Session</div><div class="type-desc" style="margin-top:3px;">1-on-1 with a licensed counselor</div></div>
+              <span class="type-tag">Individual</span>
+            </div>
+            <div class="type-card" data-type="group"   onclick="selectType(this,'group')">
+              <div class="selected-badge"><i class="ti ti-check" style="font-size:10px;"></i></div>
+              <div class="type-icon"><i class="ti ti-users"></i></div>
+              <div><div class="type-name">Group Therapy</div><div class="type-desc" style="margin-top:3px;">Peer support — 4 to 12 participants</div></div>
+              <span class="type-tag">Group</span>
+            </div>
+            <div class="type-card" data-type="psych"   onclick="selectType(this,'psych')">
+              <div class="selected-badge"><i class="ti ti-check" style="font-size:10px;"></i></div>
+              <div class="type-icon"><i class="ti ti-clipboard-pulse"></i></div>
+              <div><div class="type-name">Psych Evaluation</div><div class="type-desc" style="margin-top:3px;">Comprehensive psychological assessment</div></div>
+              <span class="type-tag">Evaluation</span>
+            </div>
+            <div class="type-card" data-type="medical" onclick="selectType(this,'medical')">
+              <div class="selected-badge"><i class="ti ti-check" style="font-size:10px;"></i></div>
+              <div class="type-icon"><i class="ti ti-stethoscope"></i></div>
+              <div><div class="type-name">Medical Test</div><div class="type-desc" style="margin-top:3px;">Lab work, drug screening &amp; vitals</div></div>
+              <span class="type-tag">Medical</span>
+            </div>
+          </div>
+
+          <!-- Facility Tour: lead contact fields only -->
+          <div class="section-card" id="tourLeadSection" style="display:none;">
+            <div class="section-label">
+              <i class="ti ti-user-plus" style="font-size:14px;color:#c2410c;"></i>
+              Lead Contact
+            </div>
+            <p style="font-size:14px;color:var(--text-secondary);margin:0 0 16px;line-height:1.43;">No patient record needed — capture the prospect and caretaker details below.</p>
+            <div style="display:flex;flex-direction:column;gap:16px;">
+              <div class="field-group">
+                <label>Prospect Patient Name <span style="color:#ef4444;">*</span></label>
+                <input type="text" id="leadName" class="field-input" placeholder="e.g. Robert Nguyen" oninput="updateLeadSummary()" />
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                <div class="field-group">
+                  <label>Caretaker Phone <span style="color:#ef4444;">*</span></label>
+                  <input type="tel" id="leadCaretakerPhone" class="field-input" placeholder="(555) 000-0000" oninput="updateLeadSummary()" onblur="validateLeadPhone()" />
+                  <span class="field-error-msg" id="leadCaretakerPhoneError">Enter a valid US phone number</span>
+                </div>
+                <div class="field-group">
+                  <label>Caretaker Email <span style="font-size:11px;font-weight:400;color:var(--text-muted);">(optional)</span></label>
+                  <input type="email" id="leadCaretakerEmail" class="field-input" placeholder="email@example.com" oninput="updateLeadSummary()" onblur="validateLeadEmail()" />
+                  <span class="field-error-msg" id="leadCaretakerEmailError">Enter a valid email address</span>
+                </div>
+              </div>
+              <div class="field-group">
+                <label>Patient Relationship with Caretaker <span style="color:#ef4444;">*</span></label>
+                <select id="leadRelationship" class="field-input" onchange="updateLeadSummary()" style="height:40px;">
+                  <option value="">Select relationship…</option>
+                  <option value="Parent">Parent</option>
+                  <option value="Child">Child</option>
+                  <option value="Spouse">Spouse</option>
+                  <option value="Sibling">Sibling</option>
+                  <option value="Guardian">Guardian</option>
+                  <option value="Friend">Friend</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 1 actions -->
+          <div class="canvas-actions" id="step1Actions">
+            <a href="appointments.html" class="btn-back"><i class="ti ti-arrow-left" style="font-size:15px;"></i> Back</a>
+            <button class="btn-next" id="btnNext1" onclick="goStep2()">
+              Next: Select Patients &amp; Staff <i class="ti ti-arrow-right" style="font-size:15px;"></i>
+            </button>
+          </div>
+        </div><!-- /step1Content -->
+
+        <!-- ── STEP 2 CONTENT ── -->
+        <div id="step2Content">
+
+          <div class="canvas-header">
+            <div class="breadcrumb">
+              <span>Appointments</span>
+              <i class="ti ti-chevron-right"></i>
+              <span style="color:var(--text-primary);font-weight:500;">New Booking</span>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+              <h1>Patients, Space &amp; Time</h1>
+              <div class="step-pills">
+                <div class="step-pill done"  ></div>
+                <div class="step-pill active"></div>
+                <div class="step-pill todo"  ></div>
+              </div>
+            </div>
+            <p>Add patient(s), pick a date, time slot, and room. Availability updates in real time.</p>
+          </div>
+
+          <!-- ── Patient Search ── -->
+          <div class="section-card" id="step2PatientSection">
+            <div class="section-label">
+              <i class="ti ti-users" style="font-size:14px;color:var(--teal-600);"></i>
+              <span id="step2PatientLabel">Select Patient</span>
+              <span id="groupPatientCount" style="display:none;font-size:10px;font-weight:600;color:var(--teal-600);background:var(--teal-50);border:1px solid var(--teal-200);padding:1px 7px;border-radius:99px;text-transform:none;letter-spacing:0;margin-left:6px;"></span>
+            </div>
+            <div class="group-hint" id="groupPatientHint" style="display:none;">
+              <i class="ti ti-info-circle" style="font-size:14px;color:var(--teal-600);flex-shrink:0;"></i>
+              Group Therapy requires 4–12 participants. Search and add each patient below.
+            </div>
+            <div class="search-bar" id="step2SearchBar">
+              <i class="ti ti-search"></i>
+              <input type="text" id="step2PatientInput"
+                     placeholder="Search by name or patient ID…"
+                     oninput="handleStep2PatientSearch(this.value)"
+                     autocomplete="off" />
+            </div>
+            <div class="pt-search-results" id="ptSearchResults"></div>
+            <div class="selected-patients" id="selectedPatientsList" style="display:none;"></div>
+          </div>
+
+          <!-- Date + Time -->
+          <div class="section-card">
+            <div class="section-label"><i class="ti ti-calendar" style="font-size:14px;color:var(--teal-600);"></i> Date &amp; Time</div>
+            <div class="datetime-row">
+              <div class="field-group">
+                <label style="font-size:12px;font-weight:500;color:var(--text-primary);margin-bottom:6px;display:block;">Date <span style="color:#ef4444;">*</span></label>
+                <div class="date-input-wrap">
+                  <i class="ti ti-calendar" style="font-size:15px;"></i>
+                  <input type="date" id="bookDate" class="field-input" onchange="onDateChange()" />
+                </div>
+              </div>
+              <div class="field-group">
+                <label style="font-size:12px;font-weight:500;color:var(--text-primary);margin-bottom:6px;display:block;">Time Slot <span style="color:#ef4444;">*</span></label>
+                <div class="time-slots" id="timeSlots">
+                  <!-- populated by JS -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Re-verify banner -->
+            <div class="reverify-banner" id="reverifyBanner" style="margin-top:14px;">
+              <i class="ti ti-refresh spin" style="font-size:15px;"></i>
+              Re-verifying availability for the new time…
+            </div>
+          </div>
+
+          <!-- Room filter note (group) -->
+          <div class="filter-note" id="roomFilterNote" style="display:none;">
+            <i class="ti ti-filter" style="font-size:14px;color:var(--teal-600);"></i>
+            <span>Group Therapy requires a room with capacity &ge; 8 people. Smaller rooms are hidden.</span>
+          </div>
+
+          <!-- Rooms -->
+          <div class="section-card">
+            <div class="section-label"><i class="ti ti-door" style="font-size:14px;color:var(--teal-600);"></i> Select Room</div>
+            <div class="room-grid" id="roomGrid">
+              <!-- populated by JS -->
+            </div>
+          </div>
+
+          <!-- Staff availability for step 2 (re-verify) -->
+          <div class="section-card">
+            <div class="section-label"><i class="ti ti-stethoscope" style="font-size:14px;color:var(--teal-600);"></i> Staff Availability</div>
+            <div class="staff-grid" id="staffGridStep2">
+              <!-- populated by JS -->
+            </div>
+          </div>
+
+          <!-- Recurrence -->
+          <div class="section-card" id="recurrenceSection" style="display:none;">
+            <div class="toggle-row" style="padding:0;border-bottom:none;">
+              <div class="toggle-left">
+                <div class="toggle-icon" style="background:var(--teal-50);color:var(--teal-600);"><i class="ti ti-refresh"></i></div>
+                <div>
+                  <div class="toggle-title">Recurring Appointment</div>
+                  <div class="toggle-sub">Repeat this booking on a schedule</div>
+                </div>
+              </div>
+              <label class="tgl">
+                <input type="checkbox" id="toggleRecurrence" onchange="onRecurrenceToggle()" />
+                <span class="tgl-track"></span>
+              </label>
+            </div>
+            <div class="recurrence-expand" id="recurrenceExpand">
+              <div class="field-group">
+                <label style="font-size:12px;font-weight:500;color:var(--text-primary);margin-bottom:6px;display:block;">Frequency</label>
+                <select class="field-input" id="recurrenceFreq" onchange="onRecurrenceChange()" style="appearance:auto;">
+                  <option value="daily">Daily</option>
+                  <option value="weekly" selected>Weekly</option>
+                  <option value="biweekly">Bi-weekly</option>
+                  <option value="monthly">Monthly</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label style="font-size:12px;font-weight:500;color:var(--text-primary);margin-bottom:6px;display:block;">End Date</label>
+                <div class="date-input-wrap">
+                  <i class="ti ti-calendar" style="font-size:15px;"></i>
+                  <input type="date" class="field-input" id="recurrenceEnd" oninput="onRecurrenceChange()" style="padding-left:38px;" />
+                </div>
+              </div>
+              <div id="recurrenceSummary" style="grid-column:1/-1;font-size:12px;color:var(--teal-700);background:var(--teal-50);border:1px solid var(--teal-200);border-radius:8px;padding:8px 12px;display:none;">
+                <i class="ti ti-calendar-repeat" style="font-size:13px;"></i> <span id="recurrenceSummaryText"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2 actions -->
+          <div class="canvas-actions">
+            <button class="btn-back" onclick="goStep1()"><i class="ti ti-arrow-left" style="font-size:15px;"></i> Back</button>
+            <button class="btn-next" id="btnNext2" onclick="goStep3()">
+              Continue to Finalize <i class="ti ti-arrow-right" style="font-size:15px;"></i>
+            </button>
+          </div>
+
+        </div><!-- /step2Content -->
+
+        <!-- ══════════════════════════════════
+             STEP 3 CONTENT — FINALIZE
+        ══════════════════════════════════ -->
+        <div id="step3Content" style="display:none;flex-direction:column;gap:24px;">
+
+          <div class="canvas-header">
+            <div class="breadcrumb">
+              <span>Appointments</span>
+              <i class="ti ti-chevron-right"></i>
+              <span style="color:var(--text-primary);font-weight:500;">New Booking</span>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+              <h1>Finalize Booking</h1>
+              <div class="step-pills">
+                <div class="step-pill done"></div>
+                <div class="step-pill done"></div>
+                <div class="step-pill active"></div>
+              </div>
+            </div>
+            <p>Complete the pre-session checklist, add notes, and set notifications.</p>
+          </div>
+
+          <!-- Booking Snapshot -->
+          <div class="booking-snapshot" id="bookingSnapshot">
+            <div class="snap-cell">
+              <div class="snap-cell-label">Patient</div>
+              <div class="snap-cell-value" id="snapPatient"><i class="ti ti-user" style="font-size:13px;color:var(--teal-600);"></i> —</div>
+            </div>
+            <div class="snap-cell">
+              <div class="snap-cell-label">Type</div>
+              <div class="snap-cell-value" id="snapType">—</div>
+            </div>
+            <div class="snap-cell">
+              <div class="snap-cell-label">Date &amp; Time</div>
+              <div class="snap-cell-value" id="snapDateTime"><i class="ti ti-calendar" style="font-size:13px;color:var(--teal-600);"></i> —</div>
+            </div>
+            <div class="snap-cell">
+              <div class="snap-cell-label">Room · Staff</div>
+              <div class="snap-cell-value" id="snapRoom"><i class="ti ti-door" style="font-size:13px;color:var(--teal-600);"></i> —</div>
+            </div>
+          </div>
+
+          <!-- Additional Notes -->
+          <div class="section-card">
+            <div class="section-label">
+              <i class="ti ti-notes" style="font-size:14px;color:var(--teal-600);"></i>
+              Additional Notes
+              <span style="font-size:10px;font-weight:400;color:var(--text-muted);text-transform:none;letter-spacing:0;margin-left:4px;">— optional</span>
+            </div>
+            <textarea id="clinicalNotes" class="notes-area"
+              rows="3" style="resize:none;min-height:unset;"
+              placeholder="Add clinical or reception notes here…"></textarea>
+          </div>
+
+          <!-- Notifications -->
+          <div class="section-card">
+            <div class="section-label"><i class="ti ti-bell" style="font-size:14px;color:var(--teal-600);"></i> Notifications</div>
+
+            <div class="toggle-row">
+              <div class="toggle-left">
+                <div class="toggle-icon sms"><i class="ti ti-message"></i></div>
+                <div>
+                  <div class="toggle-title">Send SMS Reminder</div>
+                  <div class="toggle-sub">Patient receives a text 1 hour before the appointment</div>
+                </div>
+              </div>
+              <label class="tgl">
+                <input type="checkbox" id="toggleSMS" checked />
+                <span class="tgl-track"></span>
+              </label>
+            </div>
+
+            <div class="toggle-row">
+              <div class="toggle-left">
+                <div class="toggle-icon email"><i class="ti ti-mail"></i></div>
+                <div>
+                  <div class="toggle-title">Email Caretaker</div>
+                  <div class="toggle-sub" id="caretakerToggleSub">Sends appointment summary to caretaker</div>
+                </div>
+              </div>
+              <label class="tgl">
+                <input type="checkbox" id="toggleEmail" checked />
+                <span class="tgl-track"></span>
+              </label>
+            </div>
+
+          </div>
+
+          <!-- Step 3 actions -->
+          <div class="canvas-actions">
+            <button class="btn-back" onclick="goStep2FromStep3()"><i class="ti ti-arrow-left" style="font-size:15px;"></i> Back</button>
+            <button class="btn-confirm-canvas" id="btnConfirmCanvas" onclick="confirmBooking()">
+              <i class="ti ti-circle-check" style="font-size:16px;"></i>
+              Confirm &amp; Book Session
+            </button>
+          </div>
+
+        </div><!-- /step3Content -->
+
+      </section>
+
+      <!-- ══════════════════════════════════
+           RIGHT BOOKING SUMMARY
+      ══════════════════════════════════ -->
+      <aside class="booking-sidebar">
+        <div class="sidebar-scroll">
+
+        <div class="sidebar-head">
+          <div class="live-badge"><span class="live-dot"></span> Live Summary</div>
+          <h3>Booking Summary</h3>
+          <p>Updates as you fill details</p>
+        </div>
+
+        <!-- Empty state -->
+        <div class="sidebar-empty" id="sidebarEmpty">
+          <div class="empty-icon"><i class="ti ti-clipboard-list"></i></div>
+          <h4>Nothing yet</h4>
+          <p>Select an appointment type to start your booking summary.</p>
+          <div class="empty-steps">
+            <div class="empty-step"><div class="empty-step-num">1</div><div class="empty-step-text">Pick an appointment type</div></div>
+            <div class="empty-step"><div class="empty-step-num">2</div><div class="empty-step-text">Find patient or enter lead info</div></div>
+            <div class="empty-step"><div class="empty-step-num">3</div><div class="empty-step-text">Choose room &amp; time slot</div></div>
+          </div>
+        </div>
+
+        <!-- Filled summary -->
+        <div class="sidebar-summary" id="sidebarSummary">
+
+          <!-- Patient -->
+          <div class="summary-section">
+            <div class="sum-label">Patient</div>
+            <div class="patient-card-sm">
+              <div class="patient-photo-sm" id="sumPhoto">?</div>
+              <div>
+                <div class="patient-name-sm" id="sumName">—</div>
+                <div class="patient-id-sm"   id="sumId">Not selected</div>
+                <span class="patient-pill active" id="sumStatusPill"><i class="ti ti-clock" style="font-size:9px;"></i> Pending</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Group patient list (shown for group therapy only) -->
+          <div class="summary-section" id="sumGroupSection" style="display:none;">
+            <div class="sum-label" style="display:flex;align-items:center;justify-content:space-between;">
+              <span>Group Patients</span>
+              <span id="sumGroupCount" style="font-size:10px;font-weight:700;color:var(--teal-600);background:var(--teal-50);border:1px solid var(--teal-200);padding:1px 7px;border-radius:99px;"></span>
+            </div>
+            <div id="sumGroupList"></div>
+          </div>
+
+          <!-- Appointment type -->
+          <div class="summary-section">
+            <div class="sum-label">Appointment Type</div>
+            <div id="sumTypePill" style="margin-top:2px;">—</div>
+          </div>
+
+          <!-- Caretaker (shown when patient has one) -->
+          <div class="summary-section" id="sumCaretakerSection" style="display:none;">
+            <div class="sum-label">Caretaker</div>
+            <div class="caretaker-row">
+              <div class="caretaker-avatar" id="sumCTAvatar">DK</div>
+              <div>
+                <div class="caretaker-name" id="sumCTName">—</div>
+                <div class="caretaker-rel"  id="sumCTRel">—</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Space & Time (appears after step 2) -->
+          <div class="summary-section" id="sumSpaceSection" style="display:none;">
+            <div class="sum-label">Space &amp; Time</div>
+            <div class="sum-detail" id="sumDateTime"><i class="ti ti-calendar"></i> Not set</div>
+            <div class="sum-detail" id="sumRoom"><i class="ti ti-door"></i> No room selected</div>
+            <div class="sum-detail" id="sumStaff"><i class="ti ti-stethoscope"></i> No staff selected</div>
+            <!-- Recurrence row (shown when toggle is on) -->
+            <div id="sumRecurrenceSection" style="display:none;margin-top:8px;">
+              <div class="sum-recurrence-row">
+                <i class="ti ti-refresh" style="font-size:13px;flex-shrink:0;"></i>
+                <span id="sumRecurrenceText">—</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Progress -->
+          <div class="summary-section">
+            <div class="sum-label">Progress</div>
+            <div class="checklist-item">
+              <div class="check-icon todo" id="chk1"><i class="ti ti-check" style="font-size:9px;"></i></div>
+              <span class="checklist-text" id="chkTxt1">Appointment type</span>
+            </div>
+            <div class="checklist-item">
+              <div class="check-icon todo" id="chk2"><i class="ti ti-check" style="font-size:9px;"></i></div>
+              <span class="checklist-text" id="chkTxt2">Patient identified</span>
+            </div>
+            <div class="checklist-item">
+              <div class="check-icon todo" id="chk3"><i class="ti ti-check" style="font-size:9px;"></i></div>
+              <span class="checklist-text" id="chkTxt3">Staff selected</span>
+            </div>
+            <div class="checklist-item">
+              <div class="check-icon todo" id="chk4"><i class="ti ti-check" style="font-size:9px;"></i></div>
+              <span class="checklist-text" id="chkTxt4">Room &amp; time set</span>
+            </div>
+          </div>
+
+        </div><!-- /sidebarSummary -->
+
+        <!-- Conflict alert -->
+        <div class="conflict-alert" id="conflictAlert" style="margin:0 20px 16px;">
+          <div class="conflict-head"><i class="ti ti-alert-triangle" style="font-size:13px;"></i> Scheduling Conflict</div>
+          <div class="conflict-body" id="conflictBody">This room is already booked at this time.</div>
+        </div>
+
+        </div><!-- /sidebar-scroll -->
+
+
+      </aside>
+    </div>
+  </main>
+</div>
+
+<div id="toast"></div>
+
+<!-- ── SUCCESS OVERLAY ── -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-card">
+    <div class="success-icon"><i class="ti ti-circle-check"></i></div>
+    <h2>Booking Confirmed!</h2>
+    <p>The appointment has been scheduled and notifications are on their way.</p>
+    <div class="success-meta">
+      <div class="success-meta-row"><i class="ti ti-user"></i> <span id="successPatient">—</span></div>
+      <div class="success-meta-row"><i class="ti ti-clipboard-list"></i> <span id="successType">—</span></div>
+      <div class="success-meta-row"><i class="ti ti-calendar"></i> <span id="successDateTime">—</span></div>
+      <div class="success-meta-row"><i class="ti ti-door"></i> <span id="successRoom">—</span></div>
+      <div class="success-meta-row"><i class="ti ti-stethoscope"></i> <span id="successStaff">—</span></div>
+    </div>
+    <a href="appointments.html" class="btn-view-calendar">
+      <i class="ti ti-calendar" style="font-size:16px;"></i>
+      View in Calendar
+    </a>
+  </div>
+</div>
+
+<script>
+// ─── THEME ────────────────────────────────────────────────────────────────────
+const savedTheme = localStorage.getItem('fdo-theme') || 'light';
+document.documentElement.setAttribute('data-theme', savedTheme);
+function toggleTheme() {
+  const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('fdo-theme', next);
+  document.querySelector('#themeToggle i').className = next === 'dark' ? 'ti ti-moon' : 'ti ti-sun';
+  document.querySelector('#themeToggle i').style.fontSize = '17px';
+}
+if (savedTheme === 'dark') document.querySelector('#themeToggle i').className = 'ti ti-moon';
+
+// ─── DATA ─────────────────────────────────────────────────────────────────────
+const TYPE_META = {
+  tour:    { label:'Facility Tour',           color:'#9A3412', bg:'#FFF3EE', icon:'ti-building',        tag:'New Lead'   },
+  counsel: { label:'Counselling Session',      color:'#0C5E73', bg:'#E8F6FA', icon:'ti-heart-handshake', tag:'Individual' },
+  group:   { label:'Group Therapy',            color:'#A21CAF', bg:'#FCF0FD', icon:'ti-users',           tag:'Group'      },
+  psych:   { label:'Psych Evaluation',         color:'#4A6B00', bg:'#F2F9E8', icon:'ti-clipboard-pulse', tag:'Evaluation' },
+  medical: { label:'Medical Test',             color:'#1E293B', bg:'#F1F5F9', icon:'ti-stethoscope',     tag:'Medical'    },
+};
+
+const PATIENTS = [
+  { name:'Maria Santos',   initials:'MS', id:'PT-00421', dob:'04/12/1988', caretaker:'Dana Kim',    ctInitials:'DK', rel:'Sister',  phone:'(555) 204-9812' },
+  { name:'James Thornton', initials:'JT', id:'PT-00389', dob:'08/30/1975', caretaker:'Rita Thornton', ctInitials:'RT', rel:'Spouse', phone:'(555) 871-3300' },
+  { name:'Aisha Williams', initials:'AW', id:'PT-00512', dob:'02/14/1992', caretaker:'Kevin Williams', ctInitials:'KW', rel:'Brother', phone:'(555) 349-7201' },
+  { name:'David Park',     initials:'DP', id:'PT-00467', dob:'11/03/1985', caretaker:'Susan Park',  ctInitials:'SP', rel:'Mother',  phone:'(555) 590-4420' },
+  { name:'Carlos Rivera',  initials:'CR', id:'PT-00448', dob:'06/22/1990', caretaker:'Ana Rivera',  ctInitials:'AR', rel:'Sister',  phone:'(555) 213-8847' },
+  { name:'Sarah Moore',    initials:'SM', id:'PT-00501', dob:'03/17/1983', caretaker:null },
+  { name:'Chandni Best',   initials:'CB', id:'PT-00513', dob:'07/08/1995', caretaker:null },
+  { name:'Swati Sharma',   initials:'SS', id:'PT-00514', dob:'11/22/1989', caretaker:null },
+  { name:'Mohammad Asif',  initials:'MA', id:'PT-00515', dob:'03/14/1987', caretaker:null },
+  { name:'Sachin Verma',   initials:'SV', id:'PT-00516', dob:'09/05/1991', caretaker:null },
+  { name:'Sarah Goyal',    initials:'SG', id:'PT-00517', dob:'01/30/1993', caretaker:null },
+  { name:'Payal Mehta',    initials:'PM', id:'PT-00518', dob:'06/18/1990', caretaker:null },
+];
+
+// Staff: busyUntil in 24h "HH:MM"
+const STAFF_DATA = [
+  { id:'s1', name:'Dr. Emily Chen',   role:'Licensed Counselor',  initials:'EC', color:'#7c3aed', busyUntil:null,    types:['counsel','psych'] },
+  { id:'s2', name:'Dr. Marcus Reed',  role:'Psychiatrist',         initials:'MR', color:'#0369a1', busyUntil:'11:00', types:['psych','medical'] },
+  { id:'s3', name:'Dr. Arun Patel',   role:'Medical Director',     initials:'AP', color:'#0369a1', busyUntil:'10:00', types:['medical','psych'] },
+  { id:'s4', name:'Nurse Kelly',      role:'Registered Nurse',     initials:'NK', color:'#0f766e', busyUntil:null,    types:['medical','tour','counsel'] },
+  { id:'s5', name:'James Carter',     role:'Group Therapist',      initials:'JC', color:'#be185d', busyUntil:null,    types:['group','counsel'] },
+  { id:'s6', name:'Sarah Mitchell',   role:'Facility Coordinator', initials:'SM', color:'#c2410c', busyUntil:'09:30', types:['tour'] },
+];
+
+// Rooms: busySlots maps "HH:MM" => true
+const ROOMS_DATA = [
+  { id:'r101', name:'Room 101', type:'Private Office',     capacity:2,  features:['Whiteboard','Window'],           tags:['counsel','psych','medical','tour'],    busySlots:{'09:00':true,'09:30':true} },
+  { id:'r102', name:'Room 102', type:'Private Office',     capacity:2,  features:['Computer','Window'],             tags:['counsel','psych','medical'],            busySlots:{'10:00':true,'10:30':true,'11:00':true} },
+  { id:'r203', name:'Room 203', type:'Consultation Room',  capacity:8,  features:['Projector','Whiteboard','A/C'],  tags:['group','counsel','tour','psych'],       busySlots:{'14:00':true,'14:30':true} },
+  { id:'r205', name:'Room 205', type:'Group Room',         capacity:15, features:['TV Screen','Flex Seating'],      tags:['group','tour'],                         busySlots:{} },
+  { id:'rSun', name:'Sunroom',  type:'Large Group Space',  capacity:24, features:['Natural Light','Outdoor Access'],tags:['group','tour'],                         busySlots:{'13:00':true} },
+];
+
+// Time slots available in the day
+const TIME_SLOTS = ['08:00','08:30','09:00','09:30','10:00','10:30','11:00','11:30','12:00','13:00','13:30','14:00','14:30','15:00','15:30','16:00'];
+
+// Patient schedule conflicts (mock — patient IDs that are busy at certain time slots)
+const PATIENT_CONFLICTS = {
+  'PT-00421': ['09:00','09:30'],     // Maria Santos
+  'PT-00389': ['10:00','10:30'],     // James Thornton
+  'PT-00512': ['13:00','13:30'],     // Aisha Williams
+};
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let state = {
+  step: 1,
+  type: null,
+  patient: null,       // single patient / tour lead (backward compat)
+  patients: [],        // array for multi-select (step 2)
+  staffId: null,
+  date: new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' }),
+  timeSlot: null,
+  roomId: null,
+  recurrence: { enabled: false, freq: 'weekly', endDate: '' },
+};
+
+// ─── STEP 01: SELECT TYPE ─────────────────────────────────────────────────────
+function selectType(card, type) {
+  document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+  state.type = type;
+  state.patient = null;
+  state.patients = [];
+  state.staffId = null;
+
+  // Show lead fields only for Facility Tour; hide recurrence for Facility Tour
+  const tourLeadSection = document.getElementById('tourLeadSection');
+  const recurrenceSection = document.getElementById('recurrenceSection');
+  if (type === 'tour') {
+    tourLeadSection.style.display = 'block';
+    recurrenceSection.style.display = 'none';
+    document.getElementById('leadName').value = '';
+    document.getElementById('leadCaretakerPhone').value = '';
+    document.getElementById('leadCaretakerEmail').value = '';
+    document.getElementById('leadRelationship').value = '';
+    // Reset recurrence state when switching to tour
+    document.getElementById('toggleRecurrence').checked = false;
+    document.getElementById('recurrenceExpand').classList.remove('visible');
+    state.recurrence = { enabled: false, freq: 'weekly', endDate: '' };
+  } else {
+    tourLeadSection.style.display = 'none';
+    recurrenceSection.style.display = 'block';
+  }
+
+  // Sidebar
+  document.getElementById('sidebarEmpty').style.display = 'none';
+  document.getElementById('sidebarSummary').classList.add('visible');
+  renderSummaryType();
+  setCheck(1, 'done');
+  setCheck(2, 'todo');
+  setCheck(3, 'todo');
+  clearConflict();
+  syncNextBtn1();
+
+  // Clear prior patient summary
+  setSummaryPatient(null);
+}
+
+// ─── STAFF RENDERING ─────────────────────────────────────────────────────────
+function staffIsAvailable(staff, timeSlot) {
+  if (!staff.busyUntil || !timeSlot) return true;
+  return toMins(timeSlot) >= toMins(staff.busyUntil);
+}
+
+function renderStaffGrid(containerId, type, timeSlot) {
+  const container = document.getElementById(containerId);
+  const relevant = STAFF_DATA.filter(s => s.types.includes(type));
+  container.innerHTML = relevant.map(s => {
+    const avail = staffIsAvailable(s, timeSlot);
+    const busyClass = (!avail) ? 'busy-card' : '';
+    const sel = state.staffId === s.id ? 'selected' : '';
+    const statusHtml = avail
+      ? `<span class="staff-status avail"><span class="avail-dot green"></span>Available</span>`
+      : `<span class="staff-status busy"><span class="avail-dot red"></span>Busy</span>`;
+    const busyUntilHtml = !avail
+      ? `<div class="staff-busy-until">Free after ${s.busyUntil}</div>`
+      : '';
+    const tipAttr = !avail ? `data-tip="Schedule Conflict — busy until ${s.busyUntil}"` : '';
+    return `
+      <div class="staff-card ${busyClass} ${sel}${!avail ? ' has-tip' : ''}" id="sc_${containerId}_${s.id}"
+           onclick="${avail ? `selectStaff('${s.id}','${containerId}')` : ''}" ${tipAttr}>
+        <div class="reverifying-overlay"></div>
+        <div class="staff-avatar" style="background:${s.color};">${s.initials}</div>
+        <div style="flex:1;min-width:0;">
+          <div class="staff-name">${s.name}</div>
+          <div class="staff-role">${s.role}</div>
+          ${busyUntilHtml}
+        </div>
+        ${statusHtml}
+      </div>`;
+  }).join('');
+}
+
+function selectStaff(id, containerId) {
+  state.staffId = id;
+  // Highlight in whichever grid
+  document.querySelectorAll('#staffGridStep2 .staff-card').forEach(c => c.classList.remove('selected'));
+  const el = document.getElementById(`sc_staffGridStep2_${id}`);
+  if (el) el.classList.add('selected');
+  setCheck(3, 'done');
+  updateSumStaff();
+  syncNextBtn1();
+  syncNextBtn2();
+}
+
+// ─── PATIENT SEARCH ───────────────────────────────────────────────────────────
+let searchTimer;
+function handlePatientSearch(val) {
+  clearTimeout(searchTimer);
+  if (!val || val.length < 2) {
+    document.getElementById('patientResult').classList.remove('visible');
+    state.patient = null;
+    setSummaryPatient(null);
+    setCheck(2,'todo');
+    syncNextBtn1();
+    return;
+  }
+  searchTimer = setTimeout(() => {
+    const m = PATIENTS.find(p =>
+      p.name.toLowerCase().includes(val.toLowerCase()) ||
+      p.id.toLowerCase().includes(val.toLowerCase())
+    );
+    if (m) showPatientResult(m);
+  }, 280);
+}
+
+function showPatientResult(p) {
+  document.getElementById('resultInitials').textContent = p.initials;
+  document.getElementById('resultName').textContent     = p.name;
+  document.getElementById('resultMeta').textContent     = `ID #${p.id}  ·  DOB: ${p.dob}`;
+  document.getElementById('patientResult').classList.add('visible');
+  state.patient = p;
+  setSummaryPatient(p);
+  setCheck(2,'done');
+  syncNextBtn1();
+}
+
+function clearPatient() {
+  document.getElementById('patientResult').classList.remove('visible');
+  document.getElementById('patientSearch').value = '';
+  state.patient = null;
+  setSummaryPatient(null);
+  setCheck(2,'todo');
+  syncNextBtn1();
+}
+
+// ─── QUICK-ADD LEAD ───────────────────────────────────────────────────────────
+function isValidPhone(val) {
+  return /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/.test(val.replace(/\s/g,''));
+}
+function isValidEmail(val) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+}
+
+function validateLeadPhone() {
+  const input = document.getElementById('leadCaretakerPhone');
+  const err   = document.getElementById('leadCaretakerPhoneError');
+  const val   = input.value.trim();
+  const invalid = val.length > 0 && !isValidPhone(val);
+  input.classList.toggle('input-error', invalid);
+  err.classList.toggle('visible', invalid);
+  return !invalid;
+}
+
+function validateLeadEmail() {
+  const input = document.getElementById('leadCaretakerEmail');
+  const err   = document.getElementById('leadCaretakerEmailError');
+  const val   = input.value.trim();
+  const invalid = val.length > 0 && !isValidEmail(val);
+  input.classList.toggle('input-error', invalid);
+  err.classList.toggle('visible', invalid);
+  return !invalid;
+}
+
+function updateLeadSummary() {
+  const name  = document.getElementById('leadName').value.trim();
+  const phone = document.getElementById('leadCaretakerPhone').value.trim();
+  const email = document.getElementById('leadCaretakerEmail').value.trim();
+  const rel   = document.getElementById('leadRelationship').value;
+  const phoneOk = validateLeadPhone();
+  const emailOk = validateLeadEmail();
+  if (name && phone && rel && phoneOk && emailOk) {
+    const initials = name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    state.patient = { lead:true, name, initials, id:'NEW LEAD', caretakerPhone: phone, caretakerEmail: email, relationship: rel };
+    setSummaryPatient(state.patient);
+    setCheck(2,'done');
+  } else {
+    state.patient = null;
+    setSummaryPatient(null);
+    setCheck(2,'todo');
+  }
+  syncNextBtn1();
+}
+
+// ─── STEP 2: PATIENT SEARCH ──────────────────────────────────────────────────
+let step2SearchTimer;
+
+function handleStep2PatientSearch(val) {
+  clearTimeout(step2SearchTimer);
+  const resultsEl = document.getElementById('ptSearchResults');
+  if (!val || val.length < 2) {
+    resultsEl.classList.remove('visible');
+    return;
+  }
+  step2SearchTimer = setTimeout(() => {
+    const matches = PATIENTS.filter(p =>
+      p.name.toLowerCase().includes(val.toLowerCase()) ||
+      p.id.toLowerCase().includes(val.toLowerCase())
+    ).slice(0, 5);
+
+    if (matches.length === 0) {
+      resultsEl.innerHTML = `<div style="padding:12px 14px;font-size:12px;color:var(--text-secondary);text-align:center;line-height:1.43;">
+        <i class="ti ti-search-off" style="font-size:18px;display:block;margin-bottom:4px;"></i>No patients found</div>`;
+      resultsEl.classList.add('visible');
+      return;
+    }
+
+    const isGroup = state.type === 'group';
+    resultsEl.innerHTML = matches.map(p => {
+      const alreadyAdded = state.patients.some(sp => sp.id === p.id);
+      const conflict = patientHasConflict(p);
+      const conflictHtml = conflict
+        ? `<span style="display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;color:#b91c1c;">
+             <i class="ti ti-alert-triangle" style="font-size:10px;"></i> Busy at ${state.timeSlot}
+           </span>`
+        : '';
+      const addBtn = alreadyAdded
+        ? `<span style="font-size:11px;color:var(--text-muted);flex-shrink:0;">Added</span>`
+        : `<button class="btn-add-pt" onclick="event.stopPropagation();addPatient2(${PATIENTS.indexOf(p)})">
+             <i class="ti ti-plus" style="font-size:11px;"></i> ${isGroup ? 'Add' : 'Select'}
+           </button>`;
+      return `
+        <div class="pt-result-row${alreadyAdded ? ' already-added' : ''}"
+             onclick="${alreadyAdded ? '' : `addPatient2(${PATIENTS.indexOf(p)})`}">
+          <div class="pt-result-photo">${p.initials}</div>
+          <div class="pt-result-info">
+            <div class="pt-result-name">${p.name} ${conflictHtml}</div>
+            <div class="pt-result-meta">ID #${p.id} · DOB: ${p.dob}</div>
+          </div>
+          ${addBtn}
+        </div>`;
+    }).join('');
+    resultsEl.classList.add('visible');
+  }, 240);
+}
+
+function patientHasConflict(p) {
+  if (!state.timeSlot || !p?.id) return false;
+  return (PATIENT_CONFLICTS[p.id] || []).includes(state.timeSlot);
+}
+
+function addPatient2(idx) {
+  const p = PATIENTS[idx];
+  if (!p) return;
+  const isGroup = state.type === 'group';
+  if (isGroup) {
+    if (!state.patients.some(sp => sp.id === p.id)) {
+      state.patients.push(p);
+    }
+  } else {
+    state.patients = [p];
+    state.patient = p;
+    document.getElementById('step2PatientInput').value = '';
+    document.getElementById('ptSearchResults').classList.remove('visible');
+  }
+  renderSelectedPatients();
+  updatePatientSummary();
+  updateSumGroupPatients();
+  syncNextBtn2();
+}
+
+function removePatient2(idx) {
+  state.patients.splice(idx, 1);
+  state.patient = state.patients[0] || null;
+  renderSelectedPatients();
+  updatePatientSummary();
+  updateSumGroupPatients();
+  syncNextBtn2();
+}
+
+function renderSelectedPatients() {
+  const container = document.getElementById('selectedPatientsList');
+  const countEl   = document.getElementById('groupPatientCount');
+  if (!container) return;
+
+  if (state.patients.length === 0) {
+    container.style.display = 'none';
+    if (countEl) countEl.style.display = 'none';
+    return;
+  }
+
+  container.style.display = 'flex';
+  if (state.type === 'group' && countEl) {
+    countEl.style.display = 'inline';
+    countEl.textContent = `${state.patients.length} added`;
+  } else if (countEl) {
+    countEl.style.display = 'none';
+  }
+
+  container.innerHTML = state.patients.map((p, i) => {
+    const conflict = patientHasConflict(p);
+    const conflictHtml = conflict
+      ? `<span class="conflict-chip"><i class="ti ti-alert-triangle" style="font-size:9px;"></i> Conflict at ${state.timeSlot}</span>`
+      : '';
+    return `
+      <div class="selected-pt-card${conflict ? ' has-conflict' : ''}">
+        <div class="selected-pt-photo">${p.initials}</div>
+        <div style="flex:1;min-width:0;">
+          <div class="selected-pt-name">${p.name}</div>
+          <div class="selected-pt-meta">ID #${p.id} · DOB: ${p.dob}</div>
+          ${conflictHtml}
+        </div>
+        <button class="btn-remove-pt" onclick="removePatient2(${i})" title="Remove">
+          <i class="ti ti-x" style="font-size:13px;"></i>
+        </button>
+      </div>`;
+  }).join('');
+}
+
+function updatePatientSummary() {
+  const n = state.patients.length;
+  if (state.type === 'group') {
+    const photo = document.getElementById('sumPhoto');
+    const name  = document.getElementById('sumName');
+    const idEl  = document.getElementById('sumId');
+    const pill  = document.getElementById('sumStatusPill');
+    const ctSec = document.getElementById('sumCaretakerSection');
+    if (n === 0) {
+      photo.textContent = '?'; name.textContent = '—'; idEl.textContent = 'No patients added';
+      pill.className = 'patient-pill active';
+      pill.innerHTML = '<i class="ti ti-clock" style="font-size:9px;"></i> Pending';
+      ctSec.style.display = 'none';
+    } else {
+      photo.textContent = `${n}`; photo.style.fontSize = '12px';
+      name.textContent = `${n} patient${n !== 1 ? 's' : ''}`;
+      idEl.textContent = state.patients.map(p => p.name.split(' ')[0]).join(', ');
+      pill.className = 'patient-pill active';
+      pill.innerHTML = '<i class="ti ti-circle-check" style="font-size:9px;"></i> Group Set';
+      ctSec.style.display = 'none';
+    }
+    setCheck(2, n > 0 ? 'done' : 'todo');
+  } else {
+    const p = state.patients[0] || null;
+    state.patient = p;
+    setSummaryPatient(p);
+    setCheck(2, p ? 'done' : 'todo');
+  }
+}
+
+// ─── RECURRENCE ──────────────────────────────────────────────────────────────
+function onRecurrenceToggle() {
+  state.recurrence.enabled = document.getElementById('toggleRecurrence').checked;
+  document.getElementById('recurrenceExpand').classList.toggle('visible', state.recurrence.enabled);
+  onRecurrenceChange();
+  updateSumRecurrence();
+}
+
+function onRecurrenceChange() {
+  state.recurrence.freq    = document.getElementById('recurrenceFreq').value;
+  state.recurrence.endDate = document.getElementById('recurrenceEnd').value;
+  const summaryEl  = document.getElementById('recurrenceSummary');
+  const summaryTxt = document.getElementById('recurrenceSummaryText');
+  if (state.recurrence.enabled && state.recurrence.endDate) {
+    const labels = { daily:'Daily', weekly:'Weekly', biweekly:'Bi-weekly', monthly:'Monthly' };
+    const endFmt = new Date(state.recurrence.endDate + 'T00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    summaryTxt.textContent = `${labels[state.recurrence.freq]} · ends ${endFmt}`;
+    summaryEl.style.display = 'block';
+  } else {
+    summaryEl.style.display = 'none';
+  }
+  updateSumRecurrence();
+}
+
+// ─── SUMMARY PATIENT ─────────────────────────────────────────────────────────
+function setSummaryPatient(p) {
+  const photo    = document.getElementById('sumPhoto');
+  const name     = document.getElementById('sumName');
+  const idEl     = document.getElementById('sumId');
+  const pill     = document.getElementById('sumStatusPill');
+  const ctSec    = document.getElementById('sumCaretakerSection');
+
+  if (!p) {
+    photo.textContent = '?'; name.textContent = '—'; idEl.textContent = 'Not selected';
+    pill.className = 'patient-pill active';
+    pill.innerHTML = '<i class="ti ti-clock" style="font-size:9px;"></i> Pending';
+    ctSec.style.display = 'none';
+    return;
+  }
+  photo.textContent = p.initials;
+  name.textContent  = p.name;
+  if (p.lead) {
+    idEl.textContent = `New Lead · ${p.phone || ''}`;
+    pill.className = 'patient-pill lead';
+    pill.innerHTML = '<i class="ti ti-user-plus" style="font-size:9px;"></i> New Lead';
+    ctSec.style.display = 'none';
+  } else {
+    idEl.textContent = `ID #${p.id}  ·  DOB: ${p.dob}`;
+    pill.className = 'patient-pill active';
+    pill.innerHTML = '<i class="ti ti-circle-check" style="font-size:9px;"></i> Active Patient';
+    if (p.caretaker) {
+      document.getElementById('sumCTAvatar').textContent = p.ctInitials;
+      document.getElementById('sumCTName').textContent   = p.caretaker;
+      document.getElementById('sumCTRel').textContent    = `${p.rel} · ${p.phone}`;
+      ctSec.style.display = 'block';
+    } else {
+      ctSec.style.display = 'none';
+    }
+  }
+}
+
+function renderSummaryType() {
+  const m = TYPE_META[state.type];
+  document.getElementById('sumTypePill').innerHTML = m
+    ? `<span class="sum-type-pill" style="background:${m.bg};color:${m.color};border:1px solid ${m.color}22;">
+         <i class="ti ${m.icon}" style="font-size:13px;"></i> ${m.label}
+       </span>`
+    : '—';
+}
+
+// ─── STEP NAVIGATION ─────────────────────────────────────────────────────────
+function goStep2() {
+  if (!canProceedStep1()) return;
+  state.step = 2;
+  document.getElementById('step1Content').style.display = 'none';
+  document.getElementById('step2Content').style.display = 'flex';
+  document.getElementById('step2Content').classList.add('visible');
+
+  setStepperActive(2);
+
+  // Configure patient search section
+  const isTour  = state.type === 'tour';
+  const isGroup = state.type === 'group';
+  document.getElementById('step2PatientSection').style.display = isTour ? 'none' : 'block';
+  document.getElementById('step2PatientLabel').textContent = isGroup ? 'Group Patients' : 'Select Patient';
+  document.getElementById('groupPatientHint').style.display = isGroup ? 'flex' : 'none';
+  document.getElementById('step2PatientInput').value = '';
+  document.getElementById('ptSearchResults').classList.remove('visible');
+  renderSelectedPatients();
+
+  // Build step 2 UI
+  renderTimeSlots();
+  renderRoomGrid();
+  renderStaffGrid('staffGridStep2', state.type, state.timeSlot);
+  document.getElementById('sumSpaceSection').style.display = 'block';
+
+  // Show group filter note
+  document.getElementById('roomFilterNote').style.display = isGroup ? 'flex' : 'none';
+
+  syncNextBtn2();
+}
+
+function goStep1() {
+  state.step = 1;
+  document.getElementById('step2Content').style.display = 'none';
+  document.getElementById('step2Content').classList.remove('visible');
+  document.getElementById('step1Content').style.display = 'block';
+  setStepperActive(1);
+  clearConflict();
+}
+
+function goStep3() {
+  if (!canProceedStep2()) return;
+  // Persist to sessionStorage and go back
+  sessionStorage.setItem('pendingAppointment', JSON.stringify({
+    patient: state.patient?.name || 'New Lead',
+    type: TYPE_META[state.type]?.label,
+    date: state.date,
+    time: state.timeSlot,
+    room: ROOMS_DATA.find(r=>r.id===state.roomId)?.name || '',
+    provider: STAFF_DATA.find(s=>s.id===state.staffId)?.name || '',
+    status: 'Upcoming',
+  }));
+  sessionStorage.setItem('bookingToast', `Appointment booked for ${state.patient?.name || 'New Lead'}`);
+  window.location.href = 'appointments.html';
+}
+
+function setStepperActive(n) {
+  [1,2,3].forEach(i => {
+    const item = document.getElementById(`stepItem${i}`);
+    item.classList.remove('active','completed');
+    if (i < n) item.classList.add('completed');
+    if (i === n) item.classList.add('active');
+    const conn = document.getElementById(`conn${i}`);
+    if (conn) conn.classList.toggle('done', i < n);
+  });
+}
+
+// ─── STEP 2: TIME SLOTS ───────────────────────────────────────────────────────
+function to12hr(t) {
+  const [h, m] = t.split(':').map(Number);
+  const period = h >= 12 ? 'PM' : 'AM';
+  const hour   = h % 12 || 12;
+  return `${hour}:${String(m).padStart(2,'0')} ${period}`;
+}
+
+function renderTimeSlots() {
+  const container = document.getElementById('timeSlots');
+  container.innerHTML = TIME_SLOTS.map(t => {
+    const isTaken = isMorningBlocked(t);
+    const isSel   = state.timeSlot === t;
+    return `<button class="time-slot${isTaken?' taken':''}${isSel?' selected':''}"
+              onclick="${isTaken?'':` pickTime('${t}')`}">${to12hr(t)}</button>`;
+  }).join('');
+}
+
+// Block 08:00–08:30 as globally unavailable for demo
+function isMorningBlocked(t) { return t === '08:00'; }
+
+function pickTime(t) {
+  state.timeSlot = t;
+  triggerReverify();
+}
+
+function onDateChange() {
+  state.date = document.getElementById('bookDate').value;
+  if (state.timeSlot) triggerReverify();
+  updateSumDateTime();
+}
+
+// ─── RE-VERIFY ANIMATION ─────────────────────────────────────────────────────
+let reverifyTimer;
+function triggerReverify() {
+  // Update slot selection immediately
+  renderTimeSlots();
+
+  // Show banner
+  const banner = document.getElementById('reverifyBanner');
+  banner.classList.add('visible');
+
+  // Add shimmer overlay to all room and staff cards
+  document.querySelectorAll('.room-card, .staff-card').forEach(c => c.classList.add('reverifying'));
+
+  clearTimeout(reverifyTimer);
+  reverifyTimer = setTimeout(() => {
+    banner.classList.remove('visible');
+    document.querySelectorAll('.room-card, .staff-card').forEach(c => c.classList.remove('reverifying'));
+
+    // Re-render with updated availability
+    renderRoomGrid();
+    renderStaffGrid('staffGridStep2', state.type, state.timeSlot);
+    renderSelectedPatients(); // refresh conflict state on patient cards
+    clearConflict();
+
+    // Check if selected room is now busy
+    if (state.roomId) {
+      const room = ROOMS_DATA.find(r => r.id === state.roomId);
+      if (room && room.busySlots[state.timeSlot]) {
+        state.roomId = null;
+        setCheck(4,'todo');
+        showConflict(`${room.name} is occupied at ${state.timeSlot}. Please choose a different room or time.`);
+        updateSumRoom();
+      }
+    }
+
+    // Check if selected staff is now busy
+    if (state.staffId) {
+      const el = document.getElementById(`sc_staffGridStep2_${state.staffId}`);
+      if (el && !el.classList.contains('busy-card')) {
+        el.classList.add('selected');
+      } else if (el?.classList.contains('busy-card')) {
+        const staffName = STAFF_DATA.find(s => s.id === state.staffId)?.name || 'Selected staff';
+        state.staffId = null;
+        setCheck(3,'todo');
+        showConflict(`${staffName} is unavailable at ${state.timeSlot}. Please choose another provider.`);
+        updateSumStaff();
+      }
+    }
+
+    updateSumDateTime();
+    syncNextBtn2();
+  }, 1400);
+}
+
+// ─── STEP 2: ROOMS ───────────────────────────────────────────────────────────
+function renderRoomGrid() {
+  const container = document.getElementById('roomGrid');
+  const minCap = (state.type === 'group') ? 8 : 0;
+
+  container.innerHTML = ROOMS_DATA.map(r => {
+    const filtered = r.capacity < minCap || !r.tags.includes(state.type);
+    const busy     = state.timeSlot ? !!r.busySlots[state.timeSlot] : false;
+    const selClass = state.roomId === r.id ? 'room-selected' : '';
+    const filtClass = filtered ? 'room-filtered' : '';
+    const busyClass = busy ? 'room-busy' : '';
+    const statusBadge = busy
+      ? `<span class="room-status-badge busy"><span class="avail-dot red"></span>Occupied${state.timeSlot ? ' at ' + state.timeSlot : ''}</span>`
+      : `<span class="room-status-badge avail"><span class="avail-dot green"></span>Available</span>`;
+    const busyLabel = busy ? `<div class="room-busy-label">Next free: ${nextFree(r)}</div>` : '';
+    const checkIcon = `<div class="room-selected-check"><i class="ti ti-check" style="font-size:10px;"></i></div>`;
+    const featHtml = r.features.map(f=>`<span class="room-feature">${f}</span>`).join('');
+    const clickFn = (!busy && !filtered) ? `pickRoom('${r.id}')` : '';
+    const tipAttr = busy ? `data-tip="Schedule Conflict — occupied at ${state.timeSlot}"` : '';
+    return `
+      <div class="room-card ${selClass} ${filtClass} ${busyClass}${busy ? ' has-tip' : ''}" onclick="${clickFn}" ${tipAttr}>
+        <div class="reverifying-overlay"></div>
+        ${checkIcon}
+        ${statusBadge}
+        <div class="room-name">${r.name}</div>
+        <div class="room-type">${r.type}</div>
+        <div class="room-capacity"><i class="ti ti-users" style="font-size:13px;"></i> Up to ${r.capacity} people</div>
+        <div class="room-features">${featHtml}</div>
+        ${busyLabel}
+      </div>`;
+  }).join('');
+}
+
+function nextFree(room) {
+  const busySet = new Set(Object.keys(room.busySlots));
+  for (const t of TIME_SLOTS) {
+    if (!busySet.has(t)) return t;
+  }
+  return 'Tomorrow';
+}
+
+function pickRoom(id) {
+  state.roomId = id;
+  renderRoomGrid(); // re-render to reflect selection
+  updateSumRoom();
+  setCheck(4,'done');
+  clearConflict();
+  syncNextBtn2();
+}
+
+// ─── SUMMARY UPDATES ─────────────────────────────────────────────────────────
+function updateSumDateTime() {
+  const d = state.date ? new Date(state.date + 'T00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}) : '—';
+  const t = state.timeSlot || '—';
+  const el = document.getElementById('sumDateTime');
+  el.innerHTML = `<i class="ti ti-calendar" style="font-size:14px;"></i> ${d} &nbsp;·&nbsp; ${t}`;
+  el.className = `sum-detail${state.timeSlot ? ' highlight' : ''}`;
+}
+
+function updateSumRoom() {
+  const r = ROOMS_DATA.find(r => r.id === state.roomId);
+  const el = document.getElementById('sumRoom');
+  el.innerHTML = r
+    ? `<i class="ti ti-door" style="font-size:14px;"></i> ${r.name} (Cap. ${r.capacity})`
+    : `<i class="ti ti-door" style="font-size:14px;"></i> No room selected`;
+  el.className = `sum-detail${r ? ' highlight' : ''}`;
+}
+
+function updateSumStaff() {
+  const s = STAFF_DATA.find(s => s.id === state.staffId);
+  const el = document.getElementById('sumStaff');
+  el.innerHTML = s
+    ? `<i class="ti ti-stethoscope" style="font-size:14px;"></i> ${s.name}`
+    : `<i class="ti ti-stethoscope" style="font-size:14px;"></i> No staff selected`;
+  el.className = `sum-detail${s ? ' highlight' : ''}`;
+}
+
+// ─── CONFLICT ALERT ───────────────────────────────────────────────────────────
+function showConflict(msg) {
+  const el = document.getElementById('conflictAlert');
+  document.getElementById('conflictBody').textContent = msg;
+  el.classList.add('visible');
+}
+function clearConflict() {
+  document.getElementById('conflictAlert').classList.remove('visible');
+}
+
+// ─── CHECKLIST ───────────────────────────────────────────────────────────────
+function setCheck(n, state) {
+  const el  = document.getElementById(`chk${n}`);
+  const txt = document.getElementById(`chkTxt${n}`);
+  if (!el) return;
+  el.className = `check-icon ${state}`;
+  if (txt) { txt.className = `checklist-text ${state}`; }
+}
+
+// ─── NEXT BUTTON SYNC ─────────────────────────────────────────────────────────
+function canProceedStep1() {
+  if (!state.type) return false;
+  if (state.type === 'tour') {
+    const name  = (document.getElementById('leadName')?.value || '').trim();
+    const phone = (document.getElementById('leadCaretakerPhone')?.value || '').trim();
+    const email = (document.getElementById('leadCaretakerEmail')?.value || '').trim();
+    const rel   = (document.getElementById('leadRelationship')?.value || '');
+    if (!name || !phone || !rel) return false;
+    if (!isValidPhone(phone)) return false;
+    if (email && !isValidEmail(email)) return false;
+    return true;
+  }
+  return true;
+}
+function canProceedStep2() {
+  if (state.type !== 'tour' && state.patients.length === 0) return false;
+  return !!(state.timeSlot && state.roomId);
+}
+function syncNextBtn1() {
+  document.getElementById('btnNext1').classList.toggle('enabled', canProceedStep1());
+}
+function syncNextBtn2() {
+  document.getElementById('btnNext2').classList.toggle('enabled', canProceedStep2());
+}
+
+// ─── STEP 3 DATA ─────────────────────────────────────────────────────────────
+const CHECKLISTS = {
+  tour: [
+    { id:'welcome',  icon:'ti-file-text',      label:'Print Welcome Pack',            required:true  },
+    { id:'waiver',   icon:'ti-signature',      label:'Visitor waiver signed',         required:true  },
+    { id:'followup', icon:'ti-phone',          label:'Follow-up call scheduled',      required:false },
+  ],
+  counsel: [
+    { id:'consent',   icon:'ti-signature',     label:'Consent form signed',           required:true  },
+    { id:'insurance', icon:'ti-shield-check',  label:'Verify Insurance',              required:true  },
+    { id:'emergency', icon:'ti-alert-circle',  label:'Emergency contact confirmed',   required:false },
+  ],
+  group: [
+    { id:'roster',    icon:'ti-list-check',    label:'Group roster confirmed',        required:true  },
+    { id:'consents',  icon:'ti-signature',     label:'All consent forms collected',   required:true  },
+    { id:'materials', icon:'ti-files',         label:'Session materials prepared',    required:false },
+  ],
+  psych: [
+    { id:'insurance', icon:'ti-shield-check',  label:'Verify Insurance',              required:true  },
+    { id:'referral',  icon:'ti-file-text',     label:'Referral letter received',      required:true  },
+    { id:'history',   icon:'ti-history',       label:'Medical history reviewed',      required:false },
+  ],
+  medical: [
+    { id:'insurance', icon:'ti-shield-check',  label:'Verify Insurance',              required:true  },
+    { id:'lab_orders',icon:'ti-flask',         label:'Lab orders prepared',           required:true  },
+    { id:'drug_kit',  icon:'ti-test-pipe',     label:'Drug screen kit ready',         required:false },
+  ],
+};
+
+let checkState = {}; // { itemId: boolean }
+
+// ─── GO STEP 3 ────────────────────────────────────────────────────────────────
+function goStep3() {
+  if (!canProceedStep2()) return;
+  state.step = 3;
+
+  document.getElementById('step2Content').style.display = 'none';
+  const s3 = document.getElementById('step3Content');
+  s3.style.display = 'flex';
+
+  setStepperActive(3);
+  document.getElementById('conn1').classList.add('done');
+  document.getElementById('conn2').classList.add('done');
+
+  // Populate snapshot
+  const patName  = state.type === 'group'
+    ? `${state.patients.length} patients`
+    : (state.patients[0]?.name || state.patient?.name || 'New Lead');
+  const typeMeta = TYPE_META[state.type];
+  const room     = ROOMS_DATA.find(r => r.id === state.roomId);
+  const staff    = STAFF_DATA.find(s => s.id === state.staffId);
+  const dateStr  = state.date ? new Date(state.date + 'T00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—';
+
+  document.getElementById('snapPatient').innerHTML  = `<i class="ti ti-user" style="font-size:13px;color:var(--teal-600);"></i> ${patName}`;
+  document.getElementById('snapType').innerHTML     = typeMeta ? `<i class="ti ${typeMeta.icon}" style="font-size:13px;color:${typeMeta.color};"></i> ${typeMeta.label}` : '—';
+  document.getElementById('snapDateTime').innerHTML = `<i class="ti ti-calendar" style="font-size:13px;color:var(--teal-600);"></i> ${dateStr} · ${state.timeSlot || '—'}`;
+  document.getElementById('snapRoom').innerHTML     = room ? `<i class="ti ti-door" style="font-size:13px;color:var(--teal-600);"></i> ${room.name}` : '—';
+
+  // Update caretaker toggle sub-label
+  if (state.patient?.caretaker) {
+    document.getElementById('caretakerToggleSub').textContent = `Sends summary to ${state.patient.caretaker}`;
+  }
+
+  // Update caretaker toggle for single patient
+  if (state.patients[0]?.caretaker) {
+    document.getElementById('caretakerToggleSub').textContent = `Sends summary to ${state.patients[0].caretaker}`;
+  }
+
+  // Render checklist
+  checkState = {};
+  renderChecklist();
+
+  // Update sidebar group patients + recurrence
+  updateSumGroupPatients();
+  updateSumRecurrence();
+
+  // Enable sidebar confirm button
+  syncConfirmBtn();
+}
+
+function goStep2FromStep3() {
+  state.step = 2;
+  document.getElementById('step3Content').style.display = 'none';
+  document.getElementById('step2Content').style.display = 'flex';
+  setStepperActive(2);
+  syncConfirmBtn();
+}
+
+// ─── CHECKLIST ────────────────────────────────────────────────────────────────
+function renderChecklist() {
+  const items    = CHECKLISTS[state.type] || [];
+  const container = document.getElementById('checklistItems');
+  container.innerHTML = items.map(item => {
+    const checked = !!checkState[item.id];
+    const reqBadge = item.required
+      ? `<span class="cl-req${checked?' satisfied':''}">${checked ? '✓ Done' : 'Required'}</span>`
+      : '';
+    return `
+      <div class="checklist-card${checked?' checked':''}" onclick="toggleCheck('${item.id}')" id="clcard_${item.id}">
+        <div class="cl-checkbox"><i class="ti ti-check"></i></div>
+        <div class="cl-icon"><i class="ti ${item.icon}"></i></div>
+        <div class="cl-label">${item.label}</div>
+        ${reqBadge}
+      </div>`;
+  }).join('');
+  updateChecklistProgress();
+}
+
+function toggleCheck(id) {
+  checkState[id] = !checkState[id];
+  renderChecklist();
+  syncConfirmBtn();
+}
+
+function updateChecklistProgress() {
+  const items   = CHECKLISTS[state.type] || [];
+  const done    = items.filter(i => checkState[i.id]).length;
+  const total   = items.length;
+  const el = document.getElementById('checklistProgress');
+  if (el) {
+    el.textContent = `${done} / ${total} complete`;
+    el.style.color = done === total ? 'var(--teal-600)' : 'var(--text-muted)';
+  }
+}
+
+function allRequiredChecked() {
+  const items = CHECKLISTS[state.type] || [];
+  return items.filter(i => i.required).every(i => checkState[i.id]);
+}
+
+function syncConfirmBtn() {}
+
+// ─── SIDEBAR: GROUP PATIENTS LIST ────────────────────────────────────────────
+function updateSumGroupPatients() {
+  const section = document.getElementById('sumGroupSection');
+  if (!section) return;
+  if (state.type !== 'group' || state.patients.length === 0) {
+    section.style.display = 'none';
+    return;
+  }
+  section.style.display = 'block';
+  document.getElementById('sumGroupCount').textContent = `${state.patients.length}`;
+  document.getElementById('sumGroupList').innerHTML = state.patients.map(p => {
+    const conflict = patientHasConflict(p);
+    return `
+      <div class="sum-group-row">
+        <div class="sum-group-avatar${conflict ? ' conflict' : ''}">${p.initials}</div>
+        <div style="flex:1;min-width:0;">
+          <div class="sum-group-name">${p.name}</div>
+          <div class="sum-group-id">ID #${p.id}</div>
+        </div>
+        ${conflict ? '<div class="sum-conflict-dot" title="Conflict"></div>' : ''}
+      </div>`;
+  }).join('');
+}
+
+// ─── SIDEBAR: RECURRENCE SUMMARY ─────────────────────────────────────────────
+function updateSumRecurrence() {
+  const section = document.getElementById('sumRecurrenceSection');
+  if (!section) return;
+  if (!state.recurrence.enabled) {
+    section.style.display = 'none';
+    return;
+  }
+  const labels = { daily:'Daily', weekly:'Weekly', biweekly:'Bi-weekly', monthly:'Monthly' };
+  const freq   = labels[state.recurrence.freq] || 'Weekly';
+  const endStr = state.recurrence.endDate
+    ? new Date(state.recurrence.endDate + 'T00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})
+    : 'no end date';
+  document.getElementById('sumRecurrenceText').textContent = `${freq} · ends ${endStr}`;
+  section.style.display = 'block';
+}
+
+// ─── CONFIRM BOOKING ─────────────────────────────────────────────────────────
+function confirmBooking() {
+  const patName  = state.type === 'group'
+    ? `${state.patients.length} patients`
+    : (state.patients[0]?.name || state.patient?.name || 'New Lead');
+  const typeMeta = TYPE_META[state.type];
+  const room     = ROOMS_DATA.find(r => r.id === state.roomId);
+  const staff    = STAFF_DATA.find(s => s.id === state.staffId);
+  const dateStr  = state.date
+    ? new Date(state.date + 'T00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})
+    : '—';
+
+  // Build success overlay
+  const overlay = document.getElementById('successOverlay');
+  document.getElementById('successPatient').textContent  = patName;
+  document.getElementById('successType').innerHTML       = typeMeta ? `<i class="ti ${typeMeta.icon}" style="color:${typeMeta.color};"></i> ${typeMeta.label}` : '—';
+  document.getElementById('successDateTime').textContent = `${dateStr} at ${state.timeSlot || '—'}`;
+  document.getElementById('successRoom').textContent     = room?.name || '—';
+  document.getElementById('successStaff').textContent    = staff?.name || '—';
+  overlay.classList.add('show');
+
+  // Store for appointments page
+  sessionStorage.setItem('pendingAppointment', JSON.stringify({
+    patient: patName, type: typeMeta?.label, date: state.date,
+    time: state.timeSlot, room: room?.name || '', provider: staff?.name || '', status:'Upcoming',
+    recurrence: state.recurrence.enabled ? state.recurrence : null,
+  }));
+  sessionStorage.setItem('bookingToast', `Appointment confirmed for ${patName}`);
+}
+
+// ─── UTIL ─────────────────────────────────────────────────────────────────────
+function toMins(t) {
+  if (!t) return 9999;
+  const [h,m] = t.split(':').map(Number);
+  return h * 60 + m;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show';
+  setTimeout(() => t.className = '', 3000);
+}
+
+// ─── INIT: set date input to today in IST ─────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  const todayIST = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+  const bookDate = document.getElementById('bookDate');
+  if (bookDate) bookDate.value = todayIST;
+  state.date = todayIST;
+});
+
+// ESC back
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    if (state.step === 3) goStep2FromStep3();
+    else if (state.step === 2) goStep1();
+    else window.location.href = 'appointments.html';
+  }
+});
+</script>
+</body>
+</html>

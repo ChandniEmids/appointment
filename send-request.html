@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en" data-color-mode="light" data-light-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://mcp.figma.com/mcp/html-to-design/capture.js"></script>
+  <title>Send Request — ClearPath FDO</title>
+  <link rel="stylesheet" href="https://unpkg.com/@primer/css@latest/dist/primer.css" />
+  <style>
+    body {
+      min-height: 100vh;
+      background-color: var(--bgColor-muted, #f6f8fa);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 16px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+    }
+
+    .page-container {
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .brand-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #143AC3 0%, #5F50E5 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 16px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .brand-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--fgColor-default, #1f2328);
+    }
+
+    .form-card {
+      background-color: var(--bgColor-default, #ffffff);
+      border: 1px solid var(--borderColor-default, #d0d7de);
+      border-radius: 6px;
+      padding: 24px;
+    }
+
+    .form-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--fgColor-default, #1f2328);
+      margin-bottom: 4px;
+    }
+
+    .form-subtitle {
+      font-size: 14px;
+      color: var(--fgColor-muted, #636c76);
+      margin-bottom: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--fgColor-default, #1f2328);
+      margin-bottom: 6px;
+    }
+
+    .required-marker {
+      color: var(--fgColor-danger, #d1242f);
+      font-size: 12px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 5px 12px;
+      font-size: 14px;
+      line-height: 20px;
+      color: var(--fgColor-default, #1f2328);
+      background-color: var(--control-bgColor-rest, #ffffff);
+      border: 1px solid var(--control-borderColor-rest, #d0d7de);
+      border-radius: 6px;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      box-sizing: border-box;
+      height: 32px;
+      font-family: inherit;
+    }
+
+    .form-input:focus {
+      border-color: var(--focus-outlineColor, #0969da);
+      box-shadow: var(--focus-outline, 0 0 0 3px rgba(9, 105, 218, 0.3));
+    }
+
+    .form-input.error {
+      border-color: var(--borderColor-danger-emphasis, #d1242f);
+    }
+
+    .form-input.error:focus {
+      border-color: var(--borderColor-danger-emphasis, #d1242f);
+      box-shadow: 0 0 0 3px rgba(209, 36, 47, 0.3);
+    }
+
+    .form-textarea {
+      width: 100%;
+      min-height: 112px;
+      padding: 8px 12px;
+      font-size: 14px;
+      line-height: 20px;
+      color: var(--fgColor-default, #1f2328);
+      background-color: var(--control-bgColor-rest, #ffffff);
+      border: 1px solid var(--control-borderColor-rest, #d0d7de);
+      border-radius: 6px;
+      outline: none;
+      resize: vertical;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      box-sizing: border-box;
+      font-family: inherit;
+    }
+
+    .form-textarea:focus {
+      border-color: var(--focus-outlineColor, #0969da);
+      box-shadow: var(--focus-outline, 0 0 0 3px rgba(9, 105, 218, 0.3));
+    }
+
+    .form-textarea.error {
+      border-color: var(--borderColor-danger-emphasis, #d1242f);
+    }
+
+    .form-textarea.error:focus {
+      border-color: var(--borderColor-danger-emphasis, #d1242f);
+      box-shadow: 0 0 0 3px rgba(209, 36, 47, 0.3);
+    }
+
+    .field-note {
+      font-size: 12px;
+      color: var(--fgColor-muted, #636c76);
+      margin-top: 4px;
+    }
+
+    .field-error {
+      font-size: 12px;
+      color: var(--fgColor-danger, #d1242f);
+      margin-top: 4px;
+      display: none;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .field-error.visible {
+      display: flex;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 5px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 20px;
+      color: var(--button-primary-fgColor-rest, #ffffff);
+      background-color: var(--button-primary-bgColor-rest, #1f883d);
+      border: 1px solid var(--button-primary-borderColor-rest, rgba(31, 35, 40, 0.15));
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.15s ease;
+      font-family: inherit;
+      height: 32px;
+      width: 100%;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--button-primary-bgColor-hover, #1a7f37);
+    }
+
+    .btn-primary:focus {
+      outline: none;
+      box-shadow: var(--focus-outline, 0 0 0 3px rgba(9, 105, 218, 0.3));
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 5px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 20px;
+      color: var(--button-default-fgColor-rest, #24292f);
+      background-color: var(--button-default-bgColor-rest, #f6f8fa);
+      border: 1px solid var(--button-default-borderColor-rest, rgba(31, 35, 40, 0.15));
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.15s ease;
+      font-family: inherit;
+      height: 32px;
+      flex: 1;
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--button-default-bgColor-hover, #f3f4f6);
+    }
+
+    .btn-secondary:focus {
+      outline: none;
+      box-shadow: var(--focus-outline, 0 0 0 3px rgba(9, 105, 218, 0.3));
+    }
+
+    .action-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px solid var(--borderColor-muted, #d8dee4);
+    }
+
+    .btn-submit {
+      flex: 2;
+      background-color: var(--button-primary-bgColor-rest, #1f883d);
+    }
+
+    /* Flash / Banner */
+    .flash {
+      display: none;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 12px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      margin-bottom: 16px;
+      border: 1px solid transparent;
+    }
+
+    .flash.visible {
+      display: flex;
+    }
+
+    .flash-success {
+      color: var(--fgColor-success, #1a7f37);
+      background-color: var(--bgColor-success-muted, #dafbe1);
+      border-color: var(--borderColor-success-muted, #aceebb);
+    }
+
+    .flash-danger {
+      color: var(--fgColor-danger, #d1242f);
+      background-color: var(--bgColor-danger-muted, #FFEBE9);
+      border-color: var(--borderColor-danger-muted, #FFD7D5);
+    }
+
+    .flash-icon {
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .char-count {
+      float: right;
+      font-size: 12px;
+      color: var(--fgColor-muted, #636c76);
+      margin-top: 4px;
+    }
+
+    .char-count.warn {
+      color: var(--fgColor-attention, #9a6700);
+    }
+
+    .char-count.over {
+      color: var(--fgColor-danger, #d1242f);
+      font-weight: 600;
+    }
+
+    .divider {
+      height: 1px;
+      background-color: var(--borderColor-muted, #d8dee4);
+      margin: 20px 0;
+    }
+
+    .section-heading {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--fgColor-muted, #636c76);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 12px;
+    }
+
+    .spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      display: none;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page-container">
+
+    <!-- Brand -->
+    <div class="brand-header">
+      <div class="brand-icon">C</div>
+      <span class="brand-name">ClearPath FDO</span>
+    </div>
+
+    <!-- Card -->
+    <div class="form-card">
+
+      <!-- Title -->
+      <h1 class="form-title">Send a Request</h1>
+      <p class="form-subtitle">Fill in the details below. All fields marked <span style="color:var(--fgColor-danger,#d1242f);font-weight:600;">*</span> are required.</p>
+
+      <!-- Flash: success -->
+      <div class="flash flash-success" id="flashSuccess" role="alert" aria-live="polite">
+        <svg class="flash-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <span id="flashSuccessMsg">Your request has been sent successfully!</span>
+      </div>
+
+      <!-- Flash: error -->
+      <div class="flash flash-danger" id="flashError" role="alert" aria-live="polite">
+        <svg class="flash-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="flashErrorMsg">Please fix the errors below before submitting.</span>
+      </div>
+
+      <form id="sendRequestForm" novalidate>
+
+        <!-- Contact section -->
+        <p class="section-heading">Your Details</p>
+
+        <!-- Name -->
+        <div class="form-group">
+          <label class="form-label" for="fullName">
+            Your name <span class="required-marker" aria-hidden="true">*</span>
+          </label>
+          <input
+            class="form-input"
+            type="text"
+            id="fullName"
+            name="fullName"
+            placeholder="e.g. Jordan Lee"
+            autocomplete="name"
+            aria-required="true"
+            aria-describedby="fullName-error"
+          />
+          <div class="field-error" id="fullName-error" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span>Please enter your full name.</span>
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+          <label class="form-label" for="emailId">
+            Your email ID <span class="required-marker" aria-hidden="true">*</span>
+          </label>
+          <input
+            class="form-input"
+            type="email"
+            id="emailId"
+            name="emailId"
+            placeholder="you@example.com"
+            autocomplete="email"
+            aria-required="true"
+            aria-describedby="emailId-error"
+          />
+          <div class="field-error" id="emailId-error" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span id="emailId-error-msg">Please enter a valid email address.</span>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Request section -->
+        <p class="section-heading">Your Request</p>
+
+        <!-- Request -->
+        <div class="form-group">
+          <label class="form-label" for="requestBody">
+            Your request <span class="required-marker" aria-hidden="true">*</span>
+          </label>
+          <textarea
+            class="form-textarea"
+            id="requestBody"
+            name="requestBody"
+            placeholder="Describe your request in detail…"
+            maxlength="1000"
+            aria-required="true"
+            aria-describedby="requestBody-error requestBody-note"
+          ></textarea>
+          <div style="overflow:hidden;">
+            <div class="field-error" id="requestBody-error" role="alert" style="float:left;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <span>Please describe your request.</span>
+            </div>
+            <span class="char-count" id="charCount">0 / 1000</span>
+          </div>
+          <div class="field-note" id="requestBody-note">Be as specific as possible to help us respond quickly.</div>
+        </div>
+
+        <!-- Actions -->
+        <div class="action-row">
+          <button type="button" class="btn-secondary" id="clearBtn">Clear</button>
+          <button type="submit" class="btn-primary btn-submit" id="submitBtn">
+            <span class="spinner" id="spinner"></span>
+            <span id="submitLabel">Send request</span>
+          </button>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- Footer note -->
+    <p style="text-align:center;font-size:12px;color:var(--fgColor-muted,#636c76);margin-top:16px;">
+      By sending a request, you agree to our
+      <a href="#" style="color:var(--fgColor-link,#0969da);text-decoration:none;">terms of service</a>.
+    </p>
+
+  </div>
+
+  <script>
+    const form       = document.getElementById('sendRequestForm');
+    const submitBtn  = document.getElementById('submitBtn');
+    const clearBtn   = document.getElementById('clearBtn');
+    const spinner    = document.getElementById('spinner');
+    const submitLabel = document.getElementById('submitLabel');
+    const charCount  = document.getElementById('charCount');
+    const flashSuccess = document.getElementById('flashSuccess');
+    const flashError   = document.getElementById('flashError');
+
+    const fields = {
+      fullName:    { el: document.getElementById('fullName'),    errorEl: document.getElementById('fullName-error') },
+      emailId:     { el: document.getElementById('emailId'),     errorEl: document.getElementById('emailId-error') },
+      requestBody: { el: document.getElementById('requestBody'), errorEl: document.getElementById('requestBody-error') },
+    };
+
+    // Char counter
+    fields.requestBody.el.addEventListener('input', () => {
+      const len = fields.requestBody.el.value.length;
+      charCount.textContent = `${len} / 1000`;
+      charCount.className = 'char-count' + (len > 900 ? ' warn' : '') + (len >= 1000 ? ' over' : '');
+    });
+
+    // Clear inline error on input
+    Object.values(fields).forEach(({ el, errorEl }) => {
+      el.addEventListener('input', () => {
+        el.classList.remove('error');
+        errorEl.classList.remove('visible');
+        hideFlashes();
+      });
+    });
+
+    function hideFlashes() {
+      flashSuccess.classList.remove('visible');
+      flashError.classList.remove('visible');
+    }
+
+    function validate() {
+      let valid = true;
+
+      // Name
+      if (!fields.fullName.el.value.trim()) {
+        setError(fields.fullName);
+        valid = false;
+      } else {
+        clearError(fields.fullName);
+      }
+
+      // Email
+      const emailVal = fields.emailId.el.value.trim();
+      if (!emailVal) {
+        document.getElementById('emailId-error-msg').textContent = 'Please enter your email address.';
+        setError(fields.emailId);
+        valid = false;
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
+        document.getElementById('emailId-error-msg').textContent = 'Please enter a valid email address (e.g. you@example.com).';
+        setError(fields.emailId);
+        valid = false;
+      } else {
+        clearError(fields.emailId);
+      }
+
+      // Request
+      if (!fields.requestBody.el.value.trim()) {
+        setError(fields.requestBody);
+        valid = false;
+      } else {
+        clearError(fields.requestBody);
+      }
+
+      return valid;
+    }
+
+    function setError({ el, errorEl }) {
+      el.classList.add('error');
+      errorEl.classList.add('visible');
+    }
+
+    function clearError({ el, errorEl }) {
+      el.classList.remove('error');
+      errorEl.classList.remove('visible');
+    }
+
+    // Submit
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideFlashes();
+
+      if (!validate()) {
+        flashError.classList.add('visible');
+        // Focus first errored field
+        const firstError = Object.values(fields).find(f => f.el.classList.contains('error'));
+        if (firstError) firstError.el.focus();
+        return;
+      }
+
+      // Simulate async submission
+      submitBtn.disabled = true;
+      spinner.style.display = 'block';
+      submitLabel.textContent = 'Sending…';
+
+      await new Promise(r => setTimeout(r, 1400));
+
+      spinner.style.display = 'none';
+      submitLabel.textContent = 'Send request';
+      submitBtn.disabled = false;
+
+      // Show success
+      flashSuccess.classList.add('visible');
+      document.getElementById('flashSuccessMsg').textContent =
+        `Request sent! We'll get back to ${fields.emailId.el.value.trim()} shortly.`;
+
+      // Reset form
+      form.reset();
+      charCount.textContent = '0 / 1000';
+      charCount.className = 'char-count';
+    });
+
+    // Clear
+    clearBtn.addEventListener('click', () => {
+      form.reset();
+      charCount.textContent = '0 / 1000';
+      charCount.className = 'char-count';
+      Object.values(fields).forEach(f => clearError(f));
+      hideFlashes();
+    });
+  </script>
+
+  <script>
+    function pushToFigma() {
+      var btn = document.getElementById('figmaPushBtn');
+      if (!window.figma || typeof window.figma.captureForDesign !== 'function') {
+        btn.innerText = 'capture.js not ready';
+        return;
+      }
+      btn.innerText = 'Capturing…';
+      btn.disabled = true;
+      window.figma.captureForDesign({ selector: 'body' }).then(function(res) {
+        btn.innerText = res && res.success ? '✓ Copied — paste in Figma (⌘V)' : '✗ Failed — check console';
+        btn.disabled = false;
+      }).catch(function(err) {
+        btn.innerText = '✗ Error — check console';
+        btn.disabled = false;
+        console.error(err);
+      });
+    }
+  </script>
+
+  <!-- Figma push button — fixed bottom-right -->
+  <div style="position:fixed;bottom:24px;right:24px;z-index:9999;">
+    <button id="figmaPushBtn" onclick="pushToFigma()" style="
+      display:flex;align-items:center;gap:8px;
+      height:40px;padding:0 20px;
+      background:linear-gradient(90deg,#143AC3,#5F50E5);
+      color:white;border:none;border-radius:8px;
+      font-family:'Google Sans',sans-serif;font-size:13px;font-weight:600;
+      cursor:pointer;box-shadow:0 2px 12px rgba(20,58,195,.4);
+      transition:opacity .15s;
+    ">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7-7 7 7"/></svg>
+      Push to Figma
+    </button>
+  </div>
+
+</body>
+</html>
