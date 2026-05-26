@@ -1091,7 +1091,7 @@
     }
   </script>
 </head>
-<body data-theme="dark">
+<body data-theme="light">
 
 <!-- ==================== TOP HEADER ==================== -->
 <header id="appHeader">
@@ -3027,7 +3027,7 @@ document.addEventListener('click', e => {
 // ─── INIT ─────────────────────────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
   // Restore theme preference
-  const savedTheme = localStorage.getItem('cpfdo-theme') || 'dark';
+  const savedTheme = localStorage.getItem('cpfdo-theme') || 'light';
   document.body.dataset.theme = savedTheme;
   const themeIcon = document.querySelector('#themeToggle i');
   if (themeIcon) themeIcon.className = savedTheme === 'dark' ? 'ti ti-sun' : 'ti ti-moon';
@@ -3074,7 +3074,7 @@ function closeUserDropdown() {
   document.getElementById('avatarCaret').style.transform = '';
 }
 function logout() {
-  window.location.href = 'signin.html';
+  window.location.href = 'index.html';
 }
 // Close dropdown when clicking outside
 document.addEventListener('click', e => {
