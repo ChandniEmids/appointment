@@ -191,10 +191,10 @@
     }
 
     #appHeader .header-logo-text {
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 700;
       letter-spacing: -0.01em;
-      line-height: 1;
+      line-height: 1.2;
     }
 
     #appHeader .header-logo-text .clear { color: var(--text-primary); }
@@ -308,14 +308,14 @@
       padding: 14px 16px 12px;
       border-bottom: 1px solid var(--border-subtle);
     }
-    .user-dropdown-name { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+    .user-dropdown-name { font-size: 14px; font-weight: 600; color: var(--text-primary); line-height: 1.43; }
     .user-dropdown-email { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
     .user-dropdown-item {
       display: flex;
       align-items: center;
       gap: 10px;
       padding: 10px 16px;
-      font-size: 13px;
+      font-size: 14px;
       color: var(--text-secondary);
       cursor: pointer;
       transition: background .12s;
@@ -559,8 +559,8 @@
       display:flex; align-items:center; justify-content:center;
       font-size:11px; font-weight:700; color:white;
     }
-    .visitor-name { font-size:13px; font-weight:600; color:var(--text-primary); }
-    .visitor-sub  { font-size:11px; color:var(--text-secondary); margin-top:1px; }
+    .visitor-name { font-size:14px; font-weight:600; color:var(--text-primary); line-height:1.43; }
+    .visitor-sub  { font-size:12px; color:var(--text-secondary); margin-top:1px; line-height:1.43; }
     .checkin-status {
       padding:8px 14px; font-size:11px; font-weight:600;
       display:flex; align-items:center; gap:6px;
@@ -590,7 +590,7 @@
     .action-btn {
       display:inline-flex; align-items:center; justify-content:center; gap:6px;
       height:36px; width:100%; border-radius:8px;
-      font-size:13px; font-weight:600; cursor:pointer;
+      font-size:14px; font-weight:600; cursor:pointer;
       border:1.5px solid transparent; transition:all .13s; white-space:nowrap;
     }
     .action-btn:active { transform:scale(.98); }
@@ -641,7 +641,7 @@
     .action-form-input {
       width:100%; height:34px; padding:0 10px;
       border:1.5px solid var(--border-input); border-radius:8px;
-      font-size:13px; color:var(--text-primary); background:var(--bg-surface);
+      font-size:14px; color:var(--text-primary); background:var(--bg-surface);
       outline:none; font-family:'Google Sans', sans-serif;
     }
     .action-form-input:focus { border-color:#143AC3; box-shadow:0 0 0 3px rgba(20,58,195,.1); }
@@ -707,7 +707,7 @@
       display:flex; align-items:center; justify-content:center;
     }
     .dp-logistics-label { font-size:10px; color:var(--text-muted); font-weight:500; text-transform:uppercase; letter-spacing:.04em; }
-    .dp-logistics-value { font-size:12px; font-weight:600; color:var(--text-primary); line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .dp-logistics-value { font-size:12px; font-weight:600; color:var(--text-primary); line-height:1.43; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 
     .dp-section { padding:16px 20px 0; }
     .dp-section-label {
@@ -717,8 +717,8 @@
     }
     .dp-notes {
       border-left:3px solid var(--border-input); padding:10px 14px;
-      border-radius:0 6px 6px 0; font-size:13px; color:var(--text-primary);
-      line-height:1.6; background:var(--nav-item-hover-bg);
+      border-radius:0 6px 6px 0; font-size:14px; color:var(--text-primary);
+      line-height:1.43; background:var(--nav-item-hover-bg);
     }
     .dp-notes.empty { color:var(--text-muted); font-style:italic; }
 
@@ -732,7 +732,7 @@
       display:flex; align-items:center; justify-content:center;
       font-size:14px; font-weight:700; color:white;
     }
-    .dp-patient-name { font-size:14px; font-weight:700; color:var(--text-primary); }
+    .dp-patient-name { font-size:14px; font-weight:700; color:var(--text-primary); line-height:1.43; }
     .dp-patient-id { font-size:11px; color:var(--text-muted); margin-top:2px; }
     .dp-patient-profile-link {
       display:flex; align-items:center; gap:6px; padding:10px 16px;
@@ -750,7 +750,7 @@
     .dp-view-form { padding:16px; animation:fadeInDown .15s ease; }
     .dp-view-header {
       display:flex; align-items:center; gap:8px; margin-bottom:14px;
-      font-size:13px; font-weight:700;
+      font-size:14px; font-weight:700; line-height:1.2;
     }
     .dp-recurring-choice {
       margin-top:12px; padding:12px; border-radius:8px;
@@ -767,8 +767,8 @@
     }
     .dp-radio-opt:hover { background:rgba(220,38,38,0.06); }
     .dp-radio-opt input[type="radio"] { margin-top:3px; accent-color:#dc2626; flex-shrink:0; cursor:pointer; }
-    .dp-radio-text { font-size:12px; color:var(--text-primary); font-weight:500; line-height:1.4; }
-    .dp-radio-sub { font-size:11px; color:var(--text-muted); margin-top:1px; }
+    .dp-radio-text { font-size:12px; color:var(--text-primary); font-weight:500; line-height:1.43; }
+    .dp-radio-sub { font-size:12px; color:var(--text-secondary); margin-top:1px; line-height:1.43; }
 
     /* ── Date Picker Popover ── */
     #datePicker { user-select: none; }
@@ -805,7 +805,7 @@
     .dp-weekday  { text-align: center; font-size: 11px; font-weight: 600; color: var(--text-muted); padding: 4px 0; }
     .dp-days     { display: grid; grid-template-columns: repeat(7,1fr); }
     .dp-day {
-      position: relative; text-align: center; font-size: 13px;
+      position: relative; text-align: center; font-size: 12px;
       height: 32px; display: flex; align-items: center; justify-content: center;
       cursor: pointer; border-radius: 50%;
       color: var(--text-primary); transition: background 0.1s, color 0.1s;
@@ -845,7 +845,7 @@
     /* Month picker grid */
     .dp-months { display: grid; grid-template-columns: repeat(3,1fr); gap: 4px; }
     .dp-month {
-      text-align: center; font-size: 13px; font-weight: 500; padding: 10px 4px;
+      text-align: center; font-size: 12px; font-weight: 500; padding: 10px 4px;
       border-radius: 8px; cursor: pointer; color: var(--text-primary);
       transition: background 0.1s, color 0.1s;
     }
@@ -858,7 +858,7 @@
       display: flex; justify-content: center;
     }
     .dp-today-btn {
-      font-size: 13px; font-weight: 500; color: #143AC3;
+      font-size: 12px; font-weight: 500; color: #143AC3;
       background: transparent; border: none; cursor: pointer;
       padding: 4px 12px; border-radius: 8px; display: flex; align-items: center; gap: 5px;
       transition: background 0.12s;
@@ -893,8 +893,8 @@
       border-bottom:1px solid var(--border-subtle); background:var(--bg-surface);
     }
     .e-modal-title {
-      flex:1; font-size:15px; font-weight:700; color:var(--text-primary);
-      display:flex; align-items:center; gap:8px; min-width:0;
+      flex:1; font-size:16px; font-weight:700; color:var(--text-primary);
+      line-height:1.2; display:flex; align-items:center; gap:8px; min-width:0;
     }
     .e-modal-close {
       width:32px; height:32px; border-radius:8px; flex-shrink:0;
@@ -918,7 +918,7 @@
     .e-sum-scroll { flex:1; overflow-y:auto; }
     .e-sum-section { padding:11px 16px; border-bottom:1px solid var(--border-subtle); }
     .e-sum-label { font-size:10px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:5px; }
-    .e-sum-value { font-size:12px; color:var(--text-secondary); font-weight:500; display:flex; align-items:center; gap:6px; line-height:1.4; }
+    .e-sum-value { font-size:12px; color:var(--text-secondary); font-weight:500; display:flex; align-items:center; gap:6px; line-height:1.43; }
     .e-sum-value.e-set { color:var(--text-primary); }
     .e-sum-value.e-set i { color:#143AC3; }
     .e-sum-value i { font-size:14px; color:var(--text-muted); flex-shrink:0; }
@@ -948,7 +948,7 @@
       display:flex; align-items:center; gap:6px;
     }
     .e-field { display:flex; flex-direction:column; gap:5px; }
-    .e-field-label { font-size:12px; font-weight:500; color:var(--text-primary); }
+    .e-field-label { font-size:12px; font-weight:500; color:var(--text-primary); line-height:1.43; }
     .e-input {
       width:100%; height:40px; padding:0 12px;
       border:1.5px solid var(--border-input); border-radius:8px;
@@ -964,8 +964,8 @@
     .e-textarea {
       width:100%; min-height:88px; padding:10px 12px;
       border:1.5px solid var(--border-input); border-radius:8px;
-      font-size:13px; color:var(--text-primary); background:var(--bg-input);
-      outline:none; font-family:'Google Sans', sans-serif; resize:vertical; line-height:1.6;
+      font-size:14px; color:var(--text-primary); background:var(--bg-input);
+      outline:none; font-family:'Google Sans', sans-serif; resize:vertical; line-height:1.43;
       transition:border-color .15s, box-shadow .15s;
     }
     .e-textarea:focus { border-color:#143AC3; box-shadow:0 0 0 3px rgba(20,58,195,.1); }
@@ -1004,9 +1004,9 @@
     .e-room-status.busy  { background:#fef2f2; color:#b91c1c; border:1px solid #fecaca; }
     [data-theme="dark"] .e-room-status.avail { background:rgba(21,128,61,.12); border-color:rgba(21,128,61,.25); }
     [data-theme="dark"] .e-room-status.busy  { background:rgba(185,28,28,.12); border-color:rgba(185,28,28,.25); }
-    .e-room-name { font-size:13px; font-weight:700; color:var(--text-primary); margin-bottom:2px; }
-    .e-room-type { font-size:11px; color:var(--text-secondary); margin-bottom:6px; }
-    .e-room-cap  { font-size:11px; color:var(--text-secondary); display:flex; align-items:center; gap:4px; margin-bottom:5px; }
+    .e-room-name { font-size:14px; font-weight:700; color:var(--text-primary); margin-bottom:2px; line-height:1.43; }
+    .e-room-type { font-size:12px; color:var(--text-secondary); margin-bottom:6px; line-height:1.43; }
+    .e-room-cap  { font-size:12px; color:var(--text-secondary); display:flex; align-items:center; gap:4px; margin-bottom:5px; line-height:1.43; }
     .e-room-feats { display:flex; flex-wrap:wrap; gap:4px; }
     .e-room-feat { font-size:10px; color:var(--text-muted); background:var(--border-subtle); padding:1px 6px; border-radius:99px; }
     .e-room-card.e-room-sel .e-room-feat { background:rgba(20,58,195,.12); color:#143AC3; }
@@ -1026,8 +1026,8 @@
     .e-staff-card.e-staff-busy { opacity:.55; cursor:not-allowed; border-color:#fecaca !important; }
     [data-theme="dark"] .e-staff-card.e-staff-busy { border-color:rgba(239,68,68,.35) !important; }
     .e-staff-avatar { width:33px; height:33px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:white; }
-    .e-staff-name { font-size:12px; font-weight:600; color:var(--text-primary); line-height:1.2; }
-    .e-staff-role { font-size:10px; color:var(--text-secondary); margin-top:1px; }
+    .e-staff-name { font-size:14px; font-weight:600; color:var(--text-primary); line-height:1.43; }
+    .e-staff-role { font-size:12px; color:var(--text-secondary); margin-top:1px; line-height:1.43; }
     .e-staff-badge { position:absolute; top:7px; right:7px; font-size:10px; font-weight:600; padding:1px 6px; border-radius:99px; display:flex; align-items:center; gap:3px; }
     .e-staff-badge.avail { background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0; }
     .e-staff-badge.busy  { background:#fef2f2; color:#b91c1c; border:1px solid #fecaca; }
@@ -1155,11 +1155,6 @@
       Appointments
     </a>
 
-    <a class="nav-item" href="appointments2.html">
-      <i class="ti ti-calendar-stats" style="font-size:16px;"></i>
-      Appointments2
-    </a>
-
     <a class="nav-item" href="#" onclick="return false;">
       <i class="ti ti-users" style="font-size:16px;"></i>
       Patients
@@ -1237,7 +1232,7 @@
           <span id="filterActiveDot" style="display:none;position:absolute;top:3px;right:3px;width:7px;height:7px;border-radius:50%;background:#143AC3;border:1.5px solid white;"></span>
         </button>
         <!-- New appointment -->
-        <a href="new-appointment.html"
+        <a href="new-appointment2.html"
           style="background:var(--cta-gradient);border-radius:8px;box-shadow:0 2px 8px rgba(20,58,195,.25);text-decoration:none;height:40px;padding:0 16px;font-size:14px;font-weight:600;"
           class="flex items-center gap-2 text-white hover:opacity-90 transition-opacity">
           <i class="ti ti-plus" style="font-size:16px;"></i>
@@ -1288,7 +1283,7 @@
     </div>
 
     <!-- ==================== TYPE LEGEND ==================== -->
-    <!-- <div id="typeLegend" class="flex items-center gap-4 flex-wrap px-8 py-2.5">
+    <div id="typeLegend" class="flex items-center gap-4 flex-wrap px-8 py-2.5">
       <span class="flex items-center gap-1.5 text-xs font-medium" style="color:#9A3412;">
         <span class="w-2.5 h-2.5 rounded-sm shrink-0" style="background:#FFF3EE;border-left:3px solid #9A3412;"></span>
         <i class="ti ti-map-pin" style="font-size:11px;"></i> Facility Tour
@@ -1309,7 +1304,7 @@
         <span class="w-2.5 h-2.5 rounded-sm shrink-0" style="background:#F1F5F9;border-left:3px solid #1E293B;"></span>
         <i class="ti ti-flask" style="font-size:11px;"></i> Medical Test
       </span>
-    </div> -->
+    </div>
 
     <!-- ==================== CALENDAR AREA ==================== -->
     <div id="calendarAreaWrap">
@@ -1407,49 +1402,49 @@ function wd(n) {
 
 let appointments = [
   // Mon (wd0)
-  { id: 1,  date: wd(0), time: '08:30', patient: 'David Park',      type: 'Facility Tour',            provider: 'Nurse Kelly',    room: 'Room 101', status: 'Completed' },
-  { id: 2,  date: wd(0), time: '09:00', patient: 'Fatima Yusuf',    type: 'Counselling Session',      provider: 'Dr. Emily Chen', room: 'Room 102', status: 'Completed', recurring: true },
-  { id: 3,  date: wd(0), time: '09:00', patient: 'Group Session',   type: 'Group Therapy',            provider: 'Dr. Patel',      room: 'Room 205', status: 'Completed', groupSize: 6 },
-  { id: 4,  date: wd(0), time: '10:30', patient: 'Leon Hart',       type: 'Psychological Evaluation', provider: 'Dr. Patel',      room: 'Room 203', status: 'Completed' },
-  { id: 5,  date: wd(0), time: '13:00', patient: 'Priya Nair',      type: 'Medical Test',             provider: 'Nurse Kelly',    room: 'Room 101', status: 'Completed' },
-  { id: 6,  date: wd(0), time: '15:00', patient: 'Owen Fletcher',   type: 'Counselling Session',      provider: 'Dr. Emily Chen', room: 'Room 102', status: 'Completed' },
+  { id: 1,  date: wd(0), time: '08:30', patient: 'David Park',      name: 'Initial Facility Tour',          type: 'Facility Tour',            provider: 'Nurse Kelly',    room: 'Room 101', status: 'Completed' },
+  { id: 2,  date: wd(0), time: '09:00', patient: 'Fatima Yusuf',    name: 'Fatima Yusuf – Session 1',       type: 'Counselling Session',      provider: 'Dr. Emily Chen', room: 'Room 102', status: 'Completed', recurring: true },
+  { id: 3,  date: wd(0), time: '09:00', patient: 'Group Session',   name: 'Morning Group – Week 1',         type: 'Group Therapy',            provider: 'Dr. Patel',      room: 'Room 205', status: 'Completed', groupSize: 6 },
+  { id: 4,  date: wd(0), time: '10:30', patient: 'Leon Hart',       name: 'Leon Hart – Initial Eval',       type: 'Psychological Evaluation', provider: 'Dr. Patel',      room: 'Room 203', status: 'Completed' },
+  { id: 5,  date: wd(0), time: '13:00', patient: 'Priya Nair',      name: 'Priya Nair – Blood Panel',       type: 'Medical Test',             provider: 'Nurse Kelly',    room: 'Room 101', status: 'Completed' },
+  { id: 6,  date: wd(0), time: '15:00', patient: 'Owen Fletcher',   name: 'Owen Fletcher – Session 1',      type: 'Counselling Session',      provider: 'Dr. Emily Chen', room: 'Room 102', status: 'Completed' },
   // Tue (wd1)
-  { id: 7,  date: wd(1), time: '08:00', patient: 'Sarah Moore',     type: 'Counselling Session',      provider: 'Dr. Emily Chen', room: 'Room 102', status: 'Completed' },
-  { id: 8,  date: wd(1), time: '09:00', patient: 'Carlos Rivera',   type: 'Psychological Evaluation', provider: 'Dr. Patel',      room: 'Room 203', status: 'Completed' },
-  { id: 9,  date: wd(1), time: '09:00', patient: 'Group Session',   type: 'Group Therapy',            provider: 'Dr. Patel',      room: 'Room 205', status: 'Completed', groupSize: 4, recurring: true },
-  { id: 10, date: wd(1), time: '11:00', patient: 'Marcus Bell',     type: 'Medical Test',             provider: 'Nurse Kelly',    room: 'Room 101', status: 'Completed' },
-  { id: 11, date: wd(1), time: '13:30', patient: 'Anika Patel',     type: 'Facility Tour',            provider: 'Nurse Kelly',    room: 'Room 101', status: 'Completed' },
-  { id: 12, date: wd(1), time: '15:00', patient: 'Brian Okafor',    type: 'Counselling Session',      provider: 'Dr. Emily Chen', room: 'Room 102', status: 'Completed' },
+  { id: 7,  date: wd(1), time: '08:00', patient: 'Sarah Moore',     name: 'Sarah Moore – Session 2',        type: 'Counselling Session',      provider: 'Dr. Emily Chen', room: 'Room 102', status: 'Completed' },
+  { id: 8,  date: wd(1), time: '09:00', patient: 'Carlos Rivera',   name: 'Carlos Rivera – Initial Eval',   type: 'Psychological Evaluation', provider: 'Dr. Patel',      room: 'Room 203', status: 'Completed' },
+  { id: 9,  date: wd(1), time: '09:00', patient: 'Group Session',   name: 'Morning Group – Week 2',         type: 'Group Therapy',            provider: 'Dr. Patel',      room: 'Room 205', status: 'Completed', groupSize: 4, recurring: true },
+  { id: 10, date: wd(1), time: '11:00', patient: 'Marcus Bell',     name: 'Marcus Bell – Follow-up Labs',   type: 'Medical Test',             provider: 'Nurse Kelly',    room: 'Room 101', status: 'Completed' },
+  { id: 11, date: wd(1), time: '13:30', patient: 'Anika Patel',     name: 'Anika Patel – Facility Tour',    type: 'Facility Tour',            provider: 'Nurse Kelly',    room: 'Room 101', status: 'Completed' },
+  { id: 12, date: wd(1), time: '15:00', patient: 'Brian Okafor',    name: 'Brian Okafor – Session 1',       type: 'Counselling Session',      provider: 'Dr. Emily Chen', room: 'Room 102', status: 'Completed' },
   // Wed (wd2)
-  { id: 13, date: wd(2), time: '09:00', patient: 'Maria Santos',    type: 'Counselling Session',      provider: 'Dr. Emily Chen', room: 'Room 102', status: 'Completed' },
-  { id: 14, date: wd(2), time: '09:00', patient: 'Group Session',   type: 'Group Therapy',            provider: 'Dr. Patel',      room: 'Room 205', status: 'Completed', groupSize: 7 },
-  { id: 15, date: wd(2), time: '09:00', patient: 'James Thornton',  type: 'Facility Tour',            provider: 'Nurse Kelly',    room: 'Room 101', status: 'Completed' },
-  { id: 16, date: wd(2), time: '11:30', patient: 'Lily Chang',      type: 'Psychological Evaluation', provider: 'Dr. Patel',      room: 'Room 203', status: 'Completed' },
-  { id: 17, date: wd(2), time: '13:00', patient: 'Robert Kim',      type: 'Medical Test',             provider: 'Nurse Kelly',    room: 'Room 101', status: 'Completed' },
-  { id: 18, date: wd(2), time: '15:00', patient: 'Raj Mehta',       type: 'Facility Tour',            provider: 'Nurse Kelly',    room: 'Room 101', status: 'Completed' },
+  { id: 13, date: wd(2), time: '09:00', patient: 'Maria Santos',    name: 'Maria Santos – Session 3',       type: 'Counselling Session',      provider: 'Dr. Emily Chen', room: 'Room 102', status: 'Completed' },
+  { id: 14, date: wd(2), time: '09:00', patient: 'Group Session',   name: 'Morning Group – Week 3',         type: 'Group Therapy',            provider: 'Dr. Patel',      room: 'Room 205', status: 'Completed', groupSize: 7 },
+  { id: 15, date: wd(2), time: '09:00', patient: 'James Thornton',  name: 'James Thornton – Facility Tour', type: 'Facility Tour',            provider: 'Nurse Kelly',    room: 'Room 101', status: 'Completed' },
+  { id: 16, date: wd(2), time: '11:30', patient: 'Lily Chang',      name: 'Lily Chang – Assessment',        type: 'Psychological Evaluation', provider: 'Dr. Patel',      room: 'Room 203', status: 'Completed' },
+  { id: 17, date: wd(2), time: '13:00', patient: 'Robert Kim',      name: 'Robert Kim – Screening',         type: 'Medical Test',             provider: 'Nurse Kelly',    room: 'Room 101', status: 'Completed' },
+  { id: 18, date: wd(2), time: '15:00', patient: 'Raj Mehta',       name: 'Raj Mehta – Facility Tour',      type: 'Facility Tour',            provider: 'Nurse Kelly',    room: 'Room 101', status: 'Completed' },
   // Wed (wd2) — cancelled demo
-  { id: 36, date: wd(2), time: '14:00', patient: 'Chandni Best',    type: 'Counselling Session',      provider: 'Dr. Emily Chen', room: 'Room 102', status: 'Cancelled' },
+  { id: 36, date: wd(2), time: '14:00', patient: 'Chandni Best',    name: 'Chandni Best – Session 1',       type: 'Counselling Session',      provider: 'Dr. Emily Chen', room: 'Room 102', status: 'Cancelled' },
   // Thu — TODAY (wd3)
-  { id: 19, date: wd(3), time: '08:30', patient: 'Emma Thompson',   type: 'Counselling Session',      provider: 'Dr. Emily Chen', room: 'Room 102', status: 'Ongoing',   recurring: true, notes: 'Patient expressed anxiety around upcoming family visit. Continue monitoring stress indicators closely.' },
-  { id: 20, date: wd(3), time: '08:30', patient: 'Group Session',   type: 'Group Therapy',            provider: 'Dr. Patel',      room: 'Room 205', status: 'Ongoing',   groupSize: 5, notes: 'Week 4 of 8-week program. Strong group cohesion noted. Encourage peer sharing exercises.' },
-  { id: 21, date: wd(3), time: '10:00', patient: 'Michael Brown',   type: 'Facility Tour',            provider: 'Nurse Kelly',    room: 'Room 101', status: 'Upcoming' },
-  { id: 22, date: wd(3), time: '10:00', patient: 'Diane Foster',    type: 'Psychological Evaluation', provider: 'Dr. Patel',      room: 'Room 203', status: 'Upcoming' },
-  { id: 23, date: wd(3), time: '11:30', patient: 'Kwame Asante',    type: 'Medical Test',             provider: 'Nurse Kelly',    room: 'Room 101', status: 'Upcoming' },
-  { id: 24, date: wd(3), time: '13:00', patient: 'Nora Kimani',     type: 'Counselling Session',      provider: 'Dr. Emily Chen', room: 'Room 102', status: 'Upcoming',  recurring: true, notes: 'Medication adjusted last week. Check for side effects — drowsiness and appetite changes reported.' },
-  { id: 25, date: wd(3), time: '15:30', patient: 'Hugo Reyes',      type: 'Psychological Evaluation', provider: 'Dr. Patel',      room: 'Room 203', status: 'Upcoming' },
+  { id: 19, date: wd(3), time: '08:30', patient: 'Emma Thompson',   name: 'Emma Thompson – Session 4',      type: 'Counselling Session',      provider: 'Dr. Emily Chen', room: 'Room 102', status: 'Ongoing',   recurring: true, notes: 'Patient expressed anxiety around upcoming family visit. Continue monitoring stress indicators closely.' },
+  { id: 20, date: wd(3), time: '08:30', patient: 'Group Session',   name: 'Morning Group – Week 4',         type: 'Group Therapy',            provider: 'Dr. Patel',      room: 'Room 205', status: 'Ongoing',   groupSize: 5, notes: 'Week 4 of 8-week program. Strong group cohesion noted. Encourage peer sharing exercises.' },
+  { id: 21, date: wd(3), time: '10:00', patient: 'Michael Brown',   name: 'Michael Brown – Facility Tour',  type: 'Facility Tour',            provider: 'Nurse Kelly',    room: 'Room 101', status: 'Upcoming' },
+  { id: 22, date: wd(3), time: '10:00', patient: 'Diane Foster',    name: 'Diane Foster – Initial Eval',    type: 'Psychological Evaluation', provider: 'Dr. Patel',      room: 'Room 203', status: 'Upcoming' },
+  { id: 23, date: wd(3), time: '11:30', patient: 'Kwame Asante',    name: 'Kwame Asante – Screening',       type: 'Medical Test',             provider: 'Nurse Kelly',    room: 'Room 101', status: 'Upcoming' },
+  { id: 24, date: wd(3), time: '13:00', patient: 'Nora Kimani',     name: 'Nora Kimani – Session 2',        type: 'Counselling Session',      provider: 'Dr. Emily Chen', room: 'Room 102', status: 'Upcoming',  recurring: true, notes: 'Medication adjusted last week. Check for side effects — drowsiness and appetite changes reported.' },
+  { id: 25, date: wd(3), time: '15:30', patient: 'Hugo Reyes',      name: 'Hugo Reyes – Follow-up',         type: 'Psychological Evaluation', provider: 'Dr. Patel',      room: 'Room 203', status: 'Upcoming' },
   // Fri (wd4)
-  { id: 26, date: wd(4), time: '09:00', patient: 'John Davis',      type: 'Psychological Evaluation', provider: 'Dr. Patel',      room: 'Room 203', status: 'Pending' },
-  { id: 27, date: wd(4), time: '10:30', patient: 'Patricia Lee',    type: 'Counselling Session',      provider: 'Dr. Emily Chen', room: 'Room 102', status: 'Upcoming' },
-  { id: 28, date: wd(4), time: '12:00', patient: 'Group Session',   type: 'Group Therapy',            provider: 'Dr. Patel',      room: 'Room 205', status: 'Upcoming',  groupSize: 9 },
-  { id: 29, date: wd(4), time: '14:00', patient: 'Serena Walsh',    type: 'Medical Test',             provider: 'Nurse Kelly',    room: 'Room 101', status: 'Upcoming' },
-  { id: 30, date: wd(4), time: '16:00', patient: 'Theo Andersen',   type: 'Facility Tour',            provider: 'Nurse Kelly',    room: 'Room 101', status: 'Pending' },
+  { id: 26, date: wd(4), time: '09:00', patient: 'John Davis',      name: 'John Davis – Full Eval',         type: 'Psychological Evaluation', provider: 'Dr. Patel',      room: 'Room 203', status: 'Pending' },
+  { id: 27, date: wd(4), time: '10:30', patient: 'Patricia Lee',    name: 'Patricia Lee – Session 1',       type: 'Counselling Session',      provider: 'Dr. Emily Chen', room: 'Room 102', status: 'Upcoming' },
+  { id: 28, date: wd(4), time: '12:00', patient: 'Group Session',   name: 'Afternoon Group – Week 1',       type: 'Group Therapy',            provider: 'Dr. Patel',      room: 'Room 205', status: 'Upcoming',  groupSize: 9 },
+  { id: 29, date: wd(4), time: '14:00', patient: 'Serena Walsh',    name: 'Serena Walsh – Bloodwork',       type: 'Medical Test',             provider: 'Nurse Kelly',    room: 'Room 101', status: 'Upcoming' },
+  { id: 30, date: wd(4), time: '16:00', patient: 'Theo Andersen',   name: 'Theo Andersen – Facility Tour',  type: 'Facility Tour',            provider: 'Nurse Kelly',    room: 'Room 101', status: 'Pending' },
   // Sat (wd5)
-  { id: 31, date: wd(5), time: '09:00', patient: 'Nora Kimani',     type: 'Counselling Session',      provider: 'Dr. Emily Chen', room: 'Room 102', status: 'Upcoming' },
-  { id: 32, date: wd(5), time: '11:00', patient: 'Group Session',   type: 'Group Therapy',            provider: 'Dr. Patel',      room: 'Room 205', status: 'Upcoming',  groupSize: 6 },
-  { id: 33, date: wd(5), time: '13:00', patient: 'Isla Brennan',    type: 'Medical Test',             provider: 'Nurse Kelly',    room: 'Room 101', status: 'Pending' },
+  { id: 31, date: wd(5), time: '09:00', patient: 'Nora Kimani',     name: 'Nora Kimani – Session 3',        type: 'Counselling Session',      provider: 'Dr. Emily Chen', room: 'Room 102', status: 'Upcoming' },
+  { id: 32, date: wd(5), time: '11:00', patient: 'Group Session',   name: 'Weekend Group – Session 1',      type: 'Group Therapy',            provider: 'Dr. Patel',      room: 'Room 205', status: 'Upcoming',  groupSize: 6 },
+  { id: 33, date: wd(5), time: '13:00', patient: 'Isla Brennan',    name: 'Isla Brennan – Screening',       type: 'Medical Test',             provider: 'Nurse Kelly',    room: 'Room 101', status: 'Pending' },
   // Sun (wd6)
-  { id: 34, date: wd(6), time: '10:00', patient: 'Theo Andersen',   type: 'Facility Tour',            provider: 'Nurse Kelly',    room: 'Room 101', status: 'Upcoming' },
-  { id: 35, date: wd(6), time: '13:00', patient: 'Isla Brennan',    type: 'Counselling Session',      provider: 'Dr. Emily Chen', room: 'Room 102', status: 'Pending' },
+  { id: 34, date: wd(6), time: '10:00', patient: 'Theo Andersen',   name: 'Theo Andersen – Facility Tour',  type: 'Facility Tour',            provider: 'Nurse Kelly',    room: 'Room 101', status: 'Upcoming' },
+  { id: 35, date: wd(6), time: '13:00', patient: 'Isla Brennan',    name: 'Isla Brennan – Session 1',       type: 'Counselling Session',      provider: 'Dr. Emily Chen', room: 'Room 102', status: 'Pending' },
 ];
 let nextId = 37;
 
@@ -1550,6 +1545,47 @@ function timeToHour(time24) {
   return h + m / 60;
 }
 
+// ─── TIME-BASED GRID HELPERS ─────────────────────────────────────────────────────
+const HOUR_HEIGHT = 64; // px per hour
+
+const TYPE_DURATIONS = {
+  'Facility Tour': 45, 'Counselling Session': 60,
+  'Group Therapy': 90, 'Psychological Evaluation': 90, 'Medical Test': 30,
+};
+
+function timeToMins(t) { const [h,m] = t.split(':').map(Number); return h*60+m; }
+
+function apptEndTime(appt) {
+  if (appt.endTime) return appt.endTime;
+  const dur = TYPE_DURATIONS[appt.type] || 60;
+  const end = timeToMins(appt.time) + dur;
+  return `${String(Math.floor(end/60)).padStart(2,'0')}:${String(end%60).padStart(2,'0')}`;
+}
+
+function apptTopPx(appt)    { return (timeToMins(appt.time) - HOURS[0]*60) / 60 * HOUR_HEIGHT; }
+function apptHeightPx(appt) { return Math.max((timeToMins(apptEndTime(appt)) - timeToMins(appt.time)) / 60 * HOUR_HEIGHT, 22); }
+
+// Assigns {col, totalCols} for each appt in a day so overlapping cards sit side-by-side
+function layoutDayAppts(appts) {
+  if (!appts.length) return [];
+  const sorted = [...appts].sort((a,b) => timeToMins(a.time) - timeToMins(b.time));
+  const colEnds = []; // last end-minute per column
+  const items = sorted.map(appt => {
+    const start = timeToMins(appt.time), end = timeToMins(apptEndTime(appt));
+    let col = colEnds.findIndex(e => e <= start);
+    if (col === -1) { col = colEnds.length; }
+    colEnds[col] = end;
+    return { appt, col };
+  });
+  // second pass: totalCols = max overlapping column count for each item
+  items.forEach(item => {
+    const s = timeToMins(item.appt.time), e = timeToMins(apptEndTime(item.appt));
+    item.totalCols = items.filter(o => timeToMins(o.appt.time) < e && timeToMins(apptEndTime(o.appt)) > s)
+                         .reduce((mx, o) => Math.max(mx, o.col + 1), 1);
+  });
+  return items;
+}
+
 function dateStr(d) {
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
@@ -1583,7 +1619,8 @@ function getFiltered() {
 }
 
 // ─── APPOINTMENT CARD HTML ────────────────────────────────────────────────────────
-function apptCardHTML(appt) {
+function apptCardHTML(appt, opts = {}) {
+  const { posStyle = '', compact = false } = opts;
   const t   = getTypeConfig(appt.type);
   const meta = TYPE_META[appt.type] || { icon: 'ti-calendar', color: t.border };
   const ds  = getDisplayStatus(appt);
@@ -1617,16 +1654,22 @@ function apptCardHTML(appt) {
     ? `<i class="ti ti-users" style="font-size:11px;margin-right:3px;color:var(--text-secondary);"></i>${appt.groupSize} patients`
     : appt.patient;
 
+  const displayName = appt.name || (appt.groupSize ? `${appt.groupSize} patients` : appt.patient);
+
   return `
-    <div class="appt-card rounded-lg p-2 mb-1 select-none" role="button" aria-label="${appt.type}: ${appt.groupSize ? appt.groupSize+' patients' : appt.patient}"
-         style="background:${t.bg};${borderStyle}${cardOpacity}"
+    <div class="appt-card rounded-lg p-2 mb-1 select-none" role="button" aria-label="${displayName}"
+         style="background:${t.bg};${borderStyle}${cardOpacity}${posStyle ? posStyle : ''}"
          onclick="openDetailPanel(${appt.id})">
-      <div class="flex items-start justify-between gap-1">
-        <span class="text-xs font-semibold leading-tight flex items-center gap-1" style="color:${t.text};${typeStrike}">
-          <i class="ti ${meta.icon}" style="font-size:11px;flex-shrink:0;"></i>${appt.type}
-        </span>
-        <span class="flex items-center gap-1 shrink-0">
-          ${appt.recurring ? `<span title="Recurring" style="color:${t.text};opacity:0.7;line-height:1;"><i class="ti ti-repeat" style="font-size:11px;"></i></span>` : ''}
+      <div class="flex items-start justify-between gap-1.5" style="height:100%;">
+        <div style="min-width:0;flex:1;overflow:hidden;">
+          <div style="font-size:12px;font-weight:700;line-height:1.3;color:${t.text};${typeStrike};${compact ? 'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;' : 'word-break:break-word;'}">${displayName}</div>
+          ${!compact ? `<div style="display:flex;align-items:center;gap:3px;margin-top:3px;opacity:0.6;">
+            <i class="ti ${meta.icon}" style="font-size:10px;flex-shrink:0;"></i>
+            <span style="font-size:10px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${appt.type}</span>
+          </div>` : ''}
+        </div>
+        <span class="flex items-center gap-1 shrink-0 ml-1" style="padding-top:1px;">
+          ${appt.recurring ? `<span title="Recurring" style="color:${t.text};opacity:0.6;line-height:1;"><i class="ti ti-repeat" style="font-size:10px;"></i></span>` : ''}
           ${chip}
         </span>
       </div>
@@ -1638,63 +1681,66 @@ function renderWeekView() {
   const days = getWeekDays(currentWeekStart);
   const filtered = getFiltered();
 
-  // Update title
   document.getElementById('viewTitleText').textContent = `${DAY_NAMES[0]}, ${MONTH_NAMES[days[0].getMonth()]} ${days[0].getDate()} – ${DAY_NAMES[6]}, ${MONTH_NAMES[days[6].getMonth()]} ${days[6].getDate()}, ${days[6].getFullYear()}`;
 
-  let html = `<div class="overflow-x-auto"><div id="weekTableWrapper" style="position:relative;">
-    <table class="w-full border-separate border-spacing-0" style="min-width:900px;">
-      <thead>
-        <tr>
-          <th class="w-16 bg-white sticky left-0 z-10 border-b border-gray-100"></th>`;
+  const totalH = HOURS.length * HOUR_HEIGHT;
+
+  // ── Header row ──
+  let html = `<div class="overflow-x-auto"><div id="weekTableWrapper" style="position:relative;min-width:900px;">
+    <div style="display:flex;border-bottom:1px solid var(--border-subtle);position:sticky;top:0;z-index:30;background:var(--bg-surface);">
+      <div style="width:56px;flex-shrink:0;"></div>`;
 
   days.forEach((d, i) => {
     const isToday = isSameDay(d, TODAY);
-    html += `<th class="text-center py-3 px-1 border-b border-gray-100" style="background:${isToday ? 'var(--today-bg)' : 'var(--bg-surface)'}">
-      <div class="text-xs font-medium" style="color:var(--text-secondary);">${DAY_NAMES[i]}</div>
-      <div class="text-lg font-bold" style="color:${isToday ? 'var(--today-color)' : (d.getDay() === 0 || d.getDay() === 6) ? '#f64f29' : 'var(--text-primary)'};">${d.getDate()}</div>
-      ${isToday ? '<div class="w-1.5 h-1.5 rounded-full mx-auto -mt-1" style="background:var(--today-color);"></div>' : ''}
-    </th>`;
+    html += `<div style="flex:1;text-align:center;padding:10px 4px 8px;background:${isToday ? 'var(--today-bg)' : 'var(--bg-surface)'};">
+      <div style="font-size:11px;font-weight:500;color:var(--text-secondary);">${DAY_NAMES[i]}</div>
+      <div style="font-size:18px;font-weight:700;color:${isToday ? 'var(--today-color)' : (d.getDay()===0||d.getDay()===6) ? '#f64f29' : 'var(--text-primary)'};">${d.getDate()}</div>
+      ${isToday ? `<div style="width:6px;height:6px;border-radius:50%;background:var(--today-color);margin:0 auto;margin-top:-2px;"></div>` : ''}
+    </div>`;
   });
 
-  html += `</tr></thead><tbody>`;
+  html += `</div>
+    <!-- Time grid -->
+    <div id="weekGridRows" style="display:flex;position:relative;">
+      <!-- Time gutter -->
+      <div style="width:56px;flex-shrink:0;position:relative;height:${totalH}px;">`;
 
-  HOURS.forEach(hour => {
-    html += `<tr id="week-hour-row-${hour}">
-      <td class="sticky left-0 z-10 text-right pr-3 pt-2 align-top border-b border-gray-100" style="background:var(--bg-surface);">
-        <span class="text-xs font-medium" style="color:var(--text-secondary);">${hour === 12 ? '12 PM' : hour < 12 ? hour+' AM' : (hour-12)+' PM'}</span>
-      </td>`;
+  HOURS.forEach((hour, i) => {
+    const label = hour === 12 ? '12 PM' : hour < 12 ? `${hour} AM` : `${hour-12} PM`;
+    html += `<div style="position:absolute;top:${i*HOUR_HEIGHT - 8}px;right:8px;font-size:11px;font-weight:500;color:var(--text-secondary);white-space:nowrap;">${i === 0 ? '' : label}</div>`;
+  });
 
-    days.forEach(d => {
-      const isToday = isSameDay(d, TODAY);
-      const ds = dateStr(d);
-      const slotAppts = filtered.filter(a => {
-        if (a.date !== ds) return false;
-        const h = Math.floor(timeToHour(a.time));
-        return h === hour;
-      });
+  html += `</div>`;
 
-      const MAX_VISIBLE = 4;
-      const overflow = slotAppts.length > MAX_VISIBLE ? slotAppts.length - MAX_VISIBLE : 0;
-      const visible = overflow ? slotAppts.slice(0, MAX_VISIBLE) : slotAppts;
+  // ── Day columns ──
+  days.forEach(d => {
+    const isToday = isSameDay(d, TODAY);
+    const ds = dateStr(d);
+    const dayAppts = filtered.filter(a => a.date === ds);
+    const layout = layoutDayAppts(dayAppts);
 
-      html += `<td class="border-b border-gray-100 border-r border-gray-50 align-top px-1 pt-1 pb-0.5" style="background:${isToday ? 'var(--today-bg)' : 'var(--bg-surface)'};min-height:64px;">`;
-      visible.forEach(a => { html += apptCardHTML(a); });
-      if (overflow > 0) {
-        const overflowIds = JSON.stringify(slotAppts.slice(MAX_VISIBLE).map(a => a.id));
-        html += `<div class="overflow-badge text-xs font-semibold px-2 py-1 rounded-md cursor-pointer text-center mt-0.5"
-          style="background:var(--today-bg);color:var(--today-color);border:1px dashed var(--today-color);"
-          onclick="event.stopPropagation();openOverflowModal(${JSON.stringify(dateStr(d))}, ${hour}, ${JSON.stringify(overflowIds)})"
-          title="Show ${overflow} more appointments">+${overflow} more</div>`;
-      }
-      html += `</td>`;
+    html += `<div style="flex:1;position:relative;height:${totalH}px;border-left:1px solid var(--border-subtle);background:${isToday ? 'var(--today-bg)' : 'var(--bg-surface)'};">`;
+
+    // Hour grid lines
+    HOURS.forEach((_, i) => {
+      html += `<div style="position:absolute;top:${i*HOUR_HEIGHT}px;left:0;right:0;height:1px;background:var(--border-subtle);pointer-events:none;"></div>`;
     });
 
-    html += `</tr>`;
+    // Cards
+    layout.forEach(({ appt, col, totalCols }) => {
+      const top    = apptTopPx(appt);
+      const height = apptHeightPx(appt);
+      const pct    = 100 / totalCols;
+      const compact = height < 50;
+      const posStyle = `position:absolute;top:${top}px;height:${height}px;left:calc(${col*pct}% + 2px);width:calc(${pct}% - 4px);margin:0;box-sizing:border-box;overflow:hidden;`;
+      html += apptCardHTML(appt, { posStyle, compact });
+    });
+
+    html += `</div>`;
   });
 
-  html += `</tbody></table></div></div>`;
+  html += `</div></div></div>`;
 
-  // Check for no results
   const weekDates = days.map(d => dateStr(d));
   const weekAppts = filtered.filter(a => weekDates.includes(a.date));
   if (weekAppts.length === 0 && Object.keys(activeFilters).some(k => activeFilters[k])) {
@@ -1714,6 +1760,9 @@ function renderDayView() {
   const dayLabel = d.toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric', year:'numeric'});
   document.getElementById('viewTitleText').textContent = dayLabel;
 
+  const totalH = HOURS.length * HOUR_HEIGHT;
+  const layout  = layoutDayAppts(filtered);
+
   let html = `<div class="w-full">
     <div class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
       <div class="px-5 py-3 border-b border-gray-100 flex items-center gap-2" style="background:${isToday ? 'var(--today-bg)' : 'var(--bg-surface)'};">
@@ -1727,32 +1776,36 @@ function renderDayView() {
       <div class="overflow-y-auto" style="max-height:calc(100vh - 320px);">`;
 
   if (filtered.length === 0) {
-    html += `<div class="py-16 text-center"><div class="text-4xl mb-3">📅</div><div class="font-medium" style="color:#666689;">No appointments this day</div><div class="text-sm mt-1" style="color:#666689;">Enjoy the free day or <a href="new-appointment.html" style="color:#143AC3;" class="underline">book an appointment</a></div></div>`;
+    html += `<div class="py-16 text-center"><div class="text-4xl mb-3">📅</div><div class="font-medium" style="color:#666689;">No appointments this day</div><div class="text-sm mt-1" style="color:#666689;">Enjoy the free day or <a href="new-appointment2.html" style="color:#143AC3;" class="underline">book an appointment</a></div></div>`;
   } else {
-    HOURS.forEach(hour => {
-      const slotAppts = filtered.filter(a => Math.floor(timeToHour(a.time)) === hour);
-      const label = hour === 12 ? '12:00 PM' : hour < 12 ? `${hour}:00 AM` : `${hour-12}:00 PM`;
+    html += `<div id="dayGridRows" style="display:flex;position:relative;">
+      <!-- Time gutter -->
+      <div style="width:64px;flex-shrink:0;position:relative;height:${totalH}px;">`;
 
-      const MAX_VISIBLE_DAY = 4;
-      const overflowDay = slotAppts.length > MAX_VISIBLE_DAY ? slotAppts.length - MAX_VISIBLE_DAY : 0;
-      const visibleDay = overflowDay ? slotAppts.slice(0, MAX_VISIBLE_DAY) : slotAppts;
-
-      html += `<div class="flex border-b border-gray-50" id="day-hour-${hour}" style="border-color:var(--border-subtle);position:relative;">
-        <div class="w-20 shrink-0 pt-3 pr-3 text-right">
-          <span class="text-xs font-medium" style="color:var(--text-secondary);">${label}</span>
-        </div>
-        <div class="flex-1 py-1.5 px-2 min-h-16">`;
-
-      visibleDay.forEach(a => { html += apptCardHTML(a); });
-      if (overflowDay > 0) {
-        const overflowDayIds = JSON.stringify(slotAppts.slice(MAX_VISIBLE_DAY).map(a => a.id));
-        html += `<div class="overflow-badge text-xs font-semibold px-2 py-1 rounded-md cursor-pointer text-center mt-0.5"
-          style="background:var(--today-bg);color:var(--today-color);border:1px dashed var(--today-color);"
-          onclick="event.stopPropagation();openOverflowModal(${JSON.stringify(dateStr(d))}, ${hour}, ${JSON.stringify(overflowDayIds)})"
-          title="Show ${overflowDay} more appointments">+${overflowDay} more</div>`;
-      }
-      html += `</div></div>`;
+    HOURS.forEach((hour, i) => {
+      const label = hour === 12 ? '12 PM' : hour < 12 ? `${hour} AM` : `${hour-12} PM`;
+      html += `<div style="position:absolute;top:${i*HOUR_HEIGHT - 8}px;right:10px;font-size:11px;font-weight:500;color:var(--text-secondary);white-space:nowrap;">${i === 0 ? '' : label}</div>
+               <div style="position:absolute;top:${i*HOUR_HEIGHT}px;left:0;right:0;height:1px;background:var(--border-subtle);pointer-events:none;"></div>`;
     });
+
+    html += `</div>
+      <!-- Cards area -->
+      <div style="flex:1;position:relative;height:${totalH}px;border-left:1px solid var(--border-subtle);">`;
+
+    HOURS.forEach((_, i) => {
+      html += `<div style="position:absolute;top:${i*HOUR_HEIGHT}px;left:0;right:0;height:1px;background:var(--border-subtle);pointer-events:none;"></div>`;
+    });
+
+    layout.forEach(({ appt, col, totalCols }) => {
+      const top    = apptTopPx(appt);
+      const height = apptHeightPx(appt);
+      const pct    = 100 / totalCols;
+      const compact = height < 50;
+      const posStyle = `position:absolute;top:${top}px;height:${height}px;left:calc(${col*pct}% + 4px);width:calc(${pct}% - 8px);margin:0;box-sizing:border-box;overflow:hidden;`;
+      html += apptCardHTML(appt, { posStyle, compact });
+    });
+
+    html += `</div></div>`;
   }
 
   html += `</div></div></div>`;
@@ -1847,7 +1900,7 @@ function emptyStateHTML() {
     </div>
     <h3 class="text-lg font-semibold mb-1" style="color:#121219;">No appointments found</h3>
     <p class="text-sm mb-4" style="color:#666689;">Try adjusting your filters or book a new appointment</p>
-    <a href="new-appointment.html" class="px-4 py-2 text-white text-sm font-medium rounded-lg transition-colors hover:opacity-90" style="background:var(--cta-gradient);text-decoration:none;box-shadow:0 2px 8px rgba(20,58,195,.25);">Book your first appointment</a>
+    <a href="new-appointment2.html" class="px-4 py-2 text-white text-sm font-medium rounded-lg transition-colors hover:opacity-90" style="background:var(--cta-gradient);text-decoration:none;box-shadow:0 2px 8px rgba(20,58,195,.25);">Book your first appointment</a>
   </div>`;
 }
 
@@ -1936,31 +1989,30 @@ function injectCurrentTimeIndicator() {
       <div style="flex:1;height:2px;background:linear-gradient(90deg,#DC2626,rgba(220,38,38,0.25));"></div>
     </div>`;
 
+  // Direct pixel calculation — works for both new position-based grid layouts
+  const gridTop = (h * 60 + m - HOURS[0] * 60) / 60 * HOUR_HEIGHT;
+
   if (currentView === 'day') {
     if (!isSameDay(currentDayDate, TODAY)) return;
-    const row = document.getElementById(`day-hour-${h}`);
-    if (!row) return;
+    const grid = document.getElementById('dayGridRows');
+    if (!grid) return;
     const el = document.createElement('div');
     el.id = 'currentTimeIndicator';
-    el.style.cssText = `position:absolute;left:0;right:0;top:${frac * row.offsetHeight}px;z-index:20;pointer-events:none;display:flex;align-items:center;`;
-    el.innerHTML = makeHTML(80);
-    row.appendChild(el);
+    el.style.cssText = `position:absolute;left:0;right:0;top:${gridTop}px;z-index:20;pointer-events:none;display:flex;align-items:center;`;
+    el.innerHTML = makeHTML(64);
+    grid.appendChild(el);
   }
 
   if (currentView === 'week') {
     const days = getWeekDays(currentWeekStart);
     if (!days.some(d => isSameDay(d, TODAY))) return;
-    const wrapper = document.getElementById('weekTableWrapper');
-    const row = document.getElementById(`week-hour-row-${h}`);
-    if (!wrapper || !row) return;
-    const wrapperTop = wrapper.getBoundingClientRect().top;
-    const rowRect = row.getBoundingClientRect();
-    const top = (rowRect.top - wrapperTop) + frac * rowRect.height;
+    const grid = document.getElementById('weekGridRows');
+    if (!grid) return;
     const el = document.createElement('div');
     el.id = 'currentTimeIndicator';
-    el.style.cssText = `position:absolute;left:0;right:0;top:${top}px;z-index:20;pointer-events:none;display:flex;align-items:center;`;
-    el.innerHTML = makeHTML(64);
-    wrapper.appendChild(el);
+    el.style.cssText = `position:absolute;left:0;right:0;top:${gridTop}px;z-index:20;pointer-events:none;display:flex;align-items:center;`;
+    el.innerHTML = makeHTML(56);
+    grid.appendChild(el);
   }
 }
 
@@ -2207,7 +2259,7 @@ function openDetailPanel(id) {
     Future:    `<span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;font-size:11px;font-weight:700;background:${t.pillBg};color:${t.pillText};border:1px solid ${t.border}60;"><i class="ti ti-clock" style="font-size:11px;"></i>Scheduled</span>`,
   };
   const statusChip = statusChipMap[ds] || statusChipMap.Future;
-  const panelTitle = appt.groupSize ? appt.type : appt.patient;
+  const panelTitle = appt.name || (appt.groupSize ? appt.type : appt.patient);
 
   // ── Header ──
   document.getElementById('dpHeader').innerHTML = `
@@ -2231,8 +2283,23 @@ function openDetailPanel(id) {
 
   // ── Conditional workspace ──
   let workspaceHtml = '';
+  const providerInitials = appt.provider.split(' ').filter(w => /^[A-Z]/.test(w)).map(w => w[0]).join('').slice(0,2);
+  const facilitatorHtml = `
+    <div class="dp-section" style="padding-bottom:16px;">
+      <div class="dp-section-label"><i class="ti ti-stethoscope" style="font-size:12px;"></i>Facilitator</div>
+      <div class="dp-patient-card">
+        <div class="dp-patient-inner">
+          <div class="dp-patient-avatar" style="background:linear-gradient(135deg,#0d9488,#0f766e);">${providerInitials}</div>
+          <div>
+            <div class="dp-patient-name">${appt.provider}</div>
+            <div class="dp-patient-id">Lead Clinician</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+
   if (appt.groupSize) {
-    workspaceHtml = `
+    workspaceHtml = facilitatorHtml + `
       <div class="dp-section" style="padding-bottom:16px;">
         <div class="dp-section-label"><i class="ti ti-users" style="font-size:12px;"></i>Attendance</div>
         <div class="att-module" id="attendanceModule">${buildAttendanceInner(appt)}</div>
@@ -2240,7 +2307,7 @@ function openDetailPanel(id) {
   } else {
     const initials = nameInitials(appt.patient);
     const ptId = `PT-${String(appt.id).padStart(5,'0')}`;
-    workspaceHtml = `
+    workspaceHtml = facilitatorHtml + `
       <div class="dp-section" style="padding-bottom:16px;">
         <div class="dp-section-label"><i class="ti ti-user" style="font-size:12px;"></i>Patient</div>
         <div class="dp-patient-card">
@@ -2469,7 +2536,7 @@ function showEditMode(id, mode) {
           <i class="ti ti-notes" style="font-size:11px;margin-right:4px;"></i>Appointment Notes
         </label>
         <textarea id="editNotes"
-                  style="width:100%;min-height:88px;padding:10px 12px;border:1.5px solid var(--border-input);border-radius:8px;font-size:13px;color:var(--text-primary);background:var(--bg-input);outline:none;font-family:'Google Sans', sans-serif;resize:vertical;line-height:1.6;"
+                  style="width:100%;min-height:88px;padding:10px 12px;border:1.5px solid var(--border-input);border-radius:8px;font-size:14px;color:var(--text-primary);background:var(--bg-input);outline:none;font-family:'Google Sans', sans-serif;resize:vertical;line-height:1.43;"
                   placeholder="Add clinical notes, observations, or reminders…"
                   onfocus="this.style.borderColor='#143AC3';this.style.boxShadow='0 0 0 3px rgba(20,58,195,.1)'"
                   onblur="this.style.borderColor='';this.style.boxShadow=''">${appt.notes || ''}</textarea>
@@ -2649,9 +2716,9 @@ function printApptSummary(id) {
     body{padding:40px;color:#121219;background:#fff;}
     .logo{font-size:16px;font-weight:700;color:#143AC3;margin-bottom:32px;display:flex;align-items:center;gap:8px;}
     .logo-dot{width:10px;height:10px;border-radius:50%;background:#0d9488;display:inline-block;}
-    h1{font-size:22px;font-weight:700;margin-bottom:4px;}
-    .sub{font-size:13px;color:#666689;margin-bottom:24px;}
-    table{width:100%;border-collapse:collapse;font-size:13px;}
+    h1{font-size:24px;font-weight:700;margin-bottom:4px;line-height:1.2;}
+    .sub{font-size:14px;color:#666689;margin-bottom:24px;line-height:1.43;}
+    table{width:100%;border-collapse:collapse;font-size:14px;}
     td{padding:10px 0;border-bottom:1px solid #f3f4f6;}
     td:first-child{color:#666689;width:160px;font-weight:600;}
     td:last-child{color:#121219;}
@@ -2661,7 +2728,7 @@ function printApptSummary(id) {
   <h1>Appointment Summary</h1>
   <p class="sub">Printed on ${new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}</p>
   <table>
-    <tr><td>Type</td><td>${appt.type}</td></tr>
+    <tr><td>Appointment Name</td><td>${appt.type}</td></tr>
     <tr><td>Patient / Group</td><td>${appt.groupSize ? appt.groupSize + ' Participants' : appt.patient}</td></tr>
     <tr><td>Date</td><td>${dateStr}</td></tr>
     <tr><td>Time</td><td>${fmt12(appt.time)}</td></tr>

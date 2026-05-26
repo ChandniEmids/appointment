@@ -7,7 +7,7 @@ Healthcare appointment management UI for a US Facility Center front desk team.
 ## Stack
 - Plain HTML + Tailwind CSS (CDN: https://cdn.tailwindcss.com)
 - Vanilla JavaScript — no frameworks, no build tools
-- Google Sans font via Google Fonts
+- Inter font via Google Fonts
 - All files are self-contained single-page HTML files
 
 ## Pages
@@ -38,20 +38,10 @@ Start if needed: `python3 -m http.server 3000`
 ## Color System
 
 ### Brand Colors
-- Brand blue: `#143AC3` — active nav, focus rings, primary interactive
-- Brand blue dark: `#2C3F85` — hover states
+- Brand blue: `#5A57DE` — active nav, focus rings
+- Brand blue dark: `#2E2C85` — hover states
 - Brand path green: `#0d9488` — logo accent, user avatar
-- Primary CTA gradient: `linear-gradient(90deg, #143AC3 0%, #5F50E5 100%)` — New appointment button, modal submit, empty state CTA
-
-### Primary Scale
-| Token | Hex | Usage |
-|---|---|---|
-| `primary-900` | `#2C3F85` | Hover dark state |
-| `primary-500` | `#143AC3` | Brand, nav active, focus ring |
-| `primary-200` | `#A5B8FC` | Future chip border |
-| `primary-100` | `#F0F3FF` | Nav active background |
-| `primary-50` | `#F5F7FF` | Future status chip background |
-| `primary-cta` | `#143AC3 → #5F50E5` | CTA buttons, logo icon |
+- Primary CTA gradient: `linear-gradient(90deg, #5064E5 0%, #5F50E5 100%)` — New appointment button, modal submit, empty state CTA
 
 ### Surface & Background
 - Page background: `linear-gradient(180deg, rgba(235,235,237,0.60) 0%, rgba(220,220,236,0.60) 100%), #FFF`
@@ -91,9 +81,7 @@ Colors chosen to avoid conflict with semantic colors (red=error, green=success, 
 | Individual Therapy | `#0E7490` | `#ECFEFF` | -->
 
 ## Typography
-- Font: Google Sans (Google Fonts)
-- CDN: `<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />`
-- CSS: `font-family: 'Google Sans', sans-serif`
+- Font: Inter (Google Fonts)
 - Headings: font-weight 700
 - Labels: 13px, font-weight 500
 - Body: 14px, font-weight 400
@@ -166,7 +154,7 @@ Never use 6px, 10px, 14px, 18px, 28px, or any non-multiple of 8.
 **Bottom:** Help & Support
 
 Nav item states:
-- Active: bg `#F0F3FF`, text `#143AC3`, 3px left border `#143AC3`
+- Active: bg `#EEEEFF`, text `#5A57DE`, 3px left border `#5A57DE`
 - Hover: bg-gray-50
 - Height: 40px, padding: 0 16px
 
@@ -181,7 +169,7 @@ Nav item states:
 - Height: 40px
 - Border-radius: 8px (`rounded-lg`)
 - Border: 1.5px solid `#F0F0F7`
-- Focus ring: 3px solid `rgba(20,58,195,0.15)`
+- Focus ring: 3px solid `rgba(90,87,222,0.15)`
 
 ### Buttons
 - Height: 40px
